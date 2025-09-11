@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocketbook/welcome_screen.dart';
 
 void main() {
-  runApp(WelcomeScreen());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -14,9 +14,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'PocketBook',
       theme: ThemeData(
-        colorScheme: ColorScheme.dark(),
-        //colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        //colorScheme: ColorScheme.dark(),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
+      home: WelcomeScreen(),
     );
   }
 }
