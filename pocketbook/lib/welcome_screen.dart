@@ -9,7 +9,7 @@ class WelcomeScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const MyApp()), //Change MyApp to the home screen when that's made
+          MaterialPageRoute(builder: (context) => const MyApp()), //TODO: Change MyApp to the home screen class when that exists
         );
       },
 
