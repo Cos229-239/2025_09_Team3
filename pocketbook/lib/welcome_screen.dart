@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbook/main.dart';
+import 'package:pocketbook/home_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -9,7 +10,7 @@ class WelcomeScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const MyApp()), //TODO: Change MyApp to the home screen class when that exists
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       },
 
