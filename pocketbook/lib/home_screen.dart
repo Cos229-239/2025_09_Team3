@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -81,7 +80,7 @@ class HomeScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Container( //Spending section content
-                  height: 250,
+                  height: 300,
                   decoration: BoxDecoration(
                     color: const Color(0xFFFF9B71),
                     border: Border.all(
@@ -91,21 +90,35 @@ class HomeScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(7)
                   ),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Add Spending',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 0, 0, 0),  
+                      Padding(padding: EdgeInsets.only(
+                        bottom: 15
+                        ),
+                        child: Text(
+                          'Add Spending',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 0, 0, 0),  
+                          ),
                         ),
                       ),
+                      
                       Padding(padding: EdgeInsetsGeometry.symmetric(horizontal: 10, vertical: 5),
                         child: TextField(
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Amount',
+                            filled: true,
+                            fillColor: Colors.white,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color:  Color(0xFF3B0054), width: 3),
+                              borderRadius: BorderRadius.circular(15)),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
+                              borderRadius: BorderRadius.circular(15)),
                           ),
                           keyboardType: TextInputType.number
                         ),
@@ -115,6 +128,14 @@ class HomeScreen extends StatelessWidget {
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Caption',
+                            filled: true,
+                            fillColor: Colors.white,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color:  Color(0xFF3B0054), width: 3),
+                              borderRadius: BorderRadius.circular(15)),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
+                              borderRadius: BorderRadius.circular(15)),
                           ),
                         ),
                       ),
