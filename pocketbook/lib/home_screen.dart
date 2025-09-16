@@ -16,7 +16,7 @@ class HomeScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.settings),
           tooltip: 'Setting Icon',
-          onPressed: () {}, //TODO: Assign button action
+          onPressed: () {}, //TODO: Assign button actions
         ),
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
@@ -156,7 +156,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                             
                           ),
-                          IconButton.filled( //Match fill color with background
+                          IconButton.filled( //TODO: Match fill color with background
                             onPressed: () {}, 
                             icon: Icon(Icons.add),
                             color: Colors.white,
@@ -164,11 +164,47 @@ class HomeScreen extends StatelessWidget {
                         ],
                       ),
                     ],
-                  ) 
+                  ), 
                 ),
               ),
-            )
+            ),
           ),
+          Expanded(
+            child: Container()
+          ),
+          Row(
+            children: [ //Navigation buttons
+              Expanded(child: Container(),),
+              SizedBox(
+                width: 80,
+                child: Column(
+                  children: [
+                    IconButton.filled(onPressed: () {}, icon: Icon(Icons.add), style: IconButton.styleFrom(fixedSize: Size(60, 60))),
+                    Text('Categories', style: TextStyle(color: Colors.white),),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 80,
+                child: Column(
+                  children: [
+                    IconButton.filled(onPressed: () {}, icon: Icon(Icons.add), style: IconButton.styleFrom(fixedSize: Size(60, 60))),
+                    Text('Spending', style: TextStyle(color: Colors.white),),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 80,
+                child: Column(
+                  children: [
+                    IconButton.filled(onPressed: () {}, icon: Icon(Icons.add), style: IconButton.styleFrom(fixedSize: Size(60, 60))),
+                    Text('Log', style: TextStyle(color: Colors.white),),
+                  ],
+                ),
+              ),      
+            ],
+          ),
+          Padding(padding: EdgeInsetsGeometry.all(10),),
         ],
       ),
     );
