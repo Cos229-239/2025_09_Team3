@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pocketbook/home_screen.dart';
+import 'package:pocketbook/spendings_screen.dart';
 import 'package:pocketbook/welcome_screen.dart';
 
 void main() {
@@ -22,7 +24,7 @@ class MyApp extends StatelessWidget {
         //colorScheme: ColorScheme.dark(),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: WelcomeScreen(),
+      home: HomeScreen(),
     );
   }
 }
