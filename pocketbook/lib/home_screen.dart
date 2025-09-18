@@ -1,16 +1,44 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class HomeScreenState extends StatefulWidget {
+  const HomeScreenState({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _HomeScreenStateManager();
+}
+
+class _HomeScreenStateManager extends State<HomeScreenState> {
+  String userName = "PLACEHOLDER";
+  double balance = 0;
+  List<String> categoryList = ["Bills", "Leisure"];
+  final TextEditingController addAmountController = TextEditingController();
+  final TextEditingController addCaptionController = TextEditingController();
+  final TextEditingController addCategotyController = TextEditingController();
+
+  //TODO: Method here to draw variable details from database
+  void _populatePageVars() {
+    //Grab info from DB
+
+    userName = "NewUsername";
+    balance = 15.00;
+    categoryList = ["Things", "More Things"];
+  }
+
+  //TODO: Database integration and edge cases for addSpending
+  void _addSpending() {
+    double amount = double.parse(addAmountController.text);
+    String caption = addCaptionController.text;
+    print('$amount $caption'); //add to spending DB
+  }
 
   @override
   Widget build(BuildContext context) {
-    String userName = "PLACEHOLDER";
-    double balance = 0;
-
     return Scaffold(
       backgroundColor: Color(0xFF3B0054),
-      appBar: AppBar( //Top bar across screen
+      appBar: AppBar(
+        //Top bar across screen
         title: Text('PocketBook'),
         centerTitle: true,
         leading: IconButton(
@@ -24,8 +52,10 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Padding(padding: EdgeInsets.all(30), //Welcome Message
-            child: Text('Hi, $userName!',
+          Padding(
+            padding: EdgeInsets.all(30), //Welcome Message
+            child: Text(
+              'Hi, $userName!',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Colors.white,
@@ -34,25 +64,23 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          Padding(padding:EdgeInsets.symmetric(horizontal: 10), //Balance section outer border
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 10,
+            ), //Balance section outer border
             child: Center(
               child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 3,
-                  ),
+                  border: Border.all(color: Colors.white, width: 3),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Container( //Balance section content
+                child: Container(
+                  //Balance section content
                   height: 100,
                   decoration: BoxDecoration(
                     color: const Color(0xFFFF9B71),
-                    border: Border.all(
-                      color: Color(0xFF3B0054),
-                      width: 3,                    
-                    ),
-                    borderRadius: BorderRadius.circular(7)
+                    border: Border.all(color: Color(0xFF3B0054), width: 3),
+                    borderRadius: BorderRadius.circular(7),
                   ),
                   child: Center(
                     child: Text(
@@ -61,7 +89,7 @@ class HomeScreen extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 0, 0, 0),  
+                        color: Color.fromARGB(255, 0, 0, 0),
                       ),
                     ),
                   ),
@@ -69,118 +97,166 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          Padding(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20,), //Spending Section padding
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 20,
+            ), //Spending Section padding
             child: Center(
-              child: Container( //spending section outer border
+              child: Container(
+                //spending section outer border
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 3,
-                  ),
+                  border: Border.all(color: Colors.white, width: 3),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Container( //Spending section content
-                  height: 300,
+                child: Container(
+                  //Spending section content
                   decoration: BoxDecoration(
                     color: const Color(0xFFFF9B71),
-                    border: Border.all(
-                      color: Color(0xFF3B0054),
-                      width: 3,                    
-                    ),
-                    borderRadius: BorderRadius.circular(7)
+                    border: Border.all(color: Color(0xFF3B0054), width: 3),
+                    borderRadius: BorderRadius.circular(7),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Padding(padding: EdgeInsets.only(
-                        bottom: 15
-                        ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 15),
                         child: Text(
                           'Add Spending',
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 0, 0, 0),  
+                            color: Color.fromARGB(255, 0, 0, 0),
                           ),
                         ),
                       ),
-                      
-                      Padding(padding: EdgeInsetsGeometry.symmetric(horizontal: 10, vertical: 5),
+
+                      Padding(
+                        padding: EdgeInsetsGeometry.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
                         child: TextField(
+                          controller: addAmountController,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'^\d+\.?\d{0,2}'),
+                            ), //Not fully sure what this means, but it should lock the $ amount to 2 decimal places
+                          ],
+                          keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Amount',
                             filled: true,
                             fillColor: Colors.white,
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color:  Color(0xFF3B0054), width: 3),
-                              borderRadius: BorderRadius.circular(15)),
+                              borderSide: BorderSide(
+                                color: Color(0xFF3B0054),
+                                width: 3,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
-                              borderRadius: BorderRadius.circular(15)),
+                              borderSide: BorderSide(
+                                color: Color.fromARGB(255, 117, 20, 158),
+                                width: 3,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                           ),
-                          keyboardType: TextInputType.number
                         ),
                       ),
-                      Padding(padding: EdgeInsetsGeometry.symmetric(horizontal: 10, vertical: 5),
+                      Padding(
+                        padding: EdgeInsetsGeometry.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
                         child: TextField(
+                          controller: addCaptionController,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Caption',
                             filled: true,
                             fillColor: Colors.white,
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color:  Color(0xFF3B0054), width: 3),
-                              borderRadius: BorderRadius.circular(15)),
+                              borderSide: BorderSide(
+                                color: Color(0xFF3B0054),
+                                width: 3,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
-                              borderRadius: BorderRadius.circular(15)),
+                              borderSide: BorderSide(
+                                color: Color.fromARGB(255, 117, 20, 158),
+                                width: 3,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                           ),
                         ),
                       ),
                       //DropdownMenu<>(),
-                      Row (
+                      Row(
                         children: [
-                          Padding(padding: EdgeInsetsGeometry.symmetric(horizontal: 10, vertical: 5),
-                            child: SizedBox(
+                          Padding(
+                            padding: EdgeInsetsGeometry.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            
+                            child: DropdownMenu<String>(
                               width: 250,
-                              child: TextField(
-                                
-                                decoration: InputDecoration(
-                                  
-                                  border: OutlineInputBorder(),
-                                  hintText: '[placeholder for dropdown]',
+                              hintText: "Category",
+                              dropdownMenuEntries: categoryList.map((selection) {
+                                return DropdownMenuEntry<String>(
+                                  value: selection,
+                                  label: selection,
+                                );
+                              }).toList(),
+                              inputDecorationTheme: InputDecorationTheme(
+                                filled: true,
+                                fillColor: Colors.white,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color(0xFF3B0054),
+                                    width: 3,
+                                  ),
+                                  borderRadius: BorderRadius.circular(15)
                                 ),
                               ),
                             ),
-                            
                           ),
-                          IconButton.filled( //TODO: Match fill color with background
-                            onPressed: () {}, 
+                          IconButton.filled(
+                            //TODO: Match fill color with background
+                            onPressed: _addSpending,
                             icon: Icon(Icons.add),
                             color: Colors.white,
+                            //style: IconButton.styleFrom(backgroundColor: Color(0xFF3B0054))
                           ),
                         ],
                       ),
                     ],
-                  ), 
+                  ),
                 ),
               ),
             ),
           ),
-          Expanded(
-            child: Container()
-          ),
+          Expanded(child: Container()),
           Row(
-            children: [ //Navigation buttons
-              Expanded(child: Container(),),
+            children: [
+              //Navigation buttons
+              Expanded(child: Container()),
               SizedBox(
                 width: 80,
                 child: Column(
                   children: [
-                    IconButton.filled(onPressed: () {}, icon: Icon(Icons.add), style: IconButton.styleFrom(fixedSize: Size(60, 60))),
-                    Text('Categories', style: TextStyle(color: Colors.white),),
+                    IconButton.filled(
+                      onPressed: () {},
+                      icon: Icon(Icons.view_day),
+                      style: IconButton.styleFrom(fixedSize: Size(60, 60), backgroundColor: Color(0xFFFF9B71)),
+                    ),
+                    Text('Categories', style: TextStyle(color: Colors.white)),
                   ],
                 ),
               ),
@@ -188,8 +264,12 @@ class HomeScreen extends StatelessWidget {
                 width: 80,
                 child: Column(
                   children: [
-                    IconButton.filled(onPressed: () {}, icon: Icon(Icons.add), style: IconButton.styleFrom(fixedSize: Size(60, 60))),
-                    Text('Spending', style: TextStyle(color: Colors.white),),
+                    IconButton.filled(
+                      onPressed: () {},
+                      icon: Icon(Icons.pie_chart),
+                      style: IconButton.styleFrom(fixedSize: Size(60, 60), backgroundColor: Color(0xFFFF9B71)),
+                    ),
+                    Text('Spending', style: TextStyle(color: Colors.white)),
                   ],
                 ),
               ),
@@ -197,30 +277,20 @@ class HomeScreen extends StatelessWidget {
                 width: 80,
                 child: Column(
                   children: [
-                    IconButton.filled(onPressed: () {}, icon: Icon(Icons.add), style: IconButton.styleFrom(fixedSize: Size(60, 60))),
-                    Text('Log', style: TextStyle(color: Colors.white),),
+                    IconButton.filled(
+                      onPressed: () {},
+                      icon: Icon(Icons.attach_money),
+                      style: IconButton.styleFrom(fixedSize: Size(60, 60), backgroundColor: Color(0xFFFF9B71)),
+                    ),
+                    Text('Log', style: TextStyle(color: Colors.white)),
                   ],
                 ),
-              ),      
+              ),
             ],
           ),
-          Padding(padding: EdgeInsetsGeometry.all(10),),
+          Padding(padding: EdgeInsetsGeometry.all(10)),
         ],
       ),
     );
-  }
-}
-
-class HomeScreenState extends StatefulWidget {
-  const HomeScreenState({super.key});
-
-  @override
-  State<StatefulWidget> createState() => _HomeScreenStateManager();
-}
-
-class _HomeScreenStateManager extends State<HomeScreenState> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold();
   }
 }
