@@ -9,26 +9,31 @@ class SpendingsScreen extends StatefulWidget{
 }
 
 class _SpendingsScreenState extends State<SpendingsScreen> {
-  final List<bool> _pressed = List<bool>.filled(5, false);
+  
+  final List<Category> _categories = [
+    Category(name: 'Rent',  value: 30, color: const Color(0xFF8E44AD)), 
+    Category(name: 'Food',  value: 20, color: const Color(0xFFFF9B71)), 
+    Category(name: 'Bills', value: 18, color: Colors.green),
+    Category(name: 'Fun',   value: 16, color: const Color.fromARGB(255, 202, 24, 17)),
+    Category(name: 'Other', value: 16, color: const Color(0xFF3498DB)),
+  ];
 
   @override
   Widget build(BuildContext context){
-
-
-
     return Scaffold(
-      backgroundColor: Color(0xFF3B0054),
+      backgroundColor: const Color(0xFF3B0054),
       appBar: AppBar( 
-        title: Text('Spendings'),
+        title: const Text('Spendings'),
         centerTitle: true,
-        leading: IconButton(icon: Icon(Icons.settings), tooltip: 'Setting Icon', onPressed: () {}, 
+        leading: IconButton(
+          icon: const Icon(Icons.settings),
+          tooltip: 'Setting Icon',
+          onPressed: () {}, 
         ),
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
         elevation: 40,
       ),
-
-
 
       body: Center(
         child: Stack(
@@ -36,19 +41,20 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
           alignment: Alignment.center,
           children: [
 
-            Container( // Breakdown box & text
+            // Breakdown box & text
+            Container(
               width: 425,
               height: 75,
-              decoration: BoxDecoration(color: Color(0xFF280039),
-              ), 
+              decoration: const BoxDecoration(color: Color(0xFF280039)),
               child: const Center(
-                child: Text('Breakdown',
-                style: TextStyle(color: Colors.white, fontSize: 36),
+                child: Text(
+                  'Breakdown',
+                  style: TextStyle(color: Colors.white, fontSize: 36),
                 ),
               ),
             ),
 
-
+            // Constrained pie_chart
             Positioned(
               bottom: 125,
               child: SizedBox(
@@ -58,26 +64,39 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                   PieChartData(
                     sectionsSpace: 4,
                     centerSpaceRadius: 75,
-                    sections: _demoSections(),
                     borderData: FlBorderData(show: false),
+                    sections: _categories.map((c) {
+                      return PieChartSectionData(
+                        value: c.value,
+                        title: c.name, 
+                        color: c.color,
+                        radius: 70,
+                        titleStyle: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ),
               ),
             ),
 
-
-            for (int i = 0; i < 5; i++) // Demo Tappable Categories
+            // Tappable categorys with matching labels
+            for (int i = 0; i < _categories.length; i++)
               Positioned(
                 bottom: -70 - (i * 70),
                 child: _ActionTile(
                   width: 350, 
                   height: 50, 
-                  color: _pressed[i]
-                    ? Colors.green
-                    :const Color(0xFFFF9B71), 
+                  label: _categories[i].name, 
+                  color: _categories[i].pressed
+                      ? Colors.green
+                      : _categories[i].color, 
                   onTap: (){
                     setState(() {
-                      _pressed[i] = !_pressed[i];
+                      _categories[i].pressed = !_categories[i].pressed;
                     });
                   },
                 ),
@@ -87,45 +106,51 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
       ),
     );
   }
-
-  List<PieChartSectionData> _demoSections() {
-    return[
-      PieChartSectionData(value: 30, title: 'Rent',   radius: 70, titleStyle: const TextStyle(color: Colors.white)),
-      PieChartSectionData(value: 20, title: 'Food',   radius: 70, color: const Color(0xFFFF9B71), titleStyle: const TextStyle(color: Colors.black)),
-      PieChartSectionData(value: 18, title: 'Bills',  radius: 70, color: Colors.green, titleStyle: const TextStyle(color: Colors.white)),
-      PieChartSectionData(value: 16, title: 'Fun',    radius: 70, color: const Color(0xFF9B59B6), titleStyle: const TextStyle(color: Colors.white)),
-      PieChartSectionData(value: 16, title: 'Other',  radius: 70, color: const Color(0xFF3498DB), titleStyle: const TextStyle(color: Colors.white)),
-    ];
-  }
-
 }
 
+// Simple data model
+class Category {
+  final String name;
+  final double value;
+  final Color color;
+  bool pressed;
 
+  Category({
+    required this.name,
+    required this.value,
+    required this.color,
+    this.pressed = false,
+  });
+}
 
-
-// Reusable, tappable rectangle(s)
+// Reusable, tappable rectangle(s) with label text
 class _ActionTile extends StatelessWidget {
   final double width;
   final double height;
+  final String label;
   final Color color;
   final VoidCallback onTap;
 
   const _ActionTile({
     required this.width,
     required this.height,
+    required this.label,
     required this.color,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final brightness = ThemeData.estimateBrightnessForColor(color);
+    final textColor = brightness == Brightness.light ? Colors.black : Colors.white;
+
     return Material( 
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(10),
-        splashColor: Colors.greenAccent.withValues(alpha: 0.3), // ripple color
-        highlightColor: Colors.green.withValues(alpha: 0.2),   // pressed color
+        splashColor: Colors.greenAccent.withValues(alpha: 0.3), 
+        highlightColor: Colors.green.withValues(alpha: 0.2),   
         child: Ink(
           width: width,
           height: height,
@@ -133,9 +158,18 @@ class _ActionTile extends StatelessWidget {
             color: color,
             borderRadius: BorderRadius.circular(10),
           ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 }
-
