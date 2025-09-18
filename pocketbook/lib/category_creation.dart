@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+
 
 class CategoryCreation extends StatefulWidget {
   const CategoryCreation({super.key});
@@ -8,7 +10,8 @@ class CategoryCreation extends StatefulWidget {
 }
 class _CategoryCreationState extends State<CategoryCreation> {
   final TextEditingController _categoryNameController = TextEditingController();
-   double _budgetValue = 0.0;
+  double _budgetValue = 0.0;
+  Color _chosenColor = const Color.fromARGB(255, 2, 128, 77);
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +85,55 @@ class _CategoryCreationState extends State<CategoryCreation> {
                        _budgetValue = value;
                      });
                    },
-                 )
+                 ),
+                 SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Choose a Color'),
+                          content: SingleChildScrollView(
+                            child: ColorPicker(
+                              pickerColor: _chosenColor,
+                              onColorChanged: (color) {
+                                setState(() {
+                                  _chosenColor = color;
+                                });
+                              },
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: const Text('Choose Color'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _chosenColor, // <-- Use the chosen color here
+                    foregroundColor: Colors.black,
+                  )
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    //add logic to save category
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Save'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey, 
+                    foregroundColor: Colors.black,
+                  )
+                )
               ],
             ),
           ),
