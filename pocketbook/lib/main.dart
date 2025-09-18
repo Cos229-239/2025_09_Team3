@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         //colorScheme: ColorScheme.dark(),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: HomeScreenState(),
+      home: WelcomeScreen(),
     );
   }
 }
