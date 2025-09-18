@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbook/categories_screen.dart';
-import 'package:pocketbook/home_screen.dart';
 
-class CategoryCreation extends StatelessWidget {
+class CategoryCreation extends StatefulWidget {
   const CategoryCreation({super.key});
 
+  @override
+  State<CategoryCreation> createState() => _CategoryCreationState();
+}
+class _CategoryCreationState extends State<CategoryCreation> {
+  final TextEditingController _categoryNameController = TextEditingController();
+   double _budgetValue = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +24,8 @@ class CategoryCreation extends StatelessWidget {
           icon: Icon(Icons.arrow_back),
           tooltip: 'Back Icon',
           onPressed: () {
-            Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const CategoriesScreen()),
-                    );
-          }, //TODO: Assign button action
+            Navigator.of(context).pop();
+          },
         ),
       ),
       body: Center(
@@ -38,8 +40,55 @@ class CategoryCreation extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(30),
           ),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                const Text(
+                  'Create a Category',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF280039),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                TextFormField(
+                  controller: _categoryNameController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Category Name',
+                    hintText: 'Enter category name',
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Text(
+                  'Set Budget Limit: \$${_budgetValue.toStringAsFixed(2)}',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color(0xFF280039),
+                  ),
+                ),
+                Slider(
+                   value: _budgetValue,
+                   min: 0,
+                   max: 5000,
+                   divisions: 100,
+                   label: '$_budgetValue',
+                   onChanged: (value) {
+                     setState(() {
+                       _budgetValue = value;
+                     });
+                   },
+                 )
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
+
