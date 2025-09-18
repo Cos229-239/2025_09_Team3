@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-=======
 import 'package:pocketbook/category_creation.dart';
 import 'package:pocketbook/home_screen.dart';
->>>>>>> categories
 
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({super.key});
@@ -17,24 +14,12 @@ class CategoriesScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
         elevation: 40,
-<<<<<<< HEAD
-     leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          tooltip: 'Back Icon',
-          onPressed: () {}, //TODO: Assign button action
-        ),
-      ),
-      body: const Center(
-        child: Text(
-          'Categories Screen',
-          style: TextStyle(fontSize: 24),
-=======
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           tooltip: 'Back Icon',
           onPressed: () {
             Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const HomeScreen()),
+                      MaterialPageRoute(builder: (context) => const HomeScreenState()),
                     );
           }, //TODO: Assign button action
         ),
@@ -80,7 +65,6 @@ class CategoriesScreen extends StatelessWidget {
               ],
             ),
           ],
->>>>>>> categories
         ),
       ),
     );
