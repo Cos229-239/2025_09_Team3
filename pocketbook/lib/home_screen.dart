@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pocketbook/categories_screen.dart';
+import 'package:pocketbook/spendings_screen.dart';
 
 class HomeScreenState extends StatefulWidget {
   const HomeScreenState({super.key});
@@ -269,7 +270,9 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                 child: Column(
                   children: [
                     IconButton.filled(
-                      onPressed: () {},
+                      onPressed: () {Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const SpendingsScreen()),
+                    );},
                       icon: Icon(Icons.pie_chart),
                       style: IconButton.styleFrom(fixedSize: Size(60, 60), backgroundColor: Color(0xFFFF9B71)),
                     ),
