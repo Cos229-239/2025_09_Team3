@@ -116,11 +116,11 @@ class _CategoryCreationState extends State<CategoryCreation> {
                       },
                     );
                   },
-                  child: const Text('Choose Color'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _chosenColor, // <-- Use the chosen color here
                     foregroundColor: Colors.black,
-                  )
+                  ),
+                  child: const Text('Choose Color')
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
@@ -128,11 +128,11 @@ class _CategoryCreationState extends State<CategoryCreation> {
                     //add logic to save category
                     Navigator.of(context).pop();
                   },
-                  child: const Text('Save'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey, 
                     foregroundColor: Colors.black,
-                  )
+                  ),
+                  child: const Text('Save')
                 )
               ],
             ),
