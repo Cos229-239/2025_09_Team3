@@ -101,9 +101,13 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                   },
                 ),
               ),
+
+
           ],  // Children
         ),
       ),
+
+      
     );
   }
 }
