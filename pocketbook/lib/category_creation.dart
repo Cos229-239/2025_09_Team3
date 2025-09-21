@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
+class Category {
+  String name;
+  double budget;
+  Color color;
+
+  Category({
+    required this.name,
+    required this.budget,
+    required this.color,
+  });
+}
 
 class CategoryCreation extends StatefulWidget {
-  const CategoryCreation({super.key});
+  final void Function(Category) onSave;
+  const CategoryCreation({super.key, required this.onSave});
 
   @override
   State<CategoryCreation> createState() => _CategoryCreationState();
@@ -125,7 +137,13 @@ class _CategoryCreationState extends State<CategoryCreation> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    //add logic to save category
+                    widget.onSave(
+                      Category(
+                        name: _categoryNameController.text,
+                        budget: _budgetValue,
+                        color: _chosenColor,
+                      ),
+                    );
                     Navigator.of(context).pop();
                   },
                   child: const Text('Save'),

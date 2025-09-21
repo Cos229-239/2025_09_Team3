@@ -11,7 +11,11 @@ class WelcomeScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
+<<<<<<< HEAD
           MaterialPageRoute(builder: (context) => const HomeScreenState()),
+=======
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+>>>>>>> categories
         );
       },
 
