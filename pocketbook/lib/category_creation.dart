@@ -28,7 +28,7 @@ class _CategoryCreationState extends State<CategoryCreation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+       backgroundColor: const Color.fromARGB(255, 200, 200, 200),
       appBar: AppBar(
         title: const Text('Category Creation'),
         centerTitle: true,
@@ -44,6 +44,7 @@ class _CategoryCreationState extends State<CategoryCreation> {
         ),
       ),
       body: Center(
+        
         child: Container(
           width: 300,
           height: 500,
@@ -89,8 +90,8 @@ class _CategoryCreationState extends State<CategoryCreation> {
                 Slider(
                    value: _budgetValue,
                    min: 0,
-                   max: 5000,
-                   divisions: 100,
+                   max: 2000,
+                   divisions: 200,
                    label: '$_budgetValue',
                    onChanged: (value) {
                      setState(() {
