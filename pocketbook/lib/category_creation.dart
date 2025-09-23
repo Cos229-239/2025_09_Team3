@@ -138,9 +138,13 @@ class _CategoryCreationState extends State<CategoryCreation> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
+                    String catName = _categoryNameController.text;
+                    if (catName.isNotEmpty) {
+                      catName = catName[0].toUpperCase() + catName.substring(1);
+                    }
                     widget.onSave(
                       Category(
-                        name: _categoryNameController.text,
+                        name: catName,
                         budget: _budgetValue,
                         color: _chosenColor,
                       ),
