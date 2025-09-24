@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbook/categories_screen.dart';
 import 'package:pocketbook/home_screen.dart';
-import 'package:pocketbook/categories_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});

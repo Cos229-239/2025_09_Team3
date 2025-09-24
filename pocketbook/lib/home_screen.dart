@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pocketbook/account_creation.dart';
 import 'package:flutter/services.dart';
 import 'package:pocketbook/categories_screen.dart';
 import 'package:pocketbook/spendings_screen.dart';
@@ -46,7 +47,10 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
         leading: IconButton(
           icon: Icon(Icons.settings),
           tooltip: 'Setting Icon',
-          onPressed: () {}, //TODO: Assign button actions
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const AccountCreation()),
+            );}, //TODO: Assign button actions
         ),
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
