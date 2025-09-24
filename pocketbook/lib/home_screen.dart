@@ -27,6 +27,8 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     db.manualUpdate();
     // db.testUser(); //TODO: Change to proper function
 
+    
+
     userName = "NewUsername";
     balance = 15.00;
     categoryList = ["No categories created"];

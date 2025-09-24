@@ -67,11 +67,13 @@ class DatabaseHandler {
     int userID,
     String categoryName,
     String categoryColor,
+    double amount,
   ) async {
     await db.insert('spending_logs', {
       'userID': userID,
       'category': categoryName,
       'categoryColor': categoryColor,
+      'amount' : amount,
       'date_time': await getCurrentTime(),
     });
   }
