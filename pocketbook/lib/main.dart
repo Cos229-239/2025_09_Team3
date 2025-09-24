@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pocketbook/home_screen.dart';
-import 'package:pocketbook/spendings_screen.dart';
 import 'package:pocketbook/welcome_screen.dart';
-import 'package:pocketbook/account_creation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());

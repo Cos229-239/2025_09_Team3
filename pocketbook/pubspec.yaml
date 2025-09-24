@@ -36,6 +36,7 @@ dependencies:
   fl_chart: ^0.68.0 
   # updated to latest version
   shared_preferences: ^2.3.0
+  sqflite: ^2.4.2
   # added for account creation screen
 
 
