@@ -33,11 +33,11 @@ dependencies:
     sdk: flutter
   flutter_colorpicker: ^1.1.0
   cupertino_icons: ^1.0.8
-  fl_chart: ^0.68.0 
-  # updated to latest version
-  shared_preferences: ^2.3.0
+  fl_chart: ^0.63.0
   sqflite: ^2.4.2
-  # added for account creation screen
+  path: ^1.9.1
+  shared_preferences: ^2.5.3
+  bcrypt: ^1.1.3
 
 
 dev_dependencies:

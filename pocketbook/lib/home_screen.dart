@@ -3,6 +3,7 @@ import 'package:pocketbook/account_creation.dart';
 import 'package:flutter/services.dart';
 import 'package:pocketbook/categories_screen.dart';
 import 'package:pocketbook/spendings_screen.dart';
+import 'database_handler.dart';
 
 class HomeScreenState extends StatefulWidget {
   const HomeScreenState({super.key});
@@ -18,25 +19,32 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   final TextEditingController addAmountController = TextEditingController();
   final TextEditingController addCaptionController = TextEditingController();
   final TextEditingController addCategotyController = TextEditingController();
-
+  final DatabaseHandler db = DatabaseHandler.databaseInstance!;
+  int userID = 1; //TODO: TEMP VARIABLE REMOVE WHEN SIGN IN IS DONE
   //TODO: Method here to draw variable details from database
-  void _populatePageVars() {
+  void getUserData() {
     //Grab info from DB
+    db.manualUpdate();
+    // db.testUser(); //TODO: Change to proper function
 
     userName = "NewUsername";
     balance = 15.00;
-    categoryList = ["Things", "More Things"];
+    categoryList = ["No categories created"];
   }
 
-  //TODO: Database integration and edge cases for addSpending
+  
   void _addSpending() {
     double amount = double.parse(addAmountController.text);
     String caption = addCaptionController.text;
-    print('$amount $caption'); //add to spending DB
+    String category = addCategotyController.text;
+
+    db.addSpending(userID, category, caption, amount);
+    //TODO: Clear input fields, error prevention
   }
 
   @override
   Widget build(BuildContext context) {
+    getUserData();
     return Scaffold(
       backgroundColor: Color(0xFF3B0054),
       appBar: AppBar(
@@ -49,7 +57,8 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
           onPressed: () {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => const AccountCreation()),
-            );}, //TODO: Assign button actions
+            );
+          }, //TODO: Assign button actions
         ),
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
@@ -209,11 +218,13 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                               horizontal: 10,
                               vertical: 5,
                             ),
-                            
+
                             child: DropdownMenu<String>(
                               width: 250,
                               hintText: "Category",
-                              dropdownMenuEntries: categoryList.map((selection) {
+                              dropdownMenuEntries: categoryList.map((
+                                selection,
+                              ) {
                                 return DropdownMenuEntry<String>(
                                   value: selection,
                                   label: selection,
@@ -227,13 +238,12 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                                     color: Color(0xFF3B0054),
                                     width: 3,
                                   ),
-                                  borderRadius: BorderRadius.circular(15)
+                                  borderRadius: BorderRadius.circular(15),
                                 ),
                               ),
                             ),
                           ),
                           IconButton.filled(
-                            //TODO: Match fill color with background
                             onPressed: _addSpending,
                             icon: Icon(Icons.add),
                             color: Colors.white,
@@ -257,12 +267,18 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                 child: Column(
                   children: [
                     IconButton.filled(
-                      onPressed: () { 
+                      onPressed: () {
                         Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const CategoriesScreen()),
-                    );}, // Added navigation to the categories button
+                          MaterialPageRoute(
+                            builder: (context) => const CategoriesScreen(),
+                          ),
+                        );
+                      }, // Added navigation to the categories button
                       icon: Icon(Icons.view_day),
-                      style: IconButton.styleFrom(fixedSize: Size(60, 60), backgroundColor: Color(0xFFFF9B71)),
+                      style: IconButton.styleFrom(
+                        fixedSize: Size(60, 60),
+                        backgroundColor: Color(0xFFFF9B71),
+                      ),
                     ),
                     Text('Categories', style: TextStyle(color: Colors.white)),
                   ],
@@ -273,11 +289,18 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                 child: Column(
                   children: [
                     IconButton.filled(
-                      onPressed: () {Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const SpendingsScreen()),
-                    );},
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const SpendingsScreen(),
+                          ),
+                        );
+                      },
                       icon: Icon(Icons.pie_chart),
-                      style: IconButton.styleFrom(fixedSize: Size(60, 60), backgroundColor: Color(0xFFFF9B71)),
+                      style: IconButton.styleFrom(
+                        fixedSize: Size(60, 60),
+                        backgroundColor: Color(0xFFFF9B71),
+                      ),
                     ),
                     Text('Spending', style: TextStyle(color: Colors.white)),
                   ],
@@ -290,7 +313,10 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                     IconButton.filled(
                       onPressed: () {},
                       icon: Icon(Icons.attach_money),
-                      style: IconButton.styleFrom(fixedSize: Size(60, 60), backgroundColor: Color(0xFFFF9B71)),
+                      style: IconButton.styleFrom(
+                        fixedSize: Size(60, 60),
+                        backgroundColor: Color(0xFFFF9B71),
+                      ),
                     ),
                     Text('Log', style: TextStyle(color: Colors.white)),
                   ],
