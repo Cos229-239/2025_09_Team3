@@ -54,7 +54,7 @@ class _AccountCreationState extends State<AccountCreation> {
     confirmPasswordController.dispose();
     super.dispose();
   }
-
+  //TODO: Set appropriate keyboard types for each input
   @override
   Widget build(BuildContext context) {
     return Scaffold(

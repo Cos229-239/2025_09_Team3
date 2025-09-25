@@ -58,7 +58,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                TextFormField(
+                TextFormField( //TODO: Change text-type to email
                   controller: _emailController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -69,6 +69,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 const SizedBox(height: 30),
                 TextFormField(
                   controller: _passwordController,
+                  obscureText: true,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Password',
@@ -76,7 +77,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                ElevatedButton(
+                ElevatedButton( //TODO: Check both fields are full
                   onPressed: () async {
                       if (await db.verifyUser(_emailController.text, _passwordController.text))
                       {

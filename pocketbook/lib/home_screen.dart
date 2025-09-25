@@ -13,7 +13,7 @@ class HomeScreenState extends StatefulWidget {
 }
 
 class _HomeScreenStateManager extends State<HomeScreenState> {
-  String? userName = "Loading...";
+  String? userName = "";
   double? balance = 0.00;
   List<String> categoryList = [];
   final TextEditingController addAmountController = TextEditingController();
@@ -57,11 +57,8 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
         }
         categoryList = ["No categories created"];
         print(userData + userCategories);
-     });
-    }
-    
-      
-    
+      });
+    }    
   }
 
   void _addSpending() {
@@ -88,7 +85,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => const AccountCreation()),
             );
-          }, //TODO: Assign button actions
+          },
         ),
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
@@ -249,7 +246,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                               vertical: 5,
                             ),
 
-                            child: DropdownMenu<String>(
+                            child: DropdownMenu<String>( //TODO: Populate dropdown menu from DB, set up warning/nonselectable option for when user has no categories
                               width: 250,
                               hintText: "Category",
                               dropdownMenuEntries: categoryList.map((
