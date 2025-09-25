@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbook/welcome_screen.dart';
+import 'package:pocketbook/database_handler.dart';
+import 'package:pocketbook/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountCreation extends StatefulWidget {
@@ -10,7 +11,8 @@ class AccountCreation extends StatefulWidget {
 }
 
 class _AccountCreationState extends State<AccountCreation> {
-  final TextEditingController nameController = TextEditingController();
+  final TextEditingController fNameController = TextEditingController();
+  final TextEditingController lNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
@@ -18,23 +20,20 @@ class _AccountCreationState extends State<AccountCreation> {
   final TextEditingController incomeController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
+  final DatabaseHandler db = DatabaseHandler.databaseInstance!;
 
   Future<void> createAccount() async {
     if (passwordController.text == confirmPasswordController.text) {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('name', nameController.text.trim());
+      await prefs.setString('first name', fNameController.text.trim());
+      await prefs.setString('last name', lNameController.text.trim());
       await prefs.setString('email', emailController.text.trim());
-      await prefs.setString('phone', phoneController.text.trim());
-      await prefs.setString('address', addressController.text.trim());
-      await prefs.setString('dob', dobController.text.trim());
-      await prefs.setString('income', incomeController.text.trim());
       await prefs.setString('password', passwordController.text.trim());
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account created successfully!')),
-        );
+        db.addUser(fNameController.text, lNameController.text, emailController.text, passwordController.text);
+        db.setUserIDVar(emailController.text);
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreenState()),
         );
       }
     } else {
@@ -48,12 +47,9 @@ class _AccountCreationState extends State<AccountCreation> {
 
   @override
   void dispose() {
-    nameController.dispose();
+    fNameController.dispose();
+    lNameController.dispose();
     emailController.dispose();
-    phoneController.dispose();
-    addressController.dispose();
-    dobController.dispose();
-    incomeController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
@@ -77,75 +73,43 @@ class _AccountCreationState extends State<AccountCreation> {
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                DateTime? picked = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime.now(),
-                );
-                if (picked != null) {
-                  dobController.text = '${picked.month}/${picked.day}/${picked.year}';
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF9B71),
-                foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              ),
-              child: const Text('Select Date of Birth'),
-            ),
             const SizedBox(height: 10),
-            TextField(
-              controller: dobController,
-              decoration: InputDecoration(
-                labelText: 'Date of Birth (MM/DD/YYYY)',
-                filled: true,
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color(0xFF3B0054), width: 3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              enabled: false,
-            ),
             const SizedBox(height: 10),
             Row(
               children: [
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: 'First Name',
-                    filled: true,
-                    fillColor: Colors.white,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Color(0xFF3B0054), width: 3),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
-                      borderRadius: BorderRadius.circular(10),
+                Expanded(
+                  child: TextField(
+                    controller: fNameController,
+                    decoration: InputDecoration(
+                      labelText: 'First Name',
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color(0xFF3B0054), width: 3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
                 ),
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Last Name',
-                    filled: true,
-                    fillColor: Colors.white,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Color(0xFF3B0054), width: 3),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
-                      borderRadius: BorderRadius.circular(10),
+                Expanded(
+                  child: TextField(
+                    controller: lNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Last Name',
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color(0xFF3B0054), width: 3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
                 ),
@@ -169,58 +133,8 @@ class _AccountCreationState extends State<AccountCreation> {
               ),
             ),
             const SizedBox(height: 10),
-            TextField(
-              controller: phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: InputDecoration(
-                labelText: 'Phone Number',
-                filled: true,
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color(0xFF3B0054), width: 3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
             const SizedBox(height: 10),
-            TextField(
-              controller: addressController,
-              decoration: InputDecoration(
-                labelText: 'Physical Address',
-                filled: true,
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color(0xFF3B0054), width: 3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
             const SizedBox(height: 10),
-            TextField(
-              controller: incomeController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Annual Income',
-                filled: true,
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color(0xFF3B0054), width: 3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
             const SizedBox(height: 10),
             TextField(
               controller: passwordController,
@@ -260,12 +174,9 @@ class _AccountCreationState extends State<AccountCreation> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                if (nameController.text.isNotEmpty &&
+                if (fNameController.text.isNotEmpty &&
+                    lNameController.text.isNotEmpty &&
                     emailController.text.isNotEmpty &&
-                    phoneController.text.isNotEmpty &&
-                    addressController.text.isNotEmpty &&
-                    dobController.text.isNotEmpty &&
-                    incomeController.text.isNotEmpty &&
                     passwordController.text.isNotEmpty &&
                     confirmPasswordController.text.isNotEmpty) {
                   createAccount();

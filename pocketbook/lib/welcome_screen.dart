@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbook/home_screen.dart';
 import 'package:pocketbook/sign_in_screen.dart';
+
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});

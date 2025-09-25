@@ -5,8 +5,7 @@ import 'package:bcrypt/bcrypt.dart';
 
 class DatabaseHandler {
   late Database db;
-
-  
+  static int userID = -1;
 
   DatabaseHandler._create(this.db);
 
@@ -28,7 +27,6 @@ class DatabaseHandler {
 
   void manualUpdate() async {
     //To be manually edited and run, only if needed
-
   }
 
   void testUser() async {
@@ -54,8 +52,7 @@ class DatabaseHandler {
       'lName': last,
       'email': email,
       'password_hash': BCrypt.hashpw(password, salt),
-      'hash_salt': salt,
-      'date_time': await getCurrentTime(),
+      'hash_salt': salt
     });
   }
 
@@ -73,7 +70,7 @@ class DatabaseHandler {
       'userID': userID,
       'category': categoryName,
       'categoryColor': categoryColor,
-      'amount' : amount,
+      'amount': amount,
       'date_time': await getCurrentTime(),
     });
   }
@@ -102,6 +99,10 @@ class DatabaseHandler {
     return result.first['userID'] as int;
   }
 
+  void setUserIDVar(String email) async {
+    userID = await getUserID(email);
+  }
+
   Future<List<Map<String, Object?>>> getUserData(int userID) async {
     return db.query('user_data', where: 'userID = ?', whereArgs: [userID]);
   }
@@ -109,7 +110,7 @@ class DatabaseHandler {
   Future<List<Map<String, Object?>>> getCategories(int userID) async {
     return db.query(
       'spending_logs',
-      where: 'userID = ?, caption IS NULL',
+      where: 'userID = ? AND caption IS NULL',
       whereArgs: [userID],
     );
   }
@@ -120,7 +121,7 @@ class DatabaseHandler {
   ) async {
     return db.query(
       'spending_logs',
-      where: 'userID = ?, category = ?, caption IS NOT NULL',
+      where: 'userID = ? AND category = ?AND caption IS NOT NULL',
       whereArgs: [userID, category],
     );
   }

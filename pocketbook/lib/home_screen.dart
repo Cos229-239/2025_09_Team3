@@ -13,40 +13,64 @@ class HomeScreenState extends StatefulWidget {
 }
 
 class _HomeScreenStateManager extends State<HomeScreenState> {
-  String userName = "PLACEHOLDER";
-  double balance = 0;
-  List<String> categoryList = ["Bills", "Leisure"];
+  String? userName = "Loading...";
+  double? balance = 0.00;
+  List<String> categoryList = [];
   final TextEditingController addAmountController = TextEditingController();
   final TextEditingController addCaptionController = TextEditingController();
   final TextEditingController addCategotyController = TextEditingController();
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
-  int userID = 1; //TODO: TEMP VARIABLE REMOVE WHEN SIGN IN IS DONE
-  //TODO: Method here to draw variable details from database
-  void getUserData() {
-    //Grab info from DB
-    db.manualUpdate();
-    // db.testUser(); //TODO: Change to proper function
-
-    
-
-    userName = "NewUsername";
-    balance = 15.00;
-    categoryList = ["No categories created"];
+  int userID = DatabaseHandler.userID;
+  
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
   }
 
-  
+  Future<void> getUserData() async {
+    //Grab info from DB
+    List<Map<String, Object?>> userData = await db.getUserData(userID);
+    List<Map<String, Object?>> userCategories = await db.getCategories(userID);
+    if (mounted) {
+      setState(() {
+        userName = userData.first['fname'] as String;
+        balance = 0;
+        if (userData.isNotEmpty && userData.first['account_balance'] != null)
+        {
+          balance = userData.first['account_balance'] as double;
+        }
+        
+        if (userCategories.isNotEmpty) {
+          print(userCategories);
+          //TODO: populate Category list
+          // categoryList = [];
+          // for (int i = 0; i < userCategories.length; i++) {
+          //   categoryList.add(userCategories.elementAt(i).)
+          // }
+          //loop through, add each category to list variable
+          categoryList = ["No categories created"];
+        }
+        categoryList = ["No categories created"];
+        print(userData + userCategories);
+     });
+    }
+    
+      
+    
+  }
+
   void _addSpending() {
     double amount = double.parse(addAmountController.text);
     String caption = addCaptionController.text;
     String category = addCategotyController.text;
 
-    db.addSpending(userID, category, caption, amount);
     //TODO: Clear input fields, error prevention
+    db.addSpending(userID, category, caption, amount);
   }
 
   @override
   Widget build(BuildContext context) {
-    getUserData();
     return Scaffold(
       backgroundColor: Color(0xFF3B0054),
       appBar: AppBar(

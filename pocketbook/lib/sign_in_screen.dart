@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbook/account_creation.dart';
 import 'package:pocketbook/home_screen.dart';
+import 'package:pocketbook/database_handler.dart';
 
 
 class SignInScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ State<SignInScreen> createState() => _SignInScreenState();
 class _SignInScreenState extends State<SignInScreen> {
     final TextEditingController _emailController = TextEditingController();
     final TextEditingController _passwordController = TextEditingController();
+    final DatabaseHandler db = DatabaseHandler.databaseInstance!;
 
   @override
   Widget build(BuildContext context) {
@@ -75,11 +77,27 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: (){
-                    // logic placeholder for sign in just to navigate to home screen
-                      Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const HomeScreenState()),
-                    );
+                  onPressed: () async {
+                      if (await db.verifyUser(_emailController.text, _passwordController.text))
+                      {
+                        db.setUserIDVar(_emailController.text);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => const HomeScreenState()),
+                        );
+                      }
+                      else
+                      {
+                        showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: const Text('Incorrect email or password'),
+                            actions: <Widget>[
+                              TextButton(onPressed: () => Navigator.pop(context, 'OK'), child: const Text('OK')),
+                            ],
+                          ),
+                        );
+                      }
+                      
                   },
                   child: const Text('Sign In'),
                   style:  ElevatedButton.styleFrom(
@@ -98,11 +116,9 @@ class _SignInScreenState extends State<SignInScreen> {
                  const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: (){
-                    //Logic placeholder for sign up button to navigate to account creation screen
                     Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => const AccountCreation()),
                     );
-
                   },
                   child: const Text('Sign Up'),
                   style:  ElevatedButton.styleFrom(
