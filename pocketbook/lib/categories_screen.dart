@@ -23,7 +23,7 @@ void addCategory(Category category) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       backgroundColor: const Color.fromARGB(255, 200, 200, 200),
+       backgroundColor: const Color(0xFF280039), 
       appBar: AppBar(
         title: const Text('Categories'),
         centerTitle: true,

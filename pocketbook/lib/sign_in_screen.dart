@@ -18,7 +18,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       backgroundColor: const Color.fromARGB(255, 200, 200, 200),
+        backgroundColor: const Color(0xFF280039),
       appBar: AppBar(
         title: const Text('PocketBook'),
         centerTitle: true,
@@ -29,7 +29,7 @@ class _SignInScreenState extends State<SignInScreen> {
         
       ),
       body: Center(
-        
+         
         child: Container(
           width: 300,
           height: 500,
@@ -83,8 +83,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   },
                   child: const Text('Sign In'),
                   style:  ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey, 
-                    foregroundColor: Colors.black,
+                    backgroundColor: const Color(0xFF280039),
+                    foregroundColor: const Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -106,8 +106,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   },
                   child: const Text('Sign Up'),
                   style:  ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey, 
-                    foregroundColor: Colors.black,
+                    backgroundColor: const Color(0xFF280039), 
+                    foregroundColor: const Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
               ],
