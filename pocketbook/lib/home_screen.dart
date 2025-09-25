@@ -34,8 +34,12 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     List<Map<String, Object?>> userCategories = await db.getCategories(userID);
     if (mounted) {
       setState(() {
-        userName = userData.first['fname'] as String;
-        balance = 0;
+        if (userData.isNotEmpty)
+        {
+          userName = userData.first['fname'] as String;
+          balance = 0;
+        }
+        
         if (userData.isNotEmpty && userData.first['account_balance'] != null)
         {
           balance = userData.first['account_balance'] as double;

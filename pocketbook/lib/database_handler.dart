@@ -99,7 +99,7 @@ class DatabaseHandler {
     return result.first['userID'] as int;
   }
 
-  void setUserIDVar(String email) async {
+  Future<void> setUserIDVar(String email) async {
     userID = await getUserID(email);
   }
 

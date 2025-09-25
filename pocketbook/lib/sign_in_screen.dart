@@ -80,7 +80,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   onPressed: () async {
                       if (await db.verifyUser(_emailController.text, _passwordController.text))
                       {
-                        db.setUserIDVar(_emailController.text);
+                        await db.setUserIDVar(_emailController.text);
                         Navigator.of(context).push(
                           MaterialPageRoute(builder: (context) => const HomeScreenState()),
                         );
