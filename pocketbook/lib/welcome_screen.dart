@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbook/categories_screen.dart';
 import 'package:pocketbook/home_screen.dart';
+import 'package:pocketbook/sign_in_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -10,7 +11,7 @@ class WelcomeScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const HomeScreenState()),
+          MaterialPageRoute(builder: (context) => const SignInScreen()),
         );
       },
 
