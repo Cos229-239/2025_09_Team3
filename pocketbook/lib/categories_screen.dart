@@ -104,6 +104,22 @@ void addCategory(Category category) {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        IconButton( //Category edit button
+                          icon: const Icon(Icons.more_vert, color: Colors.white),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => CategoryCreation(
+                                    onSave: (catEdit) {
+                                      setState(() {
+                                        categories[index] = catEdit;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                       ],
                     ),
                   );
