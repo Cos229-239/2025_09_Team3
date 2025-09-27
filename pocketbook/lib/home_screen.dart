@@ -21,7 +21,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   final TextEditingController addCategotyController = TextEditingController();
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
   int userID = DatabaseHandler.userID;
-  
+
   @override
   void initState() {
     super.initState();
@@ -34,31 +34,28 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     List<Map<String, Object?>> userCategories = await db.getCategories(userID);
     if (mounted) {
       setState(() {
-        if (userData.isNotEmpty)
-        {
+        if (userData.isNotEmpty) {
           userName = userData.first['fname'] as String;
           balance = 0;
         }
-        
-        if (userData.isNotEmpty && userData.first['account_balance'] != null)
-        {
+
+        if (userData.isNotEmpty && userData.first['account_balance'] != null) {
           balance = userData.first['account_balance'] as double;
         }
-        
+
         if (userCategories.isNotEmpty) {
           print(userCategories);
           //TODO: populate Category list
-          // categoryList = [];
-          // for (int i = 0; i < userCategories.length; i++) {
-          //   categoryList.add(userCategories.elementAt(i).)
-          // }
-          //loop through, add each category to list variable
+          categoryList = [];
+          for (int i = 0; i < userCategories.length; i++) {
+            categoryList.add(userCategories[i]['category'] as String);
+          }
+        } else {
+          print(userCategories);
           categoryList = ["No categories created"];
         }
-        categoryList = ["No categories created"];
-        print(userData + userCategories);
       });
-    }    
+    }
   }
 
   void _addSpending() {
@@ -246,7 +243,8 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                               vertical: 5,
                             ),
 
-                            child: DropdownMenu<String>( //TODO: Populate dropdown menu from DB, set up warning/nonselectable option for when user has no categories
+                            child: DropdownMenu<String>(
+                              //TODO: Populate dropdown menu from DB, set up warning/nonselectable option for when user has no categories
                               width: 250,
                               hintText: "Category",
                               dropdownMenuEntries: categoryList.map((
@@ -338,7 +336,9 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                 child: Column(
                   children: [
                     IconButton.filled(
-                      onPressed: () {},
+                      onPressed: () {
+                        
+                      },
                       icon: Icon(Icons.attach_money),
                       style: IconButton.styleFrom(
                         fixedSize: Size(60, 60),

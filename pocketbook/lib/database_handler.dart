@@ -44,7 +44,12 @@ class DatabaseHandler {
 
   static DatabaseHandler? databaseInstance;
 
-  void addUser(String first, String last, String email, String password) async {
+  Future<void> addUser(
+    String first,
+    String last,
+    String email,
+    String password,
+  ) async {
     final String salt = BCrypt.gensalt();
 
     await db.insert('user_data', {
@@ -52,15 +57,15 @@ class DatabaseHandler {
       'lName': last,
       'email': email,
       'password_hash': BCrypt.hashpw(password, salt),
-      'hash_salt': salt
+      'hash_salt': salt,
     });
   }
 
-  void setUserBalance(int userID, double amount) async {
+  Future<void> setUserBalance(int userID, double amount) async {
     db.update('user_data', {'account_balance': amount});
   }
 
-  void addCategory(
+  Future<void> addCategory(
     int userID,
     String categoryName,
     String categoryColor,
@@ -69,13 +74,13 @@ class DatabaseHandler {
     await db.insert('spending_logs', {
       'userID': userID,
       'category': categoryName,
-      'categoryColor': categoryColor,
+      'category_color': categoryColor,
       'amount': amount,
       'date_time': await getCurrentTime(),
     });
   }
 
-  void addSpending(
+  Future<void> addSpending(
     int userID,
     String category,
     String caption,
@@ -148,5 +153,9 @@ class DatabaseHandler {
   Future<String> getCurrentTime() async {
     final result = await db.rawQuery('SELECT datetime("now") as currentTime');
     return result.first["currentTime"] as String;
+  }
+
+  void debugClearLog() {
+    db.execute("DELETE FROM spending_logs");
   }
 }

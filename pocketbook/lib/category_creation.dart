@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:pocketbook/database_handler.dart';
 
 class Category {
   String name;
@@ -14,16 +15,23 @@ class Category {
 }
 
 class CategoryCreation extends StatefulWidget {
-  final void Function(Category) onSave;
-  const CategoryCreation({super.key, required this.onSave});
+
+  const CategoryCreation({super.key});
 
   @override
   State<CategoryCreation> createState() => _CategoryCreationState();
 }
+
 class _CategoryCreationState extends State<CategoryCreation> {
   final TextEditingController _categoryNameController = TextEditingController();
   double _budgetValue = 0.0;
   Color _chosenColor = const Color.fromARGB(255, 2, 128, 77);
+  final DatabaseHandler db = DatabaseHandler.databaseInstance!;
+
+  Future<void> addCategory() async {
+    await db.addCategory(DatabaseHandler.userID, _categoryNameController.text, _chosenColor.toHexString(), _budgetValue);
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,21 +144,15 @@ class _CategoryCreationState extends State<CategoryCreation> {
                   child: const Text('Choose Color')
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
+                ElevatedButton( //TODO: Check if category (name) already exists
                   onPressed: () {
-                    widget.onSave(
-                      Category(
-                        name: _categoryNameController.text,
-                        budget: _budgetValue,
-                        color: _chosenColor,
-                      ),
-                    );
-                    Navigator.of(context).pop();
+                    addCategory();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey, 
                     foregroundColor: Colors.black,
                   ),
+                  
                   child: const Text('Save')
                 )
               ],
