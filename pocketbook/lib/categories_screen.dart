@@ -193,6 +193,20 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        IconButton( //Category edit button
+                          icon: const Icon(Icons.more_vert, color: Colors.white),
+                            onPressed: () {
+                              //Need some help here to figure out what to do since onSave is gone
+                             /* Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => CategoryCreation(
+                                    onSave: (catEdit) {
+                                      setState(() {
+                                        categories[index] = catEdit;
+                                      */
+                  
+                            },
+                          ),
                       ],
                     ),
                   );

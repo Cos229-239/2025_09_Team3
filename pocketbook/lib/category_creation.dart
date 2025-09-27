@@ -29,7 +29,11 @@ class _CategoryCreationState extends State<CategoryCreation> {
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
 
   Future<void> addCategory() async {
-    await db.addCategory(DatabaseHandler.userID, _categoryNameController.text, _chosenColor.toHexString(), _budgetValue);
+    //string for text controller and auto capitalize first letter
+    String catName = _categoryNameController.text;
+                    if (catName.isNotEmpty) {
+                      catName = catName[0].toUpperCase() + catName.substring(1);}
+    await db.addCategory(DatabaseHandler.userID, catName, _chosenColor.toHexString(), _budgetValue);
     Navigator.of(context).pop();
   }
 
