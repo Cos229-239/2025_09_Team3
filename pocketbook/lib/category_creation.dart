@@ -24,6 +24,16 @@ class CategoryCreation extends StatefulWidget {
 }
 
 class _CategoryCreationState extends State<CategoryCreation> {
+  @override
+  void initState() {
+    super.initState();
+    //allows for Prefilling of fields when editing
+    if (widget.initialCategory != null) {
+      _categoryNameController.text = widget.initialCategory!.name;
+      _budgetValue = widget.initialCategory!.budget;
+      _chosenColor = widget.initialCategory!.color;
+    }
+  }
   final TextEditingController _categoryNameController = TextEditingController();
   double _budgetValue = 0.0;
   Color _chosenColor = const Color.fromARGB(255, 2, 128, 77);
@@ -36,6 +46,18 @@ class _CategoryCreationState extends State<CategoryCreation> {
                       catName = catName[0].toUpperCase() + catName.substring(1);}
     await db.addCategory(DatabaseHandler.userID, catName, _chosenColor.toHexString(), _budgetValue);
     Navigator.of(context).pop();
+  }
+
+//for saving edited categories
+    void saveEditedCategory() async{
+    String catName = _categoryNameController.text;
+                    if (catName.isNotEmpty) {
+                      catName = catName[0].toUpperCase() + catName.substring(1);
+                    }
+                    if (widget.initialCategory != null) {
+                      await db.updateCategory(DatabaseHandler.userID, widget.initialCategory!.name, catName, _chosenColor.toHexString(), _budgetValue);
+                      Navigator.of(context).pop();
+                    }
   }
 
   @override
@@ -152,7 +174,12 @@ class _CategoryCreationState extends State<CategoryCreation> {
                 const SizedBox(height: 20),
                 ElevatedButton( //TODO: Check if category (name) already exists
                   onPressed: () {
-                    addCategory();
+                    // updated to save edited categories
+                    if (widget.initialCategory != null) {
+                       saveEditedCategory();
+                       } else {
+                         addCategory();
+                   }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey, 

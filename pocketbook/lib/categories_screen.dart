@@ -44,7 +44,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   void initState() {
     super.initState();
-    getCategoryList();
+   getCategoryList();
+    
   }
 
   @override
