@@ -15,8 +15,9 @@ class Category {
 }
 
 class CategoryCreation extends StatefulWidget {
-
-  const CategoryCreation({super.key});
+  //allows for editing categories
+  final Category? initialCategory;
+  const CategoryCreation({super.key, this.initialCategory});
 
   @override
   State<CategoryCreation> createState() => _CategoryCreationState();
