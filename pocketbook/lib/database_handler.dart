@@ -89,7 +89,7 @@ class DatabaseHandler {
     double amount,
   ) async {
     await db.update(
-      'categories',
+      'spending_logs',
       {
         'category': newName,
         'category_color': categoryColor,
