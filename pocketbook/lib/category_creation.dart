@@ -29,7 +29,7 @@ class _CategoryCreationState extends State<CategoryCreation> {
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
 
   Future<void> addCategory() async {
-    //string for text controller and auto capitalize first letter
+    //string for text controller and auto capitalize first letter of category name
     String catName = _categoryNameController.text;
                     if (catName.isNotEmpty) {
                       catName = catName[0].toUpperCase() + catName.substring(1);}
@@ -41,6 +41,7 @@ class _CategoryCreationState extends State<CategoryCreation> {
   Widget build(BuildContext context) {
     return Scaffold(
        backgroundColor: const Color.fromARGB(255, 200, 200, 200),
+ 
       appBar: AppBar(
         title: const Text('Category Creation'),
         centerTitle: true,
