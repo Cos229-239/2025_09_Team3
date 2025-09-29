@@ -26,9 +26,11 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
         title: const Text('Spendings'),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.settings),
-          tooltip: 'Setting Icon',
-          onPressed: () {}, 
+          icon: Icon(Icons.arrow_back),
+          tooltip: 'Back Icon',
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         ),
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
