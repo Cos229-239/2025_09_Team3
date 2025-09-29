@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbook/account_creation.dart';
 import 'package:flutter/services.dart';
+import 'package:pocketbook/add_deposit.dart';
 import 'package:pocketbook/categories_screen.dart';
 import 'package:pocketbook/spendings_screen.dart';
 import 'database_handler.dart';
@@ -356,7 +357,11 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                   children: [
                     IconButton.filled(
                       onPressed: () {
-                        
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const AddDeposit(),
+                          ),
+                        );
                       },
                       icon: Icon(Icons.add),
                       style: IconButton.styleFrom(
