@@ -109,10 +109,26 @@ class _CategoryCreationState extends State<CategoryCreation> {
                 const SizedBox(height: 30),
                 TextFormField(
                   controller: _categoryNameController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
                     labelText: 'Category Name',
                     hintText: 'Enter category name',
+                     enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Color(0xFF3B0054),
+                                width: 3,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Color.fromARGB(255, 117, 20, 158),
+                                width: 3,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                   ),
                 ),
                 const SizedBox(height: 30),
