@@ -349,6 +349,25 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                   ],
                 ),
               ),
+              //Added button for deposit screen
+              SizedBox(
+                width: 80,
+                child: Column(
+                  children: [
+                    IconButton.filled(
+                      onPressed: () {
+                        
+                      },
+                      icon: Icon(Icons.add),
+                      style: IconButton.styleFrom(
+                        fixedSize: Size(60, 60),
+                        backgroundColor: Color(0xFFFF9B71),
+                      ),
+                    ),
+                    Text('Deposit', style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              ),
             ],
           ),
           Padding(padding: EdgeInsetsGeometry.all(10)),
