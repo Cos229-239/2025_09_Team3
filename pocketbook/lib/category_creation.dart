@@ -15,21 +15,32 @@ class Category {
 }
 
 class CategoryCreation extends StatefulWidget {
-
-  const CategoryCreation({super.key});
+  //allows for editing categories
+  final Category? initialCategory;
+  const CategoryCreation({super.key, this.initialCategory});
 
   @override
   State<CategoryCreation> createState() => _CategoryCreationState();
 }
 
 class _CategoryCreationState extends State<CategoryCreation> {
+  @override
+  void initState() {
+    super.initState();
+    //allows for Prefilling of fields when editing
+    if (widget.initialCategory != null) {
+      _categoryNameController.text = widget.initialCategory!.name;
+      _budgetValue = widget.initialCategory!.budget;
+      _chosenColor = widget.initialCategory!.color;
+    }
+  }
   final TextEditingController _categoryNameController = TextEditingController();
   double _budgetValue = 0.0;
   Color _chosenColor = const Color.fromARGB(255, 2, 128, 77);
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
 
   Future<void> addCategory() async {
-    //string for text controller and auto capitalize first letter
+    //string for text controller and auto capitalize first letter of category name
     String catName = _categoryNameController.text;
                     if (catName.isNotEmpty) {
                       catName = catName[0].toUpperCase() + catName.substring(1);}
@@ -37,10 +48,23 @@ class _CategoryCreationState extends State<CategoryCreation> {
     Navigator.of(context).pop();
   }
 
+//for saving edited categories
+    void saveEditedCategory() async{
+    String catName = _categoryNameController.text;
+                    if (catName.isNotEmpty) {
+                      catName = catName[0].toUpperCase() + catName.substring(1);
+                    }
+                    if (widget.initialCategory != null) {
+                      await db.updateCategory(DatabaseHandler.userID, widget.initialCategory!.name, catName, _chosenColor.toHexString(), _budgetValue);
+                      Navigator.of(context).pop();
+                    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
        backgroundColor: const Color.fromARGB(255, 200, 200, 200),
+ 
       appBar: AppBar(
         title: const Text('Category Creation'),
         centerTitle: true,
@@ -85,10 +109,26 @@ class _CategoryCreationState extends State<CategoryCreation> {
                 const SizedBox(height: 30),
                 TextFormField(
                   controller: _categoryNameController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
                     labelText: 'Category Name',
                     hintText: 'Enter category name',
+                     enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Color(0xFF3B0054),
+                                width: 3,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Color.fromARGB(255, 117, 20, 158),
+                                width: 3,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -150,7 +190,12 @@ class _CategoryCreationState extends State<CategoryCreation> {
                 const SizedBox(height: 20),
                 ElevatedButton( //TODO: Check if category (name) already exists
                   onPressed: () {
-                    addCategory();
+                    // updated to save edited categories
+                    if (widget.initialCategory != null) {
+                       saveEditedCategory();
+                       } else {
+                         addCategory();
+                   }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey, 

@@ -80,6 +80,26 @@ class DatabaseHandler {
     });
   }
 
+//For updating edited categories
+  Future<void> updateCategory(
+    int userID,
+    String categoryName,
+    String newName,
+    String categoryColor,
+    double amount,
+  ) async {
+    await db.update(
+      'spending_logs',
+      {
+        'category': newName,
+        'category_color': categoryColor,
+        'amount': amount,
+      },
+      where: 'userID = ? AND category = ?',
+      whereArgs: [userID, categoryName],
+    );
+  }
+
   Future<void> addSpending(
     int userID,
     String category,

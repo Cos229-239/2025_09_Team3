@@ -8,7 +8,8 @@ class CategoriesScreen extends StatefulWidget {
 
   @override
   State<CategoriesScreen> createState() => _CategoriesScreenState();
-}
+  }
+
 
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
@@ -43,7 +44,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   void initState() {
     super.initState();
-    getCategoryList();
+   getCategoryList();
+    
   }
 
   @override
@@ -167,7 +169,17 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
                   final category = categories[index];
-                  return Container(
+                  return InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () async{
+                     await Navigator.of(  context).push(
+                        MaterialPageRoute(
+                          builder: (context) => CategoryCreation(initialCategory: category),
+                        ),
+                      );
+                      reloadPage();
+                    },
+                  child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
@@ -193,22 +205,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        IconButton( //Category edit button
-                          icon: const Icon(Icons.more_vert, color: Colors.white),
-                            onPressed: () {
-                              //Need some help here to figure out what to do since onSave is gone
-                             /* Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => CategoryCreation(
-                                    onSave: (catEdit) {
-                                      setState(() {
-                                        categories[index] = catEdit;
-                                      */
-                  
-                            },
-                          ),
+                        
                       ],
                     ),
+                  ),
                   );
                 },
               ),
@@ -216,7 +216,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ],
         ),
       ),
-    );
+      );
+      }
     }
   }
-}
+  
