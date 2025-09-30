@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'database_handler.dart';
 
 class SpendingsScreen extends StatefulWidget{
   const SpendingsScreen({super.key});
@@ -10,16 +11,58 @@ class SpendingsScreen extends StatefulWidget{
 
 class _SpendingsScreenState extends State<SpendingsScreen> {
   
-  final List<Category> _categories = [
-    Category(name: 'Rent',  value: 30, color: const Color(0xFF8E44AD)), 
-    Category(name: 'Food',  value: 20, color: const Color(0xFFFF9B71)), 
-    Category(name: 'Bills', value: 18, color: Colors.green),
-    Category(name: 'Fun',   value: 16, color: const Color.fromARGB(255, 202, 24, 17)),
-    Category(name: 'Other', value: 16, color: const Color(0xFF3498DB)),
-  ];
+  final List<Category> _categories = [];
+  bool _loading = true;
+
+  @override
+  void initState(){
+    super.initState();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final handler = await DatabaseHandler.create();
+      final rows = await handler.getCategories(DatabaseHandler.userID);
+      final loaded = rows.map((r) {
+        final name = (r['category'] as String?) ?? 'Unnamed';
+        final value = (r['amount'] as num?)?.toDouble() ?? 0.0;
+        final colorRaw = r['category_color'];
+        final color = _colorFromDb(colorRaw) ?? const Color(0xFF3498DB);
+
+        return Category(name: name, value: value, color: color);
+      }).toList();
+
+      if (!mounted) return;
+      setState(() {
+        _categories
+        ..clear()
+        ..addAll(loaded);
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _categories.clear();
+        _loading = false;
+      });
+      debugPrint('Error loading categories: $e');
+    }
+  }
+
+  double get _totalValue => 
+    _categories.fold(0.0, (sum, c) => sum + (c.value));
 
   @override
   Widget build(BuildContext context){
+
+    if(_loading){
+      return const Scaffold(
+        backgroundColor: Color(0xFF3B0054),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFF3B0054),
       appBar: AppBar( 
@@ -32,6 +75,13 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh',
+            onPressed: _loadCategories,
+          ),
+        ],
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
         elevation: 40,
@@ -42,7 +92,6 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
           clipBehavior: Clip.none,
           alignment: Alignment.center,
           children: [
-
             // Breakdown box & text
             Container(
               width: 425,
@@ -55,6 +104,8 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                 ),
               ),
             ),
+
+          if (_categories.isNotEmpty && _totalValue > 0)
 
             // Constrained pie_chart
             Positioned(
@@ -83,7 +134,31 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                   ),
                 ),
               ),
-            ),
+            )
+            else 
+
+              Positioned(
+                bottom: 125,
+                child: SizedBox(
+                  width: 300,
+                  height: 300,
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF280039),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(24.0),
+                      child: Text(
+                        'No categories yet. \nAdd some to see the chart!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white70, fontSize: 24),
+                      )
+                    )
+                  ),
+                ),
+              ),
 
             // Tappable categorys with matching labels
             for (int i = 0; i < _categories.length; i++)
@@ -111,6 +186,28 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
 
       
     );
+  }
+
+// Parese a DB-Stored colour value
+  Color? _colorFromDb(Object? raw) {
+    if (raw == null) return null;
+
+    if (raw is int) {
+      // If we ever store as interger value directly
+      return Color(raw);
+    }
+
+    if (raw is String){
+      final s = raw.trim().toLowerCase(); 
+      final cleaned = s.startsWith('0x') ? s.substring(2) : s;  // Remove "0x" if there
+      final hex = cleaned.length == 6 ? 'ff$cleaned' : cleaned; // Ensures length is 8 (ARGB)
+      try {
+        return Color(int.parse(hex, radix: 16));
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
   }
 }
 
