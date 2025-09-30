@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocketbook/log_screen.dart';
 import 'package:pocketbook/sign_in_screen.dart';
 
 
@@ -10,7 +11,7 @@ class WelcomeScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const SignInScreen()),
+          MaterialPageRoute(builder: (context) => const LogScreen()),
         );
       },
 
