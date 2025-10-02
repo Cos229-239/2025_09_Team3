@@ -17,6 +17,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   String? userName = "";
   double? balance = 0.00;
   List<String> categoryList = [];
+  List<DropdownMenuEntry<String>> dropdownItems = [];
   final TextEditingController addAmountController = TextEditingController();
   final TextEditingController addCaptionController = TextEditingController();
   final TextEditingController addCategoryController = TextEditingController();
@@ -61,13 +62,21 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
         }
 
         if (userCategories.isNotEmpty) {
-          //TODO: populate Category list
           categoryList = [];
           for (int i = 0; i < userCategories.length; i++) {
             categoryList.add(userCategories[i]['category'] as String);
           }
+          dropdownItems = categoryList.map((value) {
+            return DropdownMenuEntry<String>(
+              value: value,
+              label: value,
+            );
+          }).toList();
+
         } else {
-          categoryList = ["No categories created"];
+          dropdownItems = [
+            DropdownMenuEntry(value: "No categories created", label: "No categories created", enabled: false)
+          ];
         }
       });
     }
@@ -78,7 +87,6 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     String caption = addCaptionController.text;
     String category = addCategoryController.text;
 
-    //TODO: Clear input fields, error prevention
     if (addAmountController.text.isEmpty || addCaptionController.text.isEmpty || addCategoryController.text.isEmpty)
     {
       // TODO: add alert message
@@ -273,18 +281,10 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                             ),
 
                             child: DropdownMenu<String>(
-                              //TODO: Populate dropdown menu from DB, set up warning/nonselectable option for when user has no categories
                               controller: addCategoryController,
                               width: 250,
                               hintText: "Category",
-                              dropdownMenuEntries: categoryList.map((
-                                selection,
-                              ) {
-                                return DropdownMenuEntry<String>(
-                                  value: selection,
-                                  label: selection,
-                                );
-                              }).toList(),
+                              dropdownMenuEntries: dropdownItems,
                               inputDecorationTheme: InputDecorationTheme(
                                 filled: true,
                                 fillColor: Colors.white,
