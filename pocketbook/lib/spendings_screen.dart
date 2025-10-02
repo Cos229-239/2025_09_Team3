@@ -92,20 +92,6 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
               children: [
                 const SizedBox(height: 12),
 
-                Container(
-                  width: 425,
-                  height: 75,
-                  decoration: const BoxDecoration(color: Color(0xFF280039)),
-                  child: const Center(
-                    child: Text(
-                    'Breakdown',
-                    style: TextStyle(color: Colors.white, fontSize: 36),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
                 // Pie Chart
                 SizedBox(
                   width: 300,
@@ -132,6 +118,20 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                       ),
                     )
                   : const _EmptyPiePlaceholder(),
+                ),
+
+                const SizedBox(height: 16),
+
+                Container(
+                  width: 425,
+                  height: 75,
+                  decoration: const BoxDecoration(color: Color(0xFF280039)),
+                  child: const Center(
+                    child: Text(
+                    'Breakdown',
+                    style: TextStyle(color: Colors.white, fontSize: 36),
+                    ),
+                  ),
                 ),
 
                 const SizedBox(height: 16),
