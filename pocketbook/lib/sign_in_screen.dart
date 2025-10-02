@@ -82,7 +82,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       if (await db.verifyUser(_emailController.text, _passwordController.text))
                       {
                         await db.setUserIDVar(_emailController.text);
-                        Navigator.of(context).push(
+                        Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (context) => const HomeScreenState()),
                         );
                       }
@@ -114,7 +114,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     fontSize: 16,
                   ),
                 ),
-                 const SizedBox(height: 30),
+                const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: (){
                     Navigator.of(context).push(

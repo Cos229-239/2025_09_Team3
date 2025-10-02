@@ -42,8 +42,8 @@ class _CategoryCreationState extends State<CategoryCreation> {
   Future<void> addCategory() async {
     //string for text controller and auto capitalize first letter of category name
     String catName = _categoryNameController.text;
-                    if (catName.isNotEmpty) {
-                      catName = catName[0].toUpperCase() + catName.substring(1);}
+    if (catName.isNotEmpty) {
+    catName = catName[0].toUpperCase() + catName.substring(1);}
     await db.addCategory(DatabaseHandler.userID, catName, _chosenColor.toHexString(), _budgetValue);
     Navigator.of(context).pop();
   }
@@ -51,13 +51,13 @@ class _CategoryCreationState extends State<CategoryCreation> {
 //for saving edited categories
     void saveEditedCategory() async{
     String catName = _categoryNameController.text;
-                    if (catName.isNotEmpty) {
-                      catName = catName[0].toUpperCase() + catName.substring(1);
-                    }
-                    if (widget.initialCategory != null) {
-                      await db.updateCategory(DatabaseHandler.userID, widget.initialCategory!.name, catName, _chosenColor.toHexString(), _budgetValue);
-                      Navigator.of(context).pop();
-                    }
+    if (catName.isNotEmpty) {
+      catName = catName[0].toUpperCase() + catName.substring(1);
+    }
+    if (widget.initialCategory != null) {
+      await db.updateCategory(DatabaseHandler.userID, widget.initialCategory!.name, catName, _chosenColor.toHexString(), _budgetValue);
+      Navigator.of(context).pop();
+    }
   }
 
   @override

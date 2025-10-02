@@ -30,10 +30,11 @@ class _AccountCreationState extends State<AccountCreation> {
       await prefs.setString('email', emailController.text.trim());
       await prefs.setString('password', passwordController.text.trim());
       if (mounted) {
-        db.addUser(fNameController.text, lNameController.text, emailController.text, passwordController.text);
-        db.setUserIDVar(emailController.text);
-        Navigator.of(context).pushReplacement(
+        await db.addUser(fNameController.text, lNameController.text, emailController.text, passwordController.text);
+        await db.setUserIDVar(emailController.text);
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const HomeScreenState()),
+          (Route<dynamic> route) => false,
         );
       }
     } else {

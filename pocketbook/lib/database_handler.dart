@@ -95,7 +95,15 @@ class DatabaseHandler {
         'category_color': categoryColor,
         'amount': amount,
       },
-      where: 'userID = ? AND category = ?',
+      where: 'userID = ? AND category = ? AND caption IS NULL',
+      whereArgs: [userID, categoryName],
+    );
+    await db.update( // Update logs within a category as well
+      'spending_logs', 
+      {
+        'category': newName
+      },
+      where: 'userID = ? AND category = ? AND caption IS NOT NULL',
       whereArgs: [userID, categoryName],
     );
   }
@@ -146,7 +154,7 @@ class DatabaseHandler {
   ) async {
     return db.query(
       'spending_logs',
-      where: 'userID = ? AND category = ?AND caption IS NOT NULL',
+      where: 'userID = ? AND category = ? AND caption IS NOT NULL',
       whereArgs: [userID, category],
     );
   }
@@ -177,5 +185,8 @@ class DatabaseHandler {
 
   void debugClearLog() {
     db.execute("DELETE FROM spending_logs");
+  }
+  void debugClearUsers() {
+    db.execute("DELETE FROM user_data");
   }
 }

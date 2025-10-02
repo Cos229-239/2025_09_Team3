@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocketbook/account_creation.dart';
 import 'package:flutter/services.dart';
 import 'package:pocketbook/categories_screen.dart';
+import 'package:pocketbook/sign_in_screen.dart';
 import 'package:pocketbook/spendings_screen.dart';
 import 'database_handler.dart';
 
@@ -21,6 +22,15 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   final TextEditingController addCategotyController = TextEditingController();
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
   int userID = DatabaseHandler.userID;
+
+  void reloadPage() {
+    setState(() {
+      userName = "";
+      balance = 0.00;
+      categoryList = [];
+    });
+    getUserData();
+  }
 
   @override
   void initState() {
@@ -79,8 +89,9 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
           icon: Icon(Icons.settings),
           tooltip: 'Setting Icon',
           onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const AccountCreation()),
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const SignInScreen()),
+              (Route<dynamic> route) => false,
             );
           },
         ),
@@ -269,7 +280,13 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                             ),
                           ),
                           IconButton.filled(
-                            onPressed: _addSpending,
+                            onPressed: () {
+                              _addSpending;
+                              addAmountController.clear();
+                              addCaptionController.clear();
+                              //TODO: Clear categories
+                              //addCategotyController
+                            },
                             icon: Icon(Icons.add),
                             color: Colors.white,
                             //style: IconButton.styleFrom(backgroundColor: Color(0xFF3B0054))
@@ -336,9 +353,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                 child: Column(
                   children: [
                     IconButton.filled(
-                      onPressed: () {
-                        
-                      },
+                      onPressed: () {},
                       icon: Icon(Icons.attach_money),
                       style: IconButton.styleFrom(
                         fixedSize: Size(60, 60),
