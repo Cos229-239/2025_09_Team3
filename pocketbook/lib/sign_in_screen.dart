@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocketbook/account_creation.dart';
 import 'package:pocketbook/home_screen.dart';
 import 'package:pocketbook/database_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class SignInScreen extends StatefulWidget {
@@ -79,12 +80,21 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton( //TODO: Check both fields are full
-                  onPressed: () async {
-                      if (await db.verifyUser(_emailController.text, _passwordController.text))
+                  onPressed: () async 
+                  {
+                      if (await db.verifyUser(_emailController.text, _passwordController.text)) 
                       {
                         await db.setUserIDVar(_emailController.text);
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => const HomeScreenState()),
+
+                        // NEW: remember the session
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setBool('logged_in', true);
+                        await prefs.setString('email', _emailController.text.trim());
+
+                        if (!mounted) return;
+                        Navigator.of(context).pushReplacement
+                        (
+                        MaterialPageRoute(builder: (context) => const HomeScreenState()),
                         );
                       }
                       else
