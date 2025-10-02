@@ -80,7 +80,7 @@ class DatabaseHandler {
     });
   }
 
-//For updating edited categories
+  //For updating edited categories
   Future<void> updateCategory(
     int userID,
     String categoryName,
@@ -90,19 +90,14 @@ class DatabaseHandler {
   ) async {
     await db.update(
       'spending_logs',
-      {
-        'category': newName,
-        'category_color': categoryColor,
-        'amount': amount,
-      },
+      {'category': newName, 'category_color': categoryColor, 'amount': amount},
       where: 'userID = ? AND category = ? AND caption IS NULL',
       whereArgs: [userID, categoryName],
     );
-    await db.update( // Update logs within a category as well
-      'spending_logs', 
-      {
-        'category': newName
-      },
+    await db.update(
+      // Update logs within a category as well
+      'spending_logs',
+      {'category': newName},
       where: 'userID = ? AND category = ? AND caption IS NOT NULL',
       whereArgs: [userID, categoryName],
     );
@@ -140,11 +135,23 @@ class DatabaseHandler {
     return db.query('user_data', where: 'userID = ?', whereArgs: [userID]);
   }
 
+  Future<List<Map<String, Object?>>> getUserDataFromEmail(String email) async {
+    return db.query('user_data', where: 'email = ?', whereArgs: [email]);
+  }
+
   Future<List<Map<String, Object?>>> getCategories(int userID) async {
     return db.query(
       'spending_logs',
       where: 'userID = ? AND caption IS NULL',
       whereArgs: [userID],
+    );
+  }
+  
+  Future<List<Map<String, Object?>>> getCategoriesFromName(int userID, String category) async {
+    return db.query(
+      'spending_logs',
+      where: 'userID = ? AND category = ? AND caption IS NULL',
+      whereArgs: [userID, category],
     );
   }
 
@@ -183,9 +190,28 @@ class DatabaseHandler {
     return result.first["currentTime"] as String;
   }
 
+  Future<bool> userExists(String email) async { // FUNCTION HAS NOT BEEN TESTED
+    List<Map<String, Object?>> user = await getUserDataFromEmail(email);
+
+    if (user.isEmpty) {
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> categoryExists(String category) async { // FUNCTION HAS NOT BEEN TESTED
+    List<Map<String, Object?>> categoryList = await getCategoriesFromName(userID, category);
+
+    if (categoryList.isEmpty) {
+      return false;
+    }
+    return true;
+  }
+
   void debugClearLog() {
     db.execute("DELETE FROM spending_logs");
   }
+
   void debugClearUsers() {
     db.execute("DELETE FROM user_data");
   }

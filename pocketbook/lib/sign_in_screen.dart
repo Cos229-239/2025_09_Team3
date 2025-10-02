@@ -60,6 +60,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 const SizedBox(height: 30),
                 TextFormField( //TODO: Change text-type to email
                   controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Email',

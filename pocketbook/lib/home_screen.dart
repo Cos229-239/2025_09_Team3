@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbook/account_creation.dart';
 import 'package:flutter/services.dart';
 import 'package:pocketbook/categories_screen.dart';
+import 'package:pocketbook/log_screen.dart';
 import 'package:pocketbook/sign_in_screen.dart';
 import 'package:pocketbook/spendings_screen.dart';
 import 'database_handler.dart';
@@ -19,17 +19,24 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   List<String> categoryList = [];
   final TextEditingController addAmountController = TextEditingController();
   final TextEditingController addCaptionController = TextEditingController();
-  final TextEditingController addCategotyController = TextEditingController();
+  final TextEditingController addCategoryController = TextEditingController();
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
   int userID = DatabaseHandler.userID;
 
   void reloadPage() {
+    clearFields();
     setState(() {
       userName = "";
       balance = 0.00;
       categoryList = [];
     });
     getUserData();
+  }
+
+  void clearFields() {
+    addAmountController.clear();
+    addCaptionController.clear();
+    addCategoryController.clear();
   }
 
   @override
@@ -54,27 +61,32 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
         }
 
         if (userCategories.isNotEmpty) {
-          print(userCategories);
           //TODO: populate Category list
           categoryList = [];
           for (int i = 0; i < userCategories.length; i++) {
             categoryList.add(userCategories[i]['category'] as String);
           }
         } else {
-          print(userCategories);
           categoryList = ["No categories created"];
         }
       });
     }
   }
 
-  void _addSpending() {
+  void _addSpending() async {
     double amount = double.parse(addAmountController.text);
     String caption = addCaptionController.text;
-    String category = addCategotyController.text;
+    String category = addCategoryController.text;
 
     //TODO: Clear input fields, error prevention
-    db.addSpending(userID, category, caption, amount);
+    if (addAmountController.text.isEmpty || addCaptionController.text.isEmpty || addCategoryController.text.isEmpty)
+    {
+      // TODO: add alert message
+      return;
+    }
+
+    await db.addSpending(userID, category, caption, amount);
+    clearFields();
   }
 
   @override
@@ -89,10 +101,12 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
           icon: Icon(Icons.settings),
           tooltip: 'Setting Icon',
           onPressed: () {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const SignInScreen()),
-              (Route<dynamic> route) => false,
-            );
+            Navigator.of(context)
+                .pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const SignInScreen()),
+                  (Route<dynamic> route) => false,
+                )
+                .then((value) => reloadPage());
           },
         ),
         backgroundColor: const Color(0xFF280039),
@@ -193,10 +207,14 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                               RegExp(r'^\d+\.?\d{0,2}'),
                             ), //Not fully sure what this means, but it should lock the $ amount to 2 decimal places
                           ],
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.numberWithOptions(
+                            signed: false,
+                            decimal: true,
+                          ),
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Amount',
+                            //prefixText: '\$',
                             filled: true,
                             fillColor: Colors.white,
                             enabledBorder: OutlineInputBorder(
@@ -256,6 +274,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
 
                             child: DropdownMenu<String>(
                               //TODO: Populate dropdown menu from DB, set up warning/nonselectable option for when user has no categories
+                              controller: addCategoryController,
                               width: 250,
                               hintText: "Category",
                               dropdownMenuEntries: categoryList.map((
@@ -281,11 +300,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                           ),
                           IconButton.filled(
                             onPressed: () {
-                              _addSpending;
-                              addAmountController.clear();
-                              addCaptionController.clear();
-                              //TODO: Clear categories
-                              //addCategotyController
+                              _addSpending();
                             },
                             icon: Icon(Icons.add),
                             color: Colors.white,
@@ -310,11 +325,13 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                   children: [
                     IconButton.filled(
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const CategoriesScreen(),
-                          ),
-                        );
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                builder: (context) => const CategoriesScreen(),
+                              ),
+                            )
+                            .then((value) => reloadPage());
                       }, // Added navigation to the categories button
                       icon: Icon(Icons.view_day),
                       style: IconButton.styleFrom(
@@ -332,11 +349,13 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                   children: [
                     IconButton.filled(
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const SpendingsScreen(),
-                          ),
-                        );
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                builder: (context) => const SpendingsScreen(),
+                              ),
+                            )
+                            .then((value) => reloadPage());
                       },
                       icon: Icon(Icons.pie_chart),
                       style: IconButton.styleFrom(
@@ -353,7 +372,15 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                 child: Column(
                   children: [
                     IconButton.filled(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                builder: (context) => const LogScreen(),
+                              ),
+                            )
+                            .then((value) => reloadPage());
+                      },
                       icon: Icon(Icons.attach_money),
                       style: IconButton.styleFrom(
                         fixedSize: Size(60, 60),

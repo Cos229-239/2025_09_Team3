@@ -119,6 +119,7 @@ class _AccountCreationState extends State<AccountCreation> {
             const SizedBox(height: 10),
             TextField(
               controller: emailController,
+              keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 labelText: 'Email',
                 filled: true,
