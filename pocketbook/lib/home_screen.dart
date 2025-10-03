@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pocketbook/add_deposit.dart';
 import 'package:pocketbook/categories_screen.dart';
 import 'package:pocketbook/log_screen.dart';
 import 'package:pocketbook/sign_in_screen.dart';
@@ -388,6 +389,29 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                       ),
                     ),
                     Text('Log', style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              ),
+               SizedBox(
+                width: 80,
+                child: Column(
+                  children: [
+                    IconButton.filled(
+                      onPressed: () {
+                        
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const AddDeposit(),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.add),
+                      style: IconButton.styleFrom(
+                        fixedSize: Size(60, 60),
+                        backgroundColor: Color(0xFFFF9B71),
+                      ),
+                    ),
+                    Text('Deposit', style: TextStyle(color: Colors.white)),
                   ],
                 ),
               ),
