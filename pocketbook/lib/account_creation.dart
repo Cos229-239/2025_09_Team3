@@ -19,10 +19,12 @@ class _AccountCreationState extends State<AccountCreation> {
   final TextEditingController dobController = TextEditingController();
   final TextEditingController incomeController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
 
-  Future<void> createAccount() async { //TODO: check for account already exsists
+  Future<void> createAccount() async {
+    //TODO: check for account already exsists
     if (passwordController.text == confirmPasswordController.text) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('first name', fNameController.text.trim());
@@ -32,7 +34,12 @@ class _AccountCreationState extends State<AccountCreation> {
       await prefs.setBool('logged_in', true);
       // Add user to database and set static userID variable
       if (mounted) {
-        await db.addUser(fNameController.text, lNameController.text, emailController.text, passwordController.text);
+        await db.addUser(
+          fNameController.text,
+          lNameController.text,
+          emailController.text,
+          passwordController.text,
+        );
         await db.setUserIDVar(emailController.text);
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const HomeScreenState()),
@@ -41,9 +48,9 @@ class _AccountCreationState extends State<AccountCreation> {
       }
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Passwords do not match')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
       }
     }
   }
@@ -57,7 +64,11 @@ class _AccountCreationState extends State<AccountCreation> {
     confirmPasswordController.dispose();
     super.dispose();
   }
-  
+
+  Future<bool> checkUserExists(String email) async {
+    return await db.userExists(email);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,11 +99,17 @@ class _AccountCreationState extends State<AccountCreation> {
                       filled: true,
                       fillColor: Colors.white,
                       enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Color(0xFF3B0054), width: 3),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF3B0054),
+                          width: 3,
+                        ),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 117, 20, 158),
+                          width: 3,
+                        ),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -106,17 +123,23 @@ class _AccountCreationState extends State<AccountCreation> {
                       filled: true,
                       fillColor: Colors.white,
                       enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Color(0xFF3B0054), width: 3),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF3B0054),
+                          width: 3,
+                        ),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 117, 20, 158),
+                          width: 3,
+                        ),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
                 ),
-              ]
+              ],
             ),
             const SizedBox(height: 10),
             TextField(
@@ -127,11 +150,17 @@ class _AccountCreationState extends State<AccountCreation> {
                 filled: true,
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color(0xFF3B0054), width: 3),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF3B0054),
+                    width: 3,
+                  ),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
+                  borderSide: const BorderSide(
+                    color: Color.fromARGB(255, 117, 20, 158),
+                    width: 3,
+                  ),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -148,11 +177,17 @@ class _AccountCreationState extends State<AccountCreation> {
                 filled: true,
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color(0xFF3B0054), width: 3),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF3B0054),
+                    width: 3,
+                  ),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
+                  borderSide: const BorderSide(
+                    color: Color.fromARGB(255, 117, 20, 158),
+                    width: 3,
+                  ),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -166,24 +201,37 @@ class _AccountCreationState extends State<AccountCreation> {
                 filled: true,
                 fillColor: Colors.white,
                 enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color(0xFF3B0054), width: 3),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF3B0054),
+                    width: 3,
+                  ),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color.fromARGB(255, 117, 20, 158), width: 3),
+                  borderSide: const BorderSide(
+                    color: Color.fromARGB(255, 117, 20, 158),
+                    width: 3,
+                  ),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (fNameController.text.isNotEmpty &&
                     lNameController.text.isNotEmpty &&
                     emailController.text.isNotEmpty &&
                     passwordController.text.isNotEmpty &&
                     confirmPasswordController.text.isNotEmpty) {
-                  createAccount();
+                  if (!await checkUserExists(emailController.text)) {
+                    createAccount();
+                  } else {
+                    // TODO: Alert user already exists
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('User already exists')),
+                    );
+                  }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Please fill all fields')),
@@ -193,7 +241,10 @@ class _AccountCreationState extends State<AccountCreation> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFF9B71),
                 foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
               ),
               child: const Text('Submit'),
             ),

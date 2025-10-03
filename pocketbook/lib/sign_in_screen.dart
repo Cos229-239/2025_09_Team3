@@ -74,6 +74,21 @@ class _SignInScreenState extends State<SignInScreen> {
                 ElevatedButton(
                   //TODO: Check both fields are full
                   onPressed: () async {
+                    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Please enter all fields'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'OK'),
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
+                      return;
+                    }
                     if (await db.verifyUser(
                       _emailController.text,
                       _passwordController.text,

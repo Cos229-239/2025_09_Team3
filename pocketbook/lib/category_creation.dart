@@ -42,21 +42,45 @@ class _CategoryCreationState extends State<CategoryCreation> {
   Future<void> addCategory() async {
     //string for text controller and auto capitalize first letter of category name
     String catName = _categoryNameController.text;
-    if (catName.isNotEmpty) {
-    catName = catName[0].toUpperCase() + catName.substring(1);}
-    await db.addCategory(DatabaseHandler.userID, catName, _chosenColor.toHexString(), _budgetValue);
-    Navigator.of(context).pop();
-  }
-
-//for saving edited categories
-    void saveEditedCategory() async{
-    String catName = _categoryNameController.text;
+    bool nameExists = await db.categoryExists(catName);
+    if (nameExists) {
+      //TODO: Alert category already exists
+      return;
+    }
     if (catName.isNotEmpty) {
       catName = catName[0].toUpperCase() + catName.substring(1);
     }
-    if (widget.initialCategory != null) {
+    else {
+      //TODO: Alert "Enter name"
+      return;
+    }
+    await db.addCategory(DatabaseHandler.userID, catName, _chosenColor.toHexString(), _budgetValue);
+    Navigator.of(context).pop();
+    
+  }
+
+//for saving edited categories
+    void saveEditedCategory() async {
+    String catName = _categoryNameController.text;
+    bool nameExists = false;
+    if (catName.isNotEmpty) {
+      catName = catName[0].toUpperCase() + catName.substring(1);
+    }
+    else {
+      //TODO: Alert "Enter name"
+      return;
+    }
+    if (widget.initialCategory?.name != catName) // if name is changed
+    {
+      nameExists = await db.categoryExists(catName);
+    }
+    if (widget.initialCategory != null && !nameExists) {
       await db.updateCategory(DatabaseHandler.userID, widget.initialCategory!.name, catName, _chosenColor.toHexString(), _budgetValue);
       Navigator.of(context).pop();
+    }
+    else if (nameExists)
+    {
+      //TODO: Alert "name already exists"
     }
   }
 
@@ -115,20 +139,20 @@ class _CategoryCreationState extends State<CategoryCreation> {
                     fillColor: Colors.white,
                     labelText: 'Category Name',
                     hintText: 'Enter category name',
-                     enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Color(0xFF3B0054),
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Color.fromARGB(255, 117, 20, 158),
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color(0xFF3B0054),
+                        width: 3,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color.fromARGB(255, 117, 20, 158),
+                        width: 3,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -192,10 +216,10 @@ class _CategoryCreationState extends State<CategoryCreation> {
                   onPressed: () {
                     // updated to save edited categories
                     if (widget.initialCategory != null) {
-                       saveEditedCategory();
-                       } else {
-                         addCategory();
-                   }
+                      saveEditedCategory();
+                    } else {
+                      addCategory();
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey, 

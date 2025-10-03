@@ -102,24 +102,24 @@ class _AddDepositState extends State<AddDeposit> {
                     labelText: 'Deposit Source',
                     hintText: 'Enter deposit source',
                      enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Color(0xFF3B0054),
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Color.fromARGB(255, 117, 20, 158),
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF3B0054),
+                          width: 3,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 117, 20, 158),
+                          width: 3,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
                   ),
                 ),
                
                 const SizedBox(height: 20),
-                ElevatedButton( //TODO: Check if category (name) already exists
+                ElevatedButton(
                   onPressed: () {
                     // add functionality to add deposit to database
                   
