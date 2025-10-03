@@ -5,6 +5,7 @@ import 'package:pocketbook/categories_screen.dart';
 import 'package:pocketbook/log_screen.dart';
 import 'package:pocketbook/sign_in_screen.dart';
 import 'package:pocketbook/spendings_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'database_handler.dart';
 
 class HomeScreenState extends StatefulWidget {
@@ -31,6 +32,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
       userName = "";
       balance = 0.00;
       categoryList = [];
+      dropdownItems = [];
     });
     getUserData();
   }
@@ -39,6 +41,25 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     addAmountController.clear();
     addCaptionController.clear();
     addCategoryController.clear();
+  }
+
+  void logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    clearFields();
+    setState(() {
+      userName = "";
+      balance = 0.00;
+      categoryList = [];
+      dropdownItems = [];
+    });
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const SignInScreen()),
+      (Route<dynamic> route) => false,
+    );
+    //.then((value) => reloadPage());
   }
 
   @override
@@ -68,15 +89,15 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
             categoryList.add(userCategories[i]['category'] as String);
           }
           dropdownItems = categoryList.map((value) {
-            return DropdownMenuEntry<String>(
-              value: value,
-              label: value,
-            );
+            return DropdownMenuEntry<String>(value: value, label: value);
           }).toList();
-
         } else {
           dropdownItems = [
-            DropdownMenuEntry(value: "No categories created", label: "No categories created", enabled: false)
+            DropdownMenuEntry(
+              value: "No categories created",
+              label: "No categories created",
+              enabled: false,
+            ),
           ];
         }
       });
@@ -88,8 +109,9 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     String caption = addCaptionController.text;
     String category = addCategoryController.text;
 
-    if (addAmountController.text.isEmpty || addCaptionController.text.isEmpty || addCategoryController.text.isEmpty)
-    {
+    if (addAmountController.text.isEmpty ||
+        addCaptionController.text.isEmpty ||
+        addCategoryController.text.isEmpty) {
       // TODO: add alert message
       return;
     }
@@ -110,12 +132,8 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
           icon: Icon(Icons.settings),
           tooltip: 'Setting Icon',
           onPressed: () {
-            Navigator.of(context)
-                .pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const SignInScreen()),
-                  (Route<dynamic> route) => false,
-                )
-                .then((value) => reloadPage());
+            //TODO: Clear shared preferences data
+            logout();
           },
         ),
         backgroundColor: const Color(0xFF280039),

@@ -2,45 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:pocketbook/account_creation.dart';
 import 'package:pocketbook/home_screen.dart';
 import 'package:pocketbook/database_handler.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
-@override
-State<SignInScreen> createState() => _SignInScreenState();
- 
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _passwordController = TextEditingController();
-    final DatabaseHandler db = DatabaseHandler.databaseInstance!;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final DatabaseHandler db = DatabaseHandler.databaseInstance!;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xFF280039),
+      backgroundColor: const Color(0xFF280039),
       appBar: AppBar(
         title: const Text('PocketBook'),
         centerTitle: true,
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
         elevation: 40,
-        
-        
       ),
       body: Center(
-         
         child: Container(
           width: 300,
           height: 500,
           decoration: BoxDecoration(
             color: const Color(0xFFFF9B71),
-            border: Border.all(
-              color: const Color(0xFF280039),
-              width: 3,
-            ),
+            border: Border.all(color: const Color(0xFF280039), width: 3),
             borderRadius: BorderRadius.circular(30),
           ),
           child: Padding(
@@ -78,31 +71,48 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                ElevatedButton( //TODO: Check both fields are full
+                ElevatedButton(
+                  //TODO: Check both fields are full
                   onPressed: () async {
-                      if (await db.verifyUser(_emailController.text, _passwordController.text))
-                      {
-                        await db.setUserIDVar(_emailController.text);
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => const HomeScreenState()),
-                        );
+                    if (await db.verifyUser(
+                      _emailController.text,
+                      _passwordController.text,
+                    )) {
+                      await db.setUserIDVar(_emailController.text);
+
+                      // NEW: remember the session
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setBool('logged_in', true);
+                      await prefs.setString(
+                        'email',
+                        _emailController.text.trim(),
+                      );
+
+                      if (!mounted) {
+                        return;
                       }
-                      else
-                      {
-                        showDialog<String>(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: const Text('Incorrect email or password'),
-                            actions: <Widget>[
-                              TextButton(onPressed: () => Navigator.pop(context, 'OK'), child: const Text('OK')),
-                            ],
-                          ),
-                        );
-                      }
-                      
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreenState(),
+                        ),
+                      );
+                    } else {
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Incorrect email or password'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'OK'),
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
                   },
                   child: const Text('Sign In'),
-                  style:  ElevatedButton.styleFrom(
+                  style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF280039),
                     foregroundColor: const Color.fromARGB(255, 255, 255, 255),
                   ),
@@ -110,21 +120,20 @@ class _SignInScreenState extends State<SignInScreen> {
                 const SizedBox(height: 20),
                 const Text(
                   'If you don\'t have an account, please sign up first.',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(color: Colors.black, fontSize: 16),
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: (){
+                  onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const AccountCreation()),
+                      MaterialPageRoute(
+                        builder: (context) => const AccountCreation(),
+                      ),
                     );
                   },
                   child: const Text('Sign Up'),
-                  style:  ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF280039), 
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF280039),
                     foregroundColor: const Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
@@ -136,5 +145,3 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 }
-
-

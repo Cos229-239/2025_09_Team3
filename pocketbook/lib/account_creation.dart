@@ -29,6 +29,8 @@ class _AccountCreationState extends State<AccountCreation> {
       await prefs.setString('last name', lNameController.text.trim());
       await prefs.setString('email', emailController.text.trim());
       await prefs.setString('password', passwordController.text.trim());
+      await prefs.setBool('logged_in', true);
+      // Add user to database and set static userID variable
       if (mounted) {
         await db.addUser(fNameController.text, lNameController.text, emailController.text, passwordController.text);
         await db.setUserIDVar(emailController.text);
