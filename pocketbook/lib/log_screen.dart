@@ -17,11 +17,11 @@ class LogScreen extends StatelessWidget {
 List<FakeLog> getFakeDatabase(){
   return [
     FakeLog(date: '2023-10-01', where: 'Grocery Store', amount: 45.67),
-    FakeLog(date: '2023-10-02', where: 'Coffee Shop', amount: -4.50),
+    FakeLog(date: '2023-10-02', where: 'Coffee Shop', amount: 4.50),
     FakeLog(date: '2023-10-03', where: 'Restaurant', amount: 78.90),
-    FakeLog(date: '2023-10-04', where: 'Gas Station', amount: -30.00),
+    FakeLog(date: '2023-10-04', where: 'Gas Station', amount: 30.00),
     FakeLog(date: '2023-10-05', where: 'Online Shopping', amount: 120.45),
-    FakeLog(date: '2023-10-06', where: 'Pharmacy', amount: -15.20),
+    FakeLog(date: '2023-10-06', where: 'Pharmacy', amount: 15.20),
     FakeLog(date: '2023-10-07', where: 'Bookstore', amount: 22.30),
     FakeLog(date: '2023-10-08', where: 'Clothing Store', amount: 60.00),
     FakeLog(date: '2023-10-09', where: 'Electronics Store', amount: 250.75),
@@ -97,21 +97,27 @@ List<FakeLog> getFakeDatabase(){
                  child: Row(
                   children: [
                     Expanded(
-                      flex:1,
-                      child: Text (log.date),
+                      
+                      child: Text (log.date,
+                      textAlign: TextAlign.left),
                     ),
                     Expanded(
-                      flex:1,
-                      child: Text (log.where),
+                      flex: 1,
+                      child: Text (log.where
+                        , textAlign: TextAlign.center,),
+                      // Add this)
                     ),
                     Expanded(
-                      flex:-3,
+                      
                       child: Text (
+                         textAlign: TextAlign.right,
                         //operator to determine if deposit or withdrawal
                         (depositPos ? '+' : '-') + '\$' + log.amount.toStringAsFixed(2),
                         style: TextStyle(
+                         
                           color: depositPos ? Colors.green : Colors.red,
                           fontWeight: FontWeight.bold,
+                          
                         )
                       ),
                     ),
