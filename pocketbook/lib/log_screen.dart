@@ -50,6 +50,7 @@ void initState() {
     final dataLog = await db.getLogs(DatabaseHandler.userID);
     setState(() {
       logs = dataLog.map((log) => LogEntry(
+        //had to do null checks////need to fix database for null checks also<----------------
         date: log['date_time']?.toString() ?? 'No Date',
         where: log['caption']?.toString() ?? 'Unknown',
         amount: log['amount'] as double? ?? 0.0, 
