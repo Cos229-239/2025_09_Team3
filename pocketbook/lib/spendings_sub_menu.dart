@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
 
 class SpendingsSubmenu extends StatelessWidget {
-  const SpendingsSubmenu({super.key});
+  const SpendingsSubmenu({
+    super.key,
+    required this.categoryName,
+    required this.categoryColor,
+    required this.totalAmount,
+    });
+
+  final String categoryName;
+  final Color categoryColor;
+  final double totalAmount;
+
 
   @override
   Widget build(BuildContext context) {
+
+    Color textOn(Color bg) => ThemeData.estimateBrightnessForColor(bg) == Brightness.light ? Colors.black : Colors.white;
+
     return Scaffold(
       backgroundColor: const Color(0xFF3B0054),
       appBar: AppBar( 
-        title: const Text('SubMenu Place Holder'),
+        title:  Text(categoryName),  // Uses the category's name
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: 'Go Back',
-          onPressed: () {}, 
+          onPressed: () => Navigator.pop(context), 
         ),
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
@@ -28,51 +41,64 @@ class SpendingsSubmenu extends StatelessWidget {
 
             Positioned(
               bottom: 600,
-
               child: SizedBox(
                 width: 375,
                 height: 200,
-
                 child: Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFF9B71), 
+                    color: categoryColor,  // Category Specific Color 
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.white, width: 3)),
-                  child: const Center(
-                    child: Text(
-                      'Spending Data Here',
-                      style: TextStyle(color: Colors.black, fontSize: 24),
+                    border: Border.all(color: Colors.white, width: 3),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Spending Data',
+                          style: TextStyle(
+                            color: textOn(categoryColor),
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+                        Text(
+                          categoryName,  // Show category being viewed
+                          style: TextStyle(
+                            color: textOn(categoryColor).withValues(alpha: 0.9),
+                            fontSize: 18,
+                          ),
+                        )
+
+                      ],
                     ),
                   ),
-
                 ),
-
               ),
-
             ),
 
             Positioned(
               bottom: 500,
-              
               child: SizedBox(
                 width: 425,
                 height: 75,
-
                 child: Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFF9B71),
+                    color: categoryColor.withValues(alpha: 0.85),
                     border: Border.all(color: Colors.white, width: 3)),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Transactions',
-                      style: TextStyle(color: Colors.black, fontSize: 36),
+                      style: TextStyle(
+                        color: textOn(categoryColor.withValues(alpha: 0.85)),
+                        fontSize: 36,
+                      ),
                     ),
                   ),
-
                 )
-
               ),
-
             ),
 
           ],  // Children

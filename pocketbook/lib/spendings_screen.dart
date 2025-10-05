@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'database_handler.dart';
+import 'spendings_sub_menu.dart';
 
 class SpendingsScreen extends StatefulWidget{
   const SpendingsScreen({super.key});
@@ -49,6 +50,20 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
   }
 
   double get _totalValue => _categories.fold(0.0, (sum, c) => sum + (c.value));
+
+  void _openCategory(Category item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SpendingsSubmenu(
+          categoryName: item.name,
+          categoryColor: item.color,
+          totalAmount: item.value,
+          // Add total value??
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context){
@@ -157,12 +172,8 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                           width: 350,
                           height: 50,
                           label: item.name,
-                          color: item.pressed ? Colors.green : item.color,
-                          onTap: () {
-                            setState(() {
-                               item.pressed = !item.pressed;
-                              });
-                            },
+                          color: item.color,
+                          onTap: () => _openCategory(item),
                           ),
                         );
                       },
@@ -228,18 +239,18 @@ class Category {
   final String name;
   final double value;
   final Color color;
-  bool pressed;
+  //bool pressed;
 
   Category({
     required this.name,
     required this.value,
     required this.color,
-    this.pressed = false,
+    //this.pressed = false,
   });
 }
 
 // Reusable, tappable rectangle(s) with label text
-class _ActionTile extends StatelessWidget {
+class _ActionTile extends StatefulWidget {
   final double width;
   final double height;
   final String label;
@@ -253,38 +264,87 @@ class _ActionTile extends StatelessWidget {
     required this.color,
     required this.onTap,
   });
+  
+  @override
+  State<_ActionTile> createState() => _ActionTileState();
+}
+
+// Animation
+class _ActionTileState extends State<_ActionTile> {
+  bool _pressed = false;
+  Duration _animDuration = const Duration(milliseconds: 65); // Quick Darken
+
+  void _handleTapDown(TapDownDetails _){
+    setState(() {
+      _animDuration = const Duration(milliseconds: 65); // Fast in
+      _pressed = true;
+    });
+  }
+
+  void _handleTapCancel() {
+    setState(() {
+      _animDuration = const Duration(milliseconds: 220); // Soft out
+      _pressed = false;
+    });
+  }
+
+  void _handleTap() {
+    widget.onTap();  // Trigger
+    setState(() {
+      _animDuration = const Duration(milliseconds: 220); // Soft Fade
+      _pressed = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final brightness = ThemeData.estimateBrightnessForColor(color);
+    final radius = BorderRadius.circular(10);
+    final brightness = ThemeData.estimateBrightnessForColor(widget.color);
     final textColor = brightness == Brightness.light ? Colors.black : Colors.white;
 
-    return Material( 
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        splashColor: Colors.greenAccent.withValues(alpha: 0.3), 
-        highlightColor: Colors.green.withValues(alpha: 0.2),   
-        child: Ink(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTapDown: _handleTapDown,
+      onTapCancel: _handleTapCancel,
+      onTap: _handleTap,
+      child: Stack(
+        children: [
+          // Base tile
+          Container(
+            width: widget.width,
+            height: widget.height,
+            decoration: BoxDecoration(
+              color: widget.color,
+              borderRadius: radius,
+            ),
+            child: Center(
+              child: Text(
+                widget.label,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
-        ),
+
+          ClipRRect( // Animated darkening overlay
+            borderRadius: radius,
+            child: AnimatedOpacity(
+              opacity: _pressed ? 0.18 : 0.0, // How Dark it'll get
+              duration: _animDuration,
+              curve: _pressed ? Curves.easeOutCubic : Curves.easeOut,
+              child: Container(
+                width: widget.width,
+                height: widget.height,
+                color: Colors.black, // Pure black <> opacity animates
+              ),
+            ),
+          ),
+
+        ],
       ),
+
     );
   }
 }
