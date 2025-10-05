@@ -81,6 +81,8 @@ class _CategoryCreationState extends State<CategoryCreation> {
     else if (nameExists)
     {
       //TODO: Alert "name already exists"
+     
+                         
     }
   }
 
@@ -107,7 +109,7 @@ class _CategoryCreationState extends State<CategoryCreation> {
         
         child: Container(
           width: 300,
-          height: 500,
+          height: 525,
           decoration: BoxDecoration(
             color: const Color(0xFFFF9B71),
             border: Border.all(
@@ -229,7 +231,7 @@ class _CategoryCreationState extends State<CategoryCreation> {
                   child: const Text('Save')
                 ),
                 if(widget.initialCategory !=null)
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
                 if(widget.initialCategory !=null)
                 ElevatedButton(
                   onPressed: () 
@@ -265,10 +267,10 @@ class _CategoryCreationState extends State<CategoryCreation> {
                     }
                   },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, 
+                      backgroundColor: const Color.fromARGB(255, 255, 17, 0), 
                       foregroundColor: Colors.white,
                     ),
-                    child: const Text('Category Deletion'),
+                    child: const Text('Delete Category'),
                   
                 )
               ],
