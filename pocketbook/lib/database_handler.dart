@@ -27,6 +27,7 @@ class DatabaseHandler {
 
   void manualUpdate() async {
     //To be manually edited and run, only if needed
+    //
   }
 
   void testUser() async {
