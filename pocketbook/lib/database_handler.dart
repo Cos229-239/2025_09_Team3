@@ -103,6 +103,17 @@ class DatabaseHandler {
     );
   }
 
+//For deleting categories
+  Future<void> deleteCategory(int userId, String categoryName)
+  async{
+    await db.delete(
+      'spending_logs',
+      where: 'userID = ? AND category = ?',
+      whereArgs: [userId, categoryName]
+
+    );
+  }
+
   Future<void> addSpending(
     int userID,
     String category,

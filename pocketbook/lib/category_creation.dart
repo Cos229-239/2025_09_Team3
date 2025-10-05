@@ -227,6 +227,49 @@ class _CategoryCreationState extends State<CategoryCreation> {
                   ),
                   
                   child: const Text('Save')
+                ),
+                if(widget.initialCategory !=null)
+                const SizedBox(height: 20),
+                if(widget.initialCategory !=null)
+                ElevatedButton(
+                  onPressed: () 
+                  async {
+                    //dailog box to confirm deletion
+                    bool? deleteConfirm = await showDialog<bool>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Confirm Deletion'),
+                          content: Text('Are you sure you would like to continue with the deletion of the "${widget.initialCategory!.name}" category? This action cannot be undone.'),
+                          actions:[
+                            TextButton(
+                              onPressed:() => Navigator.of(context).pop(false),
+                              child: const Text('Cancel'),
+                            ),
+
+                            TextButton(
+                              onPressed:() => Navigator.of(context).pop(true),
+                              child: const Text('Delete', style: TextStyle(color: Colors.red),),
+                            ),
+                          ]
+                        );
+                      }
+
+                    );
+
+                    if (deleteConfirm == true) {
+                    await db.deleteCategory(
+                      DatabaseHandler.userID, widget.initialCategory!.name);
+                      Navigator.of(context).pop();
+                     
+                    }
+                  },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red, 
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Category Deletion'),
+                  
                 )
               ],
             ),
