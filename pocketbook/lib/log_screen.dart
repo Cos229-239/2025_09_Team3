@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
-
+import 'package:pocketbook/database_handler.dart';
+import 'package:sqflite/sqflite.dart';
 
 //hardcoded data for testing asthetics until database is connected
-class FakeLog {
+class LogEntry {
 final String date;
 final String where;
 final double amount;
 
-FakeLog({required this.date, required this.where, required this.amount});
+LogEntry({required this.date, required this.where, required this.amount});
 }
 
-class LogScreen extends StatelessWidget {
+class LogScreen extends StatefulWidget {
   const LogScreen({super.key});
 
-//fake database list/getter <-----------Get rid of this when connected to database
-List<FakeLog> getFakeDatabase(){
+  @override
+  _LogScreenState createState() => _LogScreenState();
+}
+
+class _LogScreenState extends State<LogScreen> {
+  //fake database list/getter <-----------Get rid of this when connected to database
+  /*List<FakeLog> getFakeDatabase(){
   return [
     FakeLog(date: '2023-10-01', where: 'Grocery Store', amount: -45.67),
     FakeLog(date: '2023-10-02', where: 'Coffee Shop', amount: -4.50),
@@ -27,11 +33,35 @@ List<FakeLog> getFakeDatabase(){
     FakeLog(date: '2023-10-09', where: 'Electronics Store', amount: 250.75),
     FakeLog(date: '2023-10-10', where: 'Gym Membership', amount: 35.00),
   ];
-}
+}*/
+
+final DatabaseHandler db = DatabaseHandler.databaseInstance!;
+List<LogEntry> logs = [];
+
+@override
+void initState() {
+  super.initState();
+  listLogs();
+  }
+
+//list the logs from database <--------------------------------------------------
+  Future<void> listLogs() 
+  async{
+    final dataLog = await db.getLogs(DatabaseHandler.userID);
+    setState(() {
+      logs = dataLog.map((log) => LogEntry(
+        date: log['date_time']?.toString() ?? 'No Date',
+        where: log['caption']?.toString() ?? 'Unknown',
+        amount: log['amount'] as double? ?? 0.0, 
+      )
+      ).toList();
+    });
+  
+  }
 
    @override
   Widget build(BuildContext context) {
-    final dataLog = getFakeDatabase(); //pulls all data from database
+   
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 222, 222, 222),
       appBar: AppBar( 
@@ -80,12 +110,14 @@ List<FakeLog> getFakeDatabase(){
           //List for displaying logs
           Divider(height: 1, color: const Color.fromARGB(255, 0, 0, 0)),
           Expanded(
-            child: ListView.builder(
+            child: 
+              logs.isEmpty ? const Center(child: Text('No transactions available.')) :
+              ListView.builder(
               //change to data from database <----------------------------------
-            itemCount: dataLog.length,
+            itemCount: logs.length,
             itemBuilder: (context, index){
-            
-              final log = dataLog[index];
+
+              final log = logs[index];
               final depositPos = log.amount >= 0;
               return Container(
                 padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),

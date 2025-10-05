@@ -115,6 +115,19 @@ class DatabaseHandler {
     );
   }
 
+  //Getting logs for log screen
+  Future<List<Map<String, dynamic>>> getLogs(
+    int userID
+  )async{
+    final result = await db.query(
+      'spending_logs',
+      where: 'userID =?',
+      whereArgs: [userID],
+      orderBy: 'date_time DESC',
+    );
+    return result;
+  }
+
   Future<void> addSpending(
     int userID,
     String category,
