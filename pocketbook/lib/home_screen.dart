@@ -317,6 +317,14 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                               ),
                             ),
                           ),
+                          //calendar button for adding date if not today
+                          IconButton.filled(
+                            icon: const Icon(Icons.calendar_today),
+                            onPressed: () {
+                              //add date picker functionality
+                            },
+                         ),
+                          
                           IconButton.filled(
                             onPressed: () {
                               _addSpending();
