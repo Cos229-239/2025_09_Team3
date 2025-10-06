@@ -82,7 +82,7 @@ void initState() {
       body: Column(
       
         children: [
-          //Table for displaying titles
+          //Table for displaying titles//
           Container(
             color: Colors.grey,
             padding: const EdgeInsets.all(8.0),
