@@ -97,12 +97,14 @@ void initState() {
                   flex: 1,
                   child: Text(
                     'Where', style: TextStyle(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
                     ),
                 ),
                    Expanded (
-                 flex: -3,
+                 flex: 1,
                   child: Text(
                     'Amount', style: TextStyle(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.right
                     ), 
                 ),
 
