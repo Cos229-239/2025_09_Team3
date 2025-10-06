@@ -105,7 +105,9 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   }
 
   void _addSpending() async {
-    double amount = double.parse(addAmountController.text);
+    double amount = double.parse(addAmountController.text).abs();
+    //make the amount auto negated
+    amount = -amount.abs();
     String caption = addCaptionController.text;
     String category = addCategoryController.text;
 

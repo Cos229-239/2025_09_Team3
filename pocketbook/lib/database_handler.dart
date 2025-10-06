@@ -125,6 +125,7 @@ class DatabaseHandler {
       whereArgs: [userID],
       orderBy: 'date_time DESC',
     );
+    
     return result;
   }
 

@@ -48,6 +48,7 @@ void initState() {
   Future<void> listLogs() 
   async{
     final dataLog = await db.getLogs(DatabaseHandler.userID);
+   
     setState(() {
       logs = dataLog.map((log) => LogEntry(
         //had to do null checks////need to fix database for null checks also<----------------
@@ -121,7 +122,7 @@ void initState() {
             itemBuilder: (context, index){
 
               final log = logs[index];
-              final depositPos = log.amount >= 0;
+              final depositPos = log.amount > 0;
               return Container(
                 padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 decoration: BoxDecoration(
