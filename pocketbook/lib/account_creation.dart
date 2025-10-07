@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocketbook/database_handler.dart';
 import 'package:pocketbook/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 class AccountCreation extends StatefulWidget {
   const AccountCreation({super.key});
@@ -46,7 +47,17 @@ class _AccountCreationState extends State<AccountCreation> {
         if(startingBalanceController.text.isNotEmpty){
           double startingBalance = double.parse(startingBalanceController.text);
           await db.setUserBalance(DatabaseHandler.userID, startingBalance);
+
+          await db.addSpending(
+           DatabaseHandler.userID,
+            'Starting Balance',
+            'Starting Balance',
+            startingBalance,
+          );
+          
+
         }
+        
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const HomeScreenState()),
           (Route<dynamic> route) => false,
