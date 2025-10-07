@@ -68,7 +68,7 @@ class _AccountCreationState extends State<AccountCreation> {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
-    startingBalanceController.dispose(); // Added this
+    startingBalanceController.dispose(); // Added this dispose
     super.dispose();
   }
 
