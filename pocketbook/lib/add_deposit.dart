@@ -53,7 +53,7 @@ class _AddDepositState extends State<AddDeposit> {
               children: [
                 const SizedBox(height: 20),
                 const Text(
-                  'Add a Depostit',
+                  'Add a Deposit',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -121,9 +121,9 @@ class _AddDepositState extends State<AddDeposit> {
                
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async{
                     // add functionality to add deposit to database
-                  
+                    _addDeposit();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey, 
@@ -154,7 +154,50 @@ class _AddDepositState extends State<AddDeposit> {
     try{
       double amount = double.parse(_amountController.text);
       amount =amount.abs(); //keeps deposits positive
-      String origin = _orginController
+      String origin = _originController.text.trim();
+      //TODO: ADD A FUNCTION TO CAPITALIZE THE FIRST LETTER IN EACH WORD> HELPER FILE<----------
+      
+      //adds deposit to database
+      await db.addSpending(
+        DatabaseHandler.userID,
+        'Deposit',
+        origin,
+        amount,
+      );
+
+      //obtain user data
+      final userData = await db.getUserData(DatabaseHandler.userID);
+      double theBalance = 0.0;
+      if(userData.isNotEmpty&& userData.first['account_balance'] !=null){
+        //updates balance to the first index of user data
+        theBalance = userData.first['account_balance'] as double;
+      }
+      //updates the users balance
+      double newBalance = theBalance + amount;
+      await db.setUserBalance(DatabaseHandler.userID, newBalance);
+
+      if(mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+           SnackBar(content: Text('Deposit of \$${amount.toStringAsFixed(2)} from $origin added successfully!')),
+        );
+        Navigator.of(context).pop();
+        
+      }
+
+        
+      
+     
+
+    }catch(e){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid amount. Please enter a valid amount.')),
+      );
+
+
     }
+    
+    
+    
+    
   }
 }

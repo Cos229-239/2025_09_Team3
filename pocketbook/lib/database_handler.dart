@@ -63,7 +63,11 @@ class DatabaseHandler {
   }
 
   Future<void> setUserBalance(int userID, double amount) async {
-    db.update('user_data', {'account_balance': amount});
+    db.update('user_data', 
+    {'account_balance': amount},
+    where: 'userID = ?',
+    whereArgs: [userID],
+    );
   }
 
   Future<void> addCategory(

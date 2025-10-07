@@ -425,13 +425,14 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                 child: Column(
                   children: [
                     IconButton.filled(
-                      onPressed: () {
+                      onPressed: () async{
                         
-                        Navigator.of(context).push(
+                        await Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => const AddDeposit(),
                           ),
                         );
+                        getUserData();
                       },
                       icon: Icon(Icons.add),
                       style: IconButton.styleFrom(
