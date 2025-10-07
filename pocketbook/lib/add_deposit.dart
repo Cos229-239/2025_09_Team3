@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'database_handler.dart';
 
+
 class AddDeposit extends StatefulWidget {
   const AddDeposit({super.key});
 
@@ -137,5 +138,23 @@ class _AddDepositState extends State<AddDeposit> {
         ),
       ),
     );
+  }
+
+  //Function for adding deposit to database
+  void _addDeposit()  
+  async{
+    //error checking for fields
+    if(_amountController.text.isEmpty || _originController.text.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields to add a deposit'))
+      );
+      return;
+    }
+
+    try{
+      double amount = double.parse(_amountController.text);
+      amount =amount.abs(); //keeps deposits positive
+      String origin = _orginController
+    }
   }
 }
