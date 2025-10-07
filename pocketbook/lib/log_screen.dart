@@ -58,7 +58,9 @@ void initState() {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: 'Go Back',
-          onPressed: () {}, 
+          onPressed: () {
+            Navigator.of(context).pop();
+          }, 
         ),
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
