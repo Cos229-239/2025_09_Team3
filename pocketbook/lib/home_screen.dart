@@ -176,7 +176,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                   ),
                   child: Center(
                     child: Text(
-                      'Account Balance\n\$$balance',
+                      'Account Balance\n\$${balance?.toStringAsFixed(2) ?? '0.00'}',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 24,

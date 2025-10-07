@@ -21,6 +21,7 @@ class _AccountCreationState extends State<AccountCreation> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+  final TextEditingController startingBalanceController = TextEditingController();// Added this
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
 
   Future<void> createAccount() async {
@@ -41,6 +42,11 @@ class _AccountCreationState extends State<AccountCreation> {
           passwordController.text,
         );
         await db.setUserIDVar(emailController.text);
+        //added for setting starting balance
+        if(startingBalanceController.text.isNotEmpty){
+          double startingBalance = double.parse(startingBalanceController.text);
+          await db.setUserBalance(DatabaseHandler.userID, startingBalance);
+        }
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const HomeScreenState()),
           (Route<dynamic> route) => false,
@@ -62,6 +68,7 @@ class _AccountCreationState extends State<AccountCreation> {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    startingBalanceController.dispose(); // Added this
     super.dispose();
   }
 
@@ -216,6 +223,31 @@ class _AccountCreationState extends State<AccountCreation> {
                 ),
               ),
             ),
+            //added starting balance textfield
+             const SizedBox(height: 10),
+            TextField(
+              controller: startingBalanceController,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(
+                labelText: 'Enter a starting account balance',
+                filled: true,
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(
+                    color: Color(0xFF3B0054),
+                    width: 3,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(
+                    color: Color.fromARGB(255, 117, 20, 158),
+                    width: 3,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
             
             const SizedBox(height: 20),
             ElevatedButton(
@@ -224,7 +256,8 @@ class _AccountCreationState extends State<AccountCreation> {
                     lNameController.text.isNotEmpty &&
                     emailController.text.isNotEmpty &&
                     passwordController.text.isNotEmpty &&
-                    confirmPasswordController.text.isNotEmpty) {
+                    confirmPasswordController.text.isNotEmpty &&                
+                    startingBalanceController.text.isNotEmpty) {// Added check for starting balance
                   if (!await checkUserExists(emailController.text)) {
                     createAccount();
                   } else {
