@@ -115,11 +115,20 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
         addCaptionController.text.isEmpty ||
         addCategoryController.text.isEmpty) {
       // TODO: add alert message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields to add spending')),
+      );
       return;
     }
 
     await db.addSpending(userID, category, caption, amount);
+
+    double theBalance = (balance ?? 0.0) + amount;
+    await db.setUserBalance(userID, theBalance);
+   
+    
     clearFields();
+    getUserData();
   }
 
   @override
