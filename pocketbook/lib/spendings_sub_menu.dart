@@ -104,7 +104,6 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
 
   double get _monthTotal => _monthTxns.fold(0.0, (sum, t) => sum + t.amount);
 
-
   @override
   Widget build(BuildContext context) {
     final c = widget.categoryColor;
@@ -228,6 +227,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+
                         IconButton(
                           tooltip: 'Previous Month',
                           icon: const Icon(Icons.chevron_left),
@@ -238,6 +238,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
                         ),
 
                         const SizedBox(width: 8),
+                        
                         Text(
                           _monthLabel(_focusedMonth),
                           style: const TextStyle(
@@ -246,7 +247,9 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
+                        
                         const SizedBox(width: 8),
+                        
                         IconButton(
                           tooltip: 'Next Month',
                           icon: const Icon(Icons.chevron_right),

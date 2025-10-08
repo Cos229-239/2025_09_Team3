@@ -13,6 +13,7 @@ class SpendingsScreen extends StatefulWidget{
 class _SpendingsScreenState extends State<SpendingsScreen> {
   final List<Category> _categories = [];
   bool _loading = true;
+  final DateTime _focusedMonth = DateTime.now(); // Current Month
 
   @override
   void initState(){
@@ -23,14 +24,42 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
   Future<void> _loadCategories() async {
     try {
       final handler = await DatabaseHandler.create();
+
       final rows = await handler.getCategories(DatabaseHandler.userID);
-      final loaded = rows.map((r) {
+      final base = rows.map((r) {
         final name = (r['category'] as String?) ?? 'Unnamed';
-        final value = (r['amount'] as num?)?.toDouble() ?? 0.0;
         final colorRaw = r['category_color'];
         final color = _colorFromDb(colorRaw) ?? const Color(0xFF3498DB);
-        return Category(name: name, value: value, color: color);
+        //final value = (r['amount'] as num?)?.toDouble() ?? 0.0;
+        return Category(name: name, value: 0.0, color: color);
       }).toList();
+
+      final futures = base.map((c) async {
+        final txns = await handler.getSpendingInCategory(
+          DatabaseHandler.userID,
+          c.name,
+        );
+        double monthSpent = 0.0;
+        for (final t in txns) {
+          final whenRaw = t['date_time']?.toString() ?? '';
+          DateTime? when;
+          try{
+            when = DateTime.parse(whenRaw);
+          } catch (_) {
+            when = null;
+          }
+          if (when == null) continue;
+          if (_isSameMonth(when, _focusedMonth)) {
+            final amt = (t['amount'] as num?)?.toDouble() ?? 0.0;
+            if (amt < 0) {
+              monthSpent += -amt;  // Store as positive "spent" for charting
+            }
+          }
+        }
+        return Category(name: c.name, value: monthSpent, color: c.color);
+      }).toList();
+
+      final loaded = await Future.wait(futures);
 
       if (!mounted) return;
       setState(() {
@@ -49,6 +78,8 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
     }
   }
 
+  bool _isSameMonth(DateTime a, DateTime b) => a.year == b.year && a.month == b.month;
+
   double get _totalValue => _categories.fold(0.0, (sum, c) => sum + (c.value));
 
   void _openCategory(Category item) {
@@ -58,8 +89,7 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
         builder: (_) => SpendingsSubmenu(
           categoryName: item.name,
           categoryColor: item.color,
-          totalAmount: item.value,
-          // Add total value??
+          totalAmount: item.value, // This months's spendings
         ),
       ),
     );
@@ -119,7 +149,7 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                         borderData: FlBorderData(show: false),
                         sections: _categories.map((c) {
                           return PieChartSectionData(
-                            value: c.value,
+                            value: c.value, // Month spend per category
                             title: c.name, 
                             color: c.color,
                             radius: 70,
@@ -136,7 +166,8 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                 ),
 
                 const SizedBox(height: 16),
-
+                
+                // Breakdown header bar
                 Container(
                   width: 425,
                   height: 75,
@@ -151,6 +182,7 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
 
                 const SizedBox(height: 16),
 
+                // Category tiles
                 Expanded(
                   child: _categories.isEmpty
                     ? const Center(
@@ -237,7 +269,7 @@ class _EmptyPiePlaceholder extends StatelessWidget{
 // Simple data model
 class Category {
   final String name;
-  final double value;
+  final double value; // This Month's Spending (positive)
   final Color color;
   //bool pressed;
 
