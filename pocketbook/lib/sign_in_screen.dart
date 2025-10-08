@@ -72,7 +72,6 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton(
-                  //TODO: Check both fields are full
                   onPressed: () async {
                     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
                       showDialog<String>(

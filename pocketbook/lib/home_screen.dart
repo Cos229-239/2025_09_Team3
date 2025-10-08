@@ -116,7 +116,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
         addCategoryController.text.isEmpty) {
       // TODO: add alert message
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields to add spending')),
+        const SnackBar(content: Text('Please enter all fields')),
       );
       return;
     }
@@ -143,7 +143,6 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
           icon: Icon(Icons.settings),
           tooltip: 'Setting Icon',
           onPressed: () {
-            //TODO: Clear shared preferences data
             logout();
           },
         ),

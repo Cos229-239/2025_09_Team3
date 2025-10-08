@@ -25,7 +25,6 @@ class _AccountCreationState extends State<AccountCreation> {
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
 
   Future<void> createAccount() async {
-    //TODO: check for account already exsists
     if (passwordController.text == confirmPasswordController.text) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('first name', fNameController.text.trim());
@@ -271,7 +270,6 @@ class _AccountCreationState extends State<AccountCreation> {
                   if (!await checkUserExists(emailController.text)) {
                     createAccount();
                   } else {
-                    // TODO: Alert user already exists
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('User already exists')),
                     );

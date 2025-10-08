@@ -71,37 +71,48 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => CategoryCreation(),
-                    ),
-                  ).then((value) => reloadPage());
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFF9B71),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    side: const BorderSide(
-                      color: Color(0xFF280039),
-                      width: 3,
-                    ),
-                  ),
-                  minimumSize: Size(
-                    MediaQuery.of(context).size.width * 0.9,
-                    MediaQuery.of(context).size.height * 0.05,
-                  ),
+              Container(
+              //spending section outer border
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white, width: 3),
+                  borderRadius: BorderRadius.circular(23),
+                  shape: BoxShape.rectangle,
                 ),
-                child: const Text(
-                  'Create Category',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                child: ElevatedButton(
+                  
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => CategoryCreation(),
+                      ),
+                    ).then((value) => reloadPage());
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 7),
+                    backgroundColor: const Color(0xFFFF9B71),
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: const BorderSide(
+                        color: Color(0xFF3B0054),
+                        width: 3,
+                      ),
+                    ),
+                    minimumSize: Size(
+                      MediaQuery.of(context).size.width * 0.9,
+                      MediaQuery.of(context).size.height * 0.05,
+                    ),
+                  ),
+                  child: const Text(
+                    'Create Category',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
+              
               const SizedBox(height: 20.0),
               Center(child: CircularProgressIndicator())
             ],
@@ -130,34 +141,44 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => CategoryCreation(),
-                  ),
-                ).then((value) => reloadPage());
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF9B71),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  side: const BorderSide(
-                    color: Color(0xFF280039),
-                    width: 3,
-                  ),
-                ),
-                minimumSize: Size(
-                  MediaQuery.of(context).size.width * 0.9,
-                  MediaQuery.of(context).size.height * 0.05,
-                ),
+            Container(
+              //spending section outer border
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white, width: 3),
+                borderRadius: BorderRadius.circular(23),
+                shape: BoxShape.rectangle,
               ),
-              child: const Text(
-                'Create Category',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+              child: ElevatedButton(
+                
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => CategoryCreation(),
+                    ),
+                  ).then((value) => reloadPage());
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 7),
+                  backgroundColor: const Color(0xFFFF9B71),
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: const BorderSide(
+                      color: Color(0xFF3B0054),
+                      width: 3,
+                    ),
+                  ),
+                  minimumSize: Size(
+                    MediaQuery.of(context).size.width * 0.9,
+                    MediaQuery.of(context).size.height * 0.05,
+                  ),
+                ),
+                child: const Text(
+                  'Create Category',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -171,43 +192,42 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   return InkWell(
                     borderRadius: BorderRadius.circular(20),
                     onTap: () async{
-                     await Navigator.of(  context).push(
+                     await Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => CategoryCreation(initialCategory: category),
                         ),
                       );
                       reloadPage();
                     },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: category.color,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          category.name,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: category.color,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            category.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        Text(
-                          '\$${category.budget.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                          Text(
+                            '\$${category.budget.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
                   );
                 },
               ),

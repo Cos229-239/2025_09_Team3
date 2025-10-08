@@ -44,14 +44,18 @@ class _CategoryCreationState extends State<CategoryCreation> {
     String catName = _categoryNameController.text;
     bool nameExists = await db.categoryExists(catName);
     if (nameExists) {
-      //TODO: Alert category already exists
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Category already exists')),
+      );
       return;
     }
     if (catName.isNotEmpty) {
       catName = catName[0].toUpperCase() + catName.substring(1);
     }
     else {
-      //TODO: Alert "Enter name"
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter category name')),
+      );
       return;
     }
     await db.addCategory(DatabaseHandler.userID, catName, _chosenColor.toHexString(), _budgetValue);
@@ -67,7 +71,9 @@ class _CategoryCreationState extends State<CategoryCreation> {
       catName = catName[0].toUpperCase() + catName.substring(1);
     }
     else {
-      //TODO: Alert "Enter name"
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter category name')),
+      );
       return;
     }
     if (widget.initialCategory?.name != catName) // if name is changed
@@ -80,9 +86,9 @@ class _CategoryCreationState extends State<CategoryCreation> {
     }
     else if (nameExists)
     {
-      //TODO: Alert "name already exists"
-     
-                         
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Category already exists')),
+      );
     }
   }
 
@@ -214,7 +220,7 @@ class _CategoryCreationState extends State<CategoryCreation> {
                   child: const Text('Choose Color')
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton( //TODO: Check if category (name) already exists
+                ElevatedButton(
                   onPressed: () {
                     // updated to save edited categories
                     if (widget.initialCategory != null) {
@@ -266,12 +272,11 @@ class _CategoryCreationState extends State<CategoryCreation> {
                      
                     }
                   },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 255, 17, 0), 
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text('Delete Category'),
-                  
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 17, 0), 
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Delete Category'),
                 )
               ],
             ),
