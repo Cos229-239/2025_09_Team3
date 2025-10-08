@@ -312,7 +312,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
 
                             child: DropdownMenu<String>(
                               controller: addCategoryController,
-                              width: 250,
+                              width: 200,
                               hintText: "Category",
                               dropdownMenuEntries: dropdownItems,
                               inputDecorationTheme: InputDecorationTheme(

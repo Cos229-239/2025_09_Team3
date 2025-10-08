@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pocketbook/database_handler.dart';
 import 'package:pocketbook/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqlite_api.dart';
 
 class AccountCreation extends StatefulWidget {
   const AccountCreation({super.key});

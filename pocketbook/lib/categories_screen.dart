@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbook/category_creation.dart';
-import 'package:pocketbook/home_screen.dart';
 import 'package:pocketbook/database_handler.dart';
 
 class CategoriesScreen extends StatefulWidget {

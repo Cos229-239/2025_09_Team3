@@ -63,6 +63,10 @@ class _AddDepositState extends State<AddDeposit> {
                 const SizedBox(height: 30),
                 TextFormField(
                   controller: _amountController,
+                  keyboardType: TextInputType.numberWithOptions(
+                    signed: false,
+                    decimal: true,
+                  ),
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
                     filled: true,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbook/database_handler.dart';
-import 'package:sqflite/sqflite.dart';
 
 //hardcoded data for testing asthetics until database is connected
 class LogEntry {
@@ -33,7 +32,7 @@ void initState() {
 //list the logs from database <--------------------------------------------------
   Future<void> listLogs() 
   async{
-    final dataLog = await db.getLogs(DatabaseHandler.userID);
+    final dataLog = await db.getSpendingLog(DatabaseHandler.userID);
    
     setState(() {
       logs = dataLog.map((log) => LogEntry(

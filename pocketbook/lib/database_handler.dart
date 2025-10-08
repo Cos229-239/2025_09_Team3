@@ -6,7 +6,7 @@ import 'package:bcrypt/bcrypt.dart';
 class DatabaseHandler {
   late Database db;
   static int userID = -1;
-
+  static DatabaseHandler? databaseInstance;
   DatabaseHandler._create(this.db);
 
   static Future<DatabaseHandler> create() async {
@@ -29,21 +29,6 @@ class DatabaseHandler {
     //To be manually edited and run, only if needed
     
   }
-
-  void testUser() async {
-    await db.insert('user_data', {
-      'fname': 'TestPerson',
-      'lname': 'TestPersonAgain',
-      'email': 'abc@email.com',
-      'account_balance': 0.00,
-      'password_hash': '#####',
-      'hash_salt': 'abcde',
-    });
-    var result = await db.query('user_data');
-    print(result);
-  }
-
-  static DatabaseHandler? databaseInstance;
 
   Future<void> addUser(
     String first,
@@ -111,26 +96,11 @@ class DatabaseHandler {
 //For deleting categories
   Future<void> deleteCategory(int userId, String categoryName)
   async{
-    await db.delete(
+    await db.delete( // double check that this deletes logs too
       'spending_logs',
       where: 'userID = ? AND category = ?',
       whereArgs: [userId, categoryName]
-
     );
-  }
-
-  //Getting logs for log screen
-  Future<List<Map<String, dynamic>>> getLogs(
-    int userID
-  )async{
-    final result = await db.query(
-      'spending_logs',
-      where: 'userID =?',
-      whereArgs: [userID],
-      orderBy: 'date_time DESC',
-    );
-    
-    return result;
   }
 
   Future<void> addSpending(
@@ -182,6 +152,7 @@ class DatabaseHandler {
       'spending_logs',
       where: 'userID = ? AND category = ? AND caption IS NULL',
       whereArgs: [userID, category],
+      
     );
   }
 
@@ -193,6 +164,18 @@ class DatabaseHandler {
       'spending_logs',
       where: 'userID = ? AND category = ? AND caption IS NOT NULL',
       whereArgs: [userID, category],
+      orderBy: 'date_time DESC',
+    );
+  }
+
+  Future<List<Map<String, Object?>>> getSpendingLog(
+    int userID,
+  ) async {
+    return db.query(
+      'spending_logs',
+      where: 'userID = ? AND caption IS NOT NULL',
+      whereArgs: [userID],
+      orderBy: 'date_time DESC',
     );
   }
 
