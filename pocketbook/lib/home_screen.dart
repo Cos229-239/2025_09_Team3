@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pocketbook/add_deposit.dart';
 import 'package:pocketbook/categories_screen.dart';
+import 'package:pocketbook/helper_files.dart';
 import 'package:pocketbook/log_screen.dart';
 import 'package:pocketbook/sign_in_screen.dart';
 import 'package:pocketbook/spendings_screen.dart';
@@ -75,7 +76,8 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     if (mounted) {
       setState(() {
         if (userData.isNotEmpty) {
-          userName = userData.first['fname'] as String;
+          String initialName = userData.first['fname'] as String;
+          userName = firstLetterCapital(initialName);
           balance = 0;
         }
 
@@ -115,9 +117,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
         addCaptionController.text.isEmpty ||
         addCategoryController.text.isEmpty) {
       // TODO: add alert message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter all fields')),
-      );
+      showErrorSnackBar(context, 'Please fill in all fields');
       return;
     }
 

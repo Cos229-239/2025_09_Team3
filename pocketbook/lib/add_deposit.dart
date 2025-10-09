@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pocketbook/helper_files.dart';
 import 'database_handler.dart';
+
 
 
 class AddDeposit extends StatefulWidget {
@@ -149,16 +151,14 @@ class _AddDepositState extends State<AddDeposit> {
   async{
     //error checking for fields
     if(_amountController.text.isEmpty || _originController.text.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields to add a deposit'))
-      );
+      showErrorSnackBar(context, 'Please fill in all fields to add a deposit');
       return;
     }
 
     try{
       double amount = double.parse(_amountController.text);
       amount =amount.abs(); //keeps deposits positive
-      String origin = _originController.text.trim();
+      String origin = firstLetterCapital(_originController.text.trim());
       //TODO: ADD A FUNCTION TO CAPITALIZE THE FIRST LETTER IN EACH WORD> HELPER FILE<----------
       
       //adds deposit to database
@@ -181,9 +181,7 @@ class _AddDepositState extends State<AddDeposit> {
       await db.setUserBalance(DatabaseHandler.userID, newBalance);
 
       if(mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(content: Text('Deposit of \$${amount.toStringAsFixed(2)} from $origin added successfully!')),
-        );
+        showErrorSnackBar(context, 'Deposit of \$${amount.toStringAsFixed(2)} from $origin added successfully!');
         Navigator.of(context).pop();
         
       }
@@ -193,9 +191,8 @@ class _AddDepositState extends State<AddDeposit> {
      
 
     }catch(e){
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid amount. Please enter a valid amount.')),
-      );
+     showErrorSnackBar(context, 'Invalid amount. Please enter a valid amount.');
+      
 
 
     }

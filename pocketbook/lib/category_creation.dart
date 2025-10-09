@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pocketbook/database_handler.dart';
+import 'package:pocketbook/helper_files.dart';
 
 class Category {
   String name;
@@ -44,18 +45,14 @@ class _CategoryCreationState extends State<CategoryCreation> {
     String catName = _categoryNameController.text;
     bool nameExists = await db.categoryExists(catName);
     if (nameExists) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Category already exists')),
-      );
+      showErrorSnackBar(context, 'Category already exists');
       return;
     }
-    if (catName.isNotEmpty) {
-      catName = catName[0].toUpperCase() + catName.substring(1);
+    if (catName.isNotEmpty&&_budgetValue!=0) {
+      catName = firstLetterCapital(catName);
     }
     else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter category name')),
-      );
+      showErrorSnackBar(context, 'Please enter category name and budget greater than 0.');
       return;
     }
     await db.addCategory(DatabaseHandler.userID, catName, _chosenColor.toHexString(), _budgetValue);
@@ -67,13 +64,11 @@ class _CategoryCreationState extends State<CategoryCreation> {
     void saveEditedCategory() async {
     String catName = _categoryNameController.text;
     bool nameExists = false;
-    if (catName.isNotEmpty) {
-      catName = catName[0].toUpperCase() + catName.substring(1);
+    if (catName.isNotEmpty && _budgetValue != 0) {
+      catName = firstLetterCapital(catName);
     }
     else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter category name')),
-      );
+      showErrorSnackBar(context, 'Please enter category name and budget greater than 0.');
       return;
     }
     if (widget.initialCategory?.name != catName) // if name is changed
@@ -86,9 +81,8 @@ class _CategoryCreationState extends State<CategoryCreation> {
     }
     else if (nameExists)
     {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Category already exists')),
-      );
+      showErrorSnackBar(context, 'Category already exists');
+      
     }
   }
 
@@ -248,7 +242,7 @@ class _CategoryCreationState extends State<CategoryCreation> {
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: const Text('Confirm Deletion'),
-                          content: Text('Are you sure you would like to continue with the deletion of the "${widget.initialCategory!.name}" category? This action cannot be undone.'),
+                          content: Text('Are you sure you would like to continue with the deletion of the "${widget.initialCategory!.name}" category and all related transaction logs? This action cannot be undone.'),
                           actions:[
                             TextButton(
                               onPressed:() => Navigator.of(context).pop(false),
