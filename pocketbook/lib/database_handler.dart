@@ -94,7 +94,12 @@ class DatabaseHandler {
   }
 
   Future<void> updateLogs(int userID, String category, String caption, double amount, String dateAndTime) async {
-    
+    await db.update(
+      'spending_logs',
+      {'caption': caption, 'amount' : amount, 'date_time' : dateAndTime},
+      where: 'userID = ? AND category = ? AND date_time = ? AND caption IS NOT NULL',
+      whereArgs: [userID, category, dateAndTime],
+    );
   }
 //For deleting categories
   Future<void> deleteCategory(int userId, String categoryName)
