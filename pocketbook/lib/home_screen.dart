@@ -110,7 +110,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     if (addAmountController.text.isEmpty ||
       addCaptionController.text.isEmpty ||
       addCategoryController.text.isEmpty) {
-        
+
       showErrorSnackBar(context, 'Please fill in all fields.');
       return;
     }
@@ -361,8 +361,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                   children: [
                     IconButton.filled(
                       onPressed: () {
-                        Navigator.of(context)
-                            .push(
+                        Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => const CategoriesScreen(),
                               ),

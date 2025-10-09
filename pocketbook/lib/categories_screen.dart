@@ -196,8 +196,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         MaterialPageRoute(
                           builder: (context) => CategoryCreation(initialCategory: category),
                         ),
-                      );
-                      reloadPage();
+                      ).then((value) => reloadPage());
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 8),
