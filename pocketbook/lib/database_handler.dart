@@ -2,6 +2,7 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:bcrypt/bcrypt.dart';
+import 'package:intl/intl.dart';
 
 class DatabaseHandler {
   late Database db;
@@ -93,10 +94,10 @@ class DatabaseHandler {
     );
   }
 
-  Future<void> updateLogs(int userID, String category, String caption, double amount, String dateAndTime) async {
+  Future<void> updateLogs(int userID, String category, String caption, String newCaption, double amount, String dateAndTime, String newDateAndTime) async {
     await db.update(
       'spending_logs',
-      {'caption': caption, 'amount' : amount, 'date_time' : dateAndTime},
+      {'caption': newCaption, 'amount' : amount, 'date_time' : newDateAndTime},
       where: 'userID = ? AND category = ? AND date_time = ? AND caption IS NOT NULL',
       whereArgs: [userID, category, dateAndTime],
     );
@@ -104,10 +105,18 @@ class DatabaseHandler {
 //For deleting categories
   Future<void> deleteCategory(int userId, String categoryName)
   async{
-    await db.delete( // double check that this deletes logs too
+    await db.delete(
       'spending_logs',
       where: 'userID = ? AND category = ?',
       whereArgs: [userId, categoryName]
+    );
+  }
+
+  Future<void> deleteLog(int userID, String caption, String dateAndTime) async {
+    await db.delete(
+      'spending_logs',
+      where: 'userID = ? AND caption = ? AND date_time = ?',
+      whereArgs: [userID, caption, dateAndTime]
     );
   }
 
@@ -206,9 +215,11 @@ class DatabaseHandler {
     return false;
   }
 
-  Future<String> getCurrentTime() async {
-    final result = await db.rawQuery('SELECT datetime("now") as currentTime');
-    return result.first["currentTime"] as String;
+  String getCurrentTime() {
+    DateTime now = DateTime.now();
+    DateFormat formatter = DateFormat("MMM-dd-yyyy\nhh:mm:ss a");
+    
+    return formatter.format(now);
   }
 
   Future<bool> userExists(String email) async { // FUNCTION HAS NOT BEEN TESTED

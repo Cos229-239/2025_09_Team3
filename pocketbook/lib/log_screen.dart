@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbook/database_handler.dart';
+import 'package:pocketbook/log_edit.dart';
 
 //hardcoded data for testing asthetics until database is connected
 class LogEntry {
-final String date;
-final String where;
-final double amount;
+  String category;
+  String caption;
+  double amount;
+  String dateAndTime;
 
-LogEntry({required this.date, required this.where, required this.amount});
+  LogEntry({
+    required this.category,
+    required this.caption,
+    required this.amount,
+    required this.dateAndTime,
+  });
 }
 
 class LogScreen extends StatefulWidget {
@@ -23,11 +30,18 @@ class _LogScreenState extends State<LogScreen> {
 final DatabaseHandler db = DatabaseHandler.databaseInstance!;
 List<LogEntry> logs = [];
 
+void reloadPage() {
+    setState(() {
+      
+    });
+    listLogs();
+  }
+
 @override
 void initState() {
   super.initState();
   listLogs();
-  }
+}
 
 //list the logs from database <--------------------------------------------------
   Future<void> listLogs() 
@@ -36,12 +50,12 @@ void initState() {
    
     setState(() {
       logs = dataLog.map((log) => LogEntry(
-        //had to do null checks////need to fix database for null checks also<----------------
-        date: log['date_time']?.toString() ?? 'No Date',
-        where: log['caption']?.toString() ?? 'Unknown',
-        amount: log['amount'] as double? ?? 0.0, 
-      )
-      ).toList();
+        //had to do null checks////need to fix database for null checks also<---------------- //Lucas here - Database nulls are on purpose, just a heads up. I dont think nulls are possible if they shouldnt be. Let me know if I missed something though
+        dateAndTime: log['date_time']?.toString() ?? 'No Date',
+        caption: log['caption']?.toString() ?? 'Unknown',
+        amount: log['amount'] as double? ?? 0.0,
+        category: log['category']?.toString() ?? ''
+      )).toList();
     });
   
   }
@@ -110,24 +124,37 @@ void initState() {
 
               final log = logs[index];
               final depositPos = log.amount > 0;
-              return Container(
-                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide (color: const Color.fromARGB(255, 0, 0, 0))
+              return ElevatedButton(
+                onPressed: () {
+                   Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => LogEdit(selectedLog: log),
+                    ),
+                  ).then((value) => reloadPage());
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  shape: LinearBorder.bottom(
+                    side: const BorderSide(
+                      color: Colors.black
+                    )
                   )
-                 ),
+                ),
+               
                  child: Row(
                   children: [
                     Expanded(
-                      
-                      child: Text (log.date,
-                      textAlign: TextAlign.left),
+                      child: Text (log.dateAndTime,
+                        textAlign: TextAlign.left, 
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
                     Expanded(
                       flex: 1,
-                      child: Text (log.where
-                        , textAlign: TextAlign.center,),
+                      child: Text (log.caption,
+                       textAlign: TextAlign.center,
+                       style: TextStyle(color: Colors.black),
+                       ),
                       // Add this)
                     ),
                     Expanded(
