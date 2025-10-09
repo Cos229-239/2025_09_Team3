@@ -43,8 +43,33 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   }
 
   void logout() async {
+    // Show confirmation dialog
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Log Out'),
+        content: const Text('Are you sure you want to log out?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Log Out'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    // Selectively clear login-related preferences
+    await prefs.remove('logged_in');
+    await prefs.remove('email');
+    // Reset userID
+    DatabaseHandler.userID = -1;
 
     clearFields();
     setState(() {
@@ -54,17 +79,11 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
       dropdownItems = [];
     });
 
+    if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => const SignInScreen()),
       (Route<dynamic> route) => false,
     );
-    //.then((value) => reloadPage());
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getUserData();
   }
 
   Future<void> getUserData() async {
