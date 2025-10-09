@@ -190,11 +190,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     foregroundColor: const Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Text(
-                  'If you don\'t have an account, please sign up first.',
-                  style: TextStyle(color: Colors.black, fontSize: 16),
-                ),
                 const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: () {
@@ -204,7 +199,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     );
                   },
-                  child: const Text('Sign Up'),
+                  child: const Text('Create Account'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF280039),
                     foregroundColor: const Color.fromARGB(255, 255, 255, 255),
