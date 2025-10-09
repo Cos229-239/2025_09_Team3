@@ -117,7 +117,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     double amount = double.parse(addAmountController.text).abs();
     //make the amount auto negated
     amount = -amount.abs();
-    String caption = addCaptionController.text;
+    String caption = firstLetterCapital(addCaptionController.text).trim();
     String category = addCategoryController.text;
 
     await db.addSpending(userID, category, caption, amount);
