@@ -93,6 +93,9 @@ class DatabaseHandler {
     );
   }
 
+  Future<void> updateLogs(int userID, String category, String caption, double amount, String dateAndTime) async {
+    
+  }
 //For deleting categories
   Future<void> deleteCategory(int userId, String categoryName)
   async{
