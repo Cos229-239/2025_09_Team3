@@ -15,6 +15,14 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
+  bool _rememberMe = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,30 +62,84 @@ class _SignInScreenState extends State<SignInScreen> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
                     labelText: 'Email',
                     hintText: 'Enter your email',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color(0xFF3B0054),
+                        width: 3,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color.fromARGB(255, 117, 20, 158),
+                        width: 3,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 30),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
                     labelText: 'Password',
                     hintText: 'Enter your password',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color(0xFF3B0054),
+                        width: 3,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color.fromARGB(255, 117, 20, 158),
+                        width: 3,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Checkbox(
+                      value: _rememberMe,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _rememberMe = value ?? false;
+                        });
+                      },
+                      activeColor: const Color(0xFF280039),
+                    ),
+                    const Text(
+                      'Remember Me',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
                     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
                       showDialog<String>(
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
-                          title: const Text('Please enter all fields'),
+                          title: const Text('Please fill in all fields'),
                           actions: <Widget>[
                             TextButton(
                               onPressed: () => Navigator.pop(context, 'OK'),
@@ -88,23 +150,20 @@ class _SignInScreenState extends State<SignInScreen> {
                       );
                       return;
                     }
+
                     if (await db.verifyUser(
                       _emailController.text,
                       _passwordController.text,
                     )) {
                       await db.setUserIDVar(_emailController.text);
 
-                      // NEW: remember the session
-                      final prefs = await SharedPreferences.getInstance();
-                      await prefs.setBool('logged_in', true);
-                      await prefs.setString(
-                        'email',
-                        _emailController.text.trim(),
-                      );
-
-                      if (!mounted) {
-                        return;
+                      if (_rememberMe) {
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setBool('logged_in', true);
+                        await prefs.setString('email', _emailController.text.trim());
                       }
+
+                      if (!mounted) return;
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (context) => const HomeScreenState(),
