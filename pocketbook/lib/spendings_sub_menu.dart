@@ -24,6 +24,9 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
   List<_Txn> _allTxns = [];
   List<_Txn> _monthTxns = [];
 
+  // Budget Value
+  double? _budget;
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +44,11 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
         DatabaseHandler.userID,
         widget.categoryName,
       );
+      final catRows = await handler.getCategoriesFromName(
+        DatabaseHandler.userID,
+        widget.categoryName,
+      );
+      final budgetFromDb = (catRows.isNotEmpty) ? (catRows.first['amount'] as num?)?.toDouble() : null;
       final parsed = rows.map((r) {
         final whenRaw = r['date_time']?.toString() ?? '';
         DateTime? when;
@@ -61,6 +69,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
 
       if (!mounted) return;
       setState(() {
+        _budget = budgetFromDb ?? widget.totalAmount;
         _allTxns = parsed;
         _monthTxns = _filterForMonth(_focusedMonth, parsed);
         _loading = false;
@@ -68,6 +77,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
+        _budget = widget.totalAmount; 
         _allTxns = [];
         _monthTxns = [];
         _loading = false;
@@ -102,7 +112,16 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
     return '${_monthNames[d.month - 1]} ${d.year}';
   }
 
-  double get _monthTotal => _monthTxns.fold(0.0, (sum, t) => sum + t.amount);
+  // double get _monthTotal => _monthTxns.fold(0.0, (sum, t) => sum + t.amount);
+  double get _monthSpent {
+    double s = 0.0;
+    for (final t in _monthTxns) {
+      if (t.amount < 0) s += -t.amount;
+    }
+    return s;
+  }
+
+  String _fmt(double v) => '\$${v.toStringAsFixed(2)}';
 
   @override
   Widget build(BuildContext context) {
@@ -160,6 +179,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             
+                            // Spending Data
                             Text(
                               'Spending Data',
                               style: TextStyle(
@@ -171,6 +191,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
                             
                             const SizedBox(height: 8),
 
+                            // Category Name
                             Text(
                               widget.categoryName,
                               style: TextStyle(
@@ -183,13 +204,26 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
 
                             // Month total for this category
                             Text(
-                              '${_signFor(_monthTotal)}\$${_monthTotal.abs().toStringAsFixed(2)} in ${_monthLabel(_focusedMonth)}',
+                              // '${_signFor(_monthTotal)}\$${_monthTotal.abs().toStringAsFixed(2)} in ${_monthLabel(_focusedMonth)}',
+                              '${_fmt(_monthSpent)} spent / ${_fmt(_budget ?? widget.totalAmount)} budget',
                               style: TextStyle(
                                 color: onC.withValues(alpha: 0.9),
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
+
+                            const SizedBox(height: 4),
+                            
+                            // Focused Month
+                            Text(
+                              'in ${_monthLabel(_focusedMonth)}',
+                              style: TextStyle(
+                                color: onC.withValues(alpha: 0.85),
+                                fontSize: 14,
+                              ),
+                            ),
+
                           ],
                         ),
                       ),
