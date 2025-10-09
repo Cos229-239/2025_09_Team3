@@ -116,7 +116,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     if (addAmountController.text.isEmpty ||
         addCaptionController.text.isEmpty ||
         addCategoryController.text.isEmpty) {
-      // TODO: add alert message
+      
       showErrorSnackBar(context, 'Please fill in all fields');
       return;
     }
