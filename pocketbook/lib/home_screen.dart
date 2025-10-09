@@ -107,20 +107,18 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   }
 
   void _addSpending() async {
-    //Getting an error when amount is empty and trying to parse to double(JD)<-----------
+    if (addAmountController.text.isEmpty ||
+      addCaptionController.text.isEmpty ||
+      addCategoryController.text.isEmpty) {
+        
+      showErrorSnackBar(context, 'Please fill in all fields.');
+      return;
+    }
     double amount = double.parse(addAmountController.text).abs();
     //make the amount auto negated
     amount = -amount.abs();
     String caption = addCaptionController.text;
     String category = addCategoryController.text;
-
-    if (addAmountController.text.isEmpty ||
-        addCaptionController.text.isEmpty ||
-        addCategoryController.text.isEmpty) {
-      
-      showErrorSnackBar(context, 'Please fill in all fields.');
-      return;
-    }
 
     await db.addSpending(userID, category, caption, amount);
 
