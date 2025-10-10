@@ -22,7 +22,7 @@ class _AddDepositState extends State<AddDeposit> {
        backgroundColor: const Color.fromARGB(255, 200, 200, 200),
  
       appBar: AppBar(
-        title: const Text('Category Creation'),
+        title: const Text('Add Deposit'),
         centerTitle: true,
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
@@ -35,47 +35,84 @@ class _AddDepositState extends State<AddDeposit> {
           },
         ),
       ),
-      body: Center(
-        
-        child: Container(
-          width: 300,
-          height: 500,
-          decoration: BoxDecoration(
-            color: const Color(0xFFFF9B71),
-            border: Border.all(
-              color: const Color(0xFF280039),
-              width: 3,
-            ),
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                const Text(
-                  'Add a Deposit',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF280039),
+      body: CustomScrollView(
+        physics: ClampingScrollPhysics(),
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child:  Center(
+              child: Container(
+                width: 300,
+                height: 500,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFF9B71),
+                  border: Border.all(
+                    color: const Color(0xFF280039),
+                    width: 3,
                   ),
+                  borderRadius: BorderRadius.circular(30),
                 ),
-                const SizedBox(height: 30),
-                TextFormField(
-                  controller: _amountController,
-                  keyboardType: TextInputType.numberWithOptions(
-                    signed: false,
-                    decimal: true,
-                  ),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelText: 'Deposit Amount',
-                    hintText: 'Enter deposit amount',
-                     enabledBorder: OutlineInputBorder(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Add a Deposit',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF280039),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      TextFormField(
+                        controller: _amountController,
+                        keyboardType: TextInputType.numberWithOptions(
+                          signed: false,
+                          decimal: true,
+                        ),
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          filled: true,
+                          fillColor: Colors.white,
+                          labelText: 'Deposit Amount',
+                          hintText: 'Enter deposit amount',
+                          enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFF3B0054),
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Color.fromARGB(255, 117, 20, 158),
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Text(
+                        'Where is the deposit from?: ',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Color(0xFF280039),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      TextFormField(
+                        controller: _originController,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          filled: true,
+                          fillColor: Colors.white,
+                          labelText: 'Deposit Source',
+                          hintText: 'Enter deposit source',
+                          enabledBorder: OutlineInputBorder(
                               borderSide: const BorderSide(
                                 color: Color(0xFF3B0054),
                                 width: 3,
@@ -89,60 +126,30 @@ class _AddDepositState extends State<AddDeposit> {
                               ),
                               borderRadius: BorderRadius.circular(15),
                             ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                Text(
-                  'Where is the deposit from?: ',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Color(0xFF280039),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                 TextFormField(
-                  controller: _originController,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelText: 'Deposit Source',
-                    hintText: 'Enter deposit source',
-                     enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Color(0xFF3B0054),
-                          width: 3,
                         ),
-                        borderRadius: BorderRadius.circular(15),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Color.fromARGB(255, 117, 20, 158),
-                          width: 3,
+                    
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () async{
+                          // add functionality to add deposit to database
+                          _addDeposit();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey, 
+                          foregroundColor: Colors.black,
                         ),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
+                        
+                        child: const Text('Add Deposit')
+                      )
+                    ],
                   ),
                 ),
-               
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async{
-                    // add functionality to add deposit to database
-                    _addDeposit();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey, 
-                    foregroundColor: Colors.black,
-                  ),
-                  
-                  child: const Text('Add Deposit')
-                )
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
+          )
+        ]
+      )
     );
   }
 
@@ -183,22 +190,9 @@ class _AddDepositState extends State<AddDeposit> {
       if(mounted) {
         showErrorSnackBar(context, 'Deposit of \$${amount.toStringAsFixed(2)} from $origin added successfully!');
         Navigator.of(context).pop();
-        
       }
-
-        
-      
-     
-
     }catch(e){
      showErrorSnackBar(context, 'Invalid amount. Please enter a valid amount.');
-      
-
-
     }
-    
-    
-    
-    
   }
 }
