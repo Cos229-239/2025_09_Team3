@@ -162,12 +162,23 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
         //Top bar across screen
         title: Text('PocketBook'),
         centerTitle: true,
-        leading: IconButton(
+        leading: PopupMenuButton<String>(
           icon: Icon(Icons.settings),
-          tooltip: 'Setting Icon',
-          onPressed: () {
-            logout();
+          tooltip: 'User Settings',
+          onSelected: (String selection) {
+
+            switch (selection) {
+              case "" : return; // case [text] : function();
+            }
           },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>> [
+            const PopupMenuItem<String>(
+              value: "placeholder",
+              child: Text("placeholder"))
+          ],
+          // onPressed: () {
+          //   logout();
+          // },
         ),
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
