@@ -27,6 +27,7 @@ class _LogEditState extends State<LogEdit> {
     if (widget.selectedLog != null) {
       dateString = widget.selectedLog!.dateAndTime.replaceAll('\n', '\\');
       _captionController.text = widget.selectedLog!.caption;
+      _amountController.text =widget.selectedLog!.amount.abs().toStringAsFixed(2);
       _amountValue = widget.selectedLog!.amount;
       _dateController = DateFormat("MMM-dd-yyyy").parse(widget.selectedLog!.dateAndTime);
     }
@@ -35,6 +36,7 @@ class _LogEditState extends State<LogEdit> {
     }
   }
   final TextEditingController _captionController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
   double _amountValue = 0.0;
   DateTime _dateController = DateTime.now();
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
@@ -132,33 +134,53 @@ class _LogEditState extends State<LogEdit> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      Text(
-                        'Set amount: \$${_amountValue.abs().toStringAsFixed(2)}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Color(0xFF280039),
+                      TextFormField(
+                         controller: _amountController,
+                        keyboardType: TextInputType.numberWithOptions(
+                          signed: false,
+                          decimal: true,
                         ),
-                      ),
-                      Slider(
-                        value: (_amountValue.abs()),
-                        min: 0,
-                        max: 2000,
-                        divisions: 200,
-                        label: '${_amountValue.abs()}',
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          filled: true,
+                          fillColor: Colors.white,
+                          labelText: 'Amount',
+                          hintText: 'Enter amount',
+                          enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFF3B0054),
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Color.fromARGB(255, 117, 20, 158),
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                        ),
                         onChanged: (value) {
                           setState(() {
+                            try{
+                              double parsed =double.parse(value);
                               if (!isDeposit)
                               {
-                                _amountValue = -value;
+                                _amountValue = -parsed.abs();
                               }
                               else
                               {
-                                _amountValue = value;
+                                _amountValue = parsed.abs();
                               }
+                            }catch(e){
+                              _amountValue = 0.0;
+                            }
                             
                           });
                         },
                       ),
+                      
                       SizedBox(height: 30),
                       // calendar -- only change date
                       ElevatedButton(
