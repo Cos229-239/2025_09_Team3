@@ -279,6 +279,7 @@ class _LogEditState extends State<LogEdit> {
 
                           if (deleteConfirm == true) {
                           await db.deleteLog(
+                           //Update functionality to update account balance when deleting a log
                             DatabaseHandler.userID, widget.selectedLog!.caption, widget.selectedLog!.dateAndTime);
                             Navigator.of(context).pop();
                           
@@ -288,7 +289,7 @@ class _LogEditState extends State<LogEdit> {
                           backgroundColor: const Color.fromARGB(255, 255, 17, 0), 
                           foregroundColor: Colors.white,
                         ),
-                        child: const Text('Delete Category'),
+                        child: const Text('Delete Log'),
                       )
                     ],
                   ),
