@@ -125,40 +125,56 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
             ),
           ),
           SizedBox(height: 10),
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async => {
-              if (_oldEmailController.text.isEmpty || _newEmailController.text.isEmpty || _passwordController.text.isEmpty)
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please enter all fields')),
-                )
-              }
-              else if (await db.userExists(_newEmailController.text))
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Email is already in use')),
-                )
-              }
-              else if (await db.verifyUser(_oldEmailController.text, _passwordController.text))
-              {
-                db.updateEmail(userID, _newEmailController.text),
-                Navigator.pop(context, true),
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Email updated')),
-                )
-              }
-              else
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Invalid email or password')),
-                )
-              }
-            },
-            child: const Text('Confirm'),
+          Row(
+            children: [
+              Spacer(),
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async => {
+                  if (_oldEmailController.text.isEmpty ||
+                      _newEmailController.text.isEmpty ||
+                      _passwordController.text.isEmpty)
+                    {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please enter all fields'),
+                        ),
+                      ),
+                    }
+                  else if (await db.userExists(_newEmailController.text))
+                    {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Email is already in use'),
+                        ),
+                      ),
+                    }
+                  else if (await db.verifyUser(
+                    _oldEmailController.text,
+                    _passwordController.text,
+                  ))
+                    {
+                      db.updateEmail(userID, _newEmailController.text),
+                      Navigator.pop(context, true),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Email updated')),
+                      ),
+                    }
+                  else
+                    {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Invalid email or password'),
+                        ),
+                      ),
+                    },
+                },
+                child: const Text('Confirm'),
+              ),
+            ],
           ),
         ],
       ),
@@ -170,8 +186,10 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   }
 
   void changePassword() async {
-    final TextEditingController _oldPasswordController = TextEditingController();
-    final TextEditingController _newPasswordController = TextEditingController();
+    final TextEditingController _oldPasswordController =
+        TextEditingController();
+    final TextEditingController _newPasswordController =
+        TextEditingController();
     final TextEditingController _confirmNewPassword = TextEditingController();
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -250,46 +268,66 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
             ),
           ),
           SizedBox(height: 10),
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async => {
-              if (_oldPasswordController.text.isEmpty || _newPasswordController.text.isEmpty || _confirmNewPassword.text.isEmpty)
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please enter all fields')),
-                )
-              }
-              else if (!await db.verifyPassword(userID, _oldPasswordController.text))
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Current password is incorrect')),
-                )
-              }
-              else if (_oldPasswordController.text == _newPasswordController.text)
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('New and old passwords cannot match')),
-                )
-              }
-              else if (_newPasswordController.text != _confirmNewPassword.text)
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('New passwords do not match')),
-                )
-              }
-              else
-              {
-                db.updatePassword(userID, _newPasswordController.text),
-                Navigator.pop(context, true),
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Password updated')),
-                )
-              }
-            },
-            child: const Text('Confirm'),
+          Row(
+            children: [
+              Spacer(),
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async => {
+                  if (_oldPasswordController.text.isEmpty ||
+                      _newPasswordController.text.isEmpty ||
+                      _confirmNewPassword.text.isEmpty)
+                    {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please enter all fields'),
+                        ),
+                      ),
+                    }
+                  else if (!await db.verifyPassword(
+                    userID,
+                    _oldPasswordController.text,
+                  ))
+                    {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Current password is incorrect'),
+                        ),
+                      ),
+                    }
+                  else if (_oldPasswordController.text ==
+                      _newPasswordController.text)
+                    {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('New and old passwords cannot match'),
+                        ),
+                      ),
+                    }
+                  else if (_newPasswordController.text !=
+                      _confirmNewPassword.text)
+                    {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('New passwords do not match'),
+                        ),
+                      ),
+                    }
+                  else
+                    {
+                      db.updatePassword(userID, _newPasswordController.text),
+                      Navigator.pop(context, true),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Password updated')),
+                      ),
+                    },
+                },
+                child: const Text('Confirm'),
+              ),
+            ],
           ),
         ],
       ),
@@ -306,7 +344,9 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Reset Log'),
-        content: const Text('Are you sure you want reset your logs? This action cannot be undone.\n\nEnter password to confirm'),
+        content: const Text(
+          'Are you sure you want reset your logs? This action cannot be undone.\n\nEnter password to confirm',
+        ),
         actions: <Widget>[
           TextField(
             controller: _passwordController,
@@ -332,25 +372,27 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
             ),
           ),
           SizedBox(height: 10),
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async => {
-              if (await db.verifyPassword(userID, _passwordController.text))
-              {
-                db.deleteAllLogs(userID),
-                Navigator.pop(context, true)
-              }
-              else
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Incorrect Passoword')),
-                )
-              }
-            },
-            child: const Text('Confirm'),
+          Row(
+            children: [
+              Spacer(),
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async => {
+                  if (await db.verifyPassword(userID, _passwordController.text))
+                    {db.deleteAllLogs(userID), Navigator.pop(context, true)}
+                  else
+                    {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Incorrect Password')),
+                      ),
+                    },
+                },
+                child: const Text('Confirm'),
+              ),
+            ],
           ),
         ],
       ),
@@ -364,9 +406,11 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     final TextEditingController _passwordController = TextEditingController();
     final bool? confirm = await showDialog<bool>(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
+      builder: (context) => AlertDialog(
         title: const Text('Reset Account'),
-        content: const Text('Are you sure you want reset your account? This action cannot be undone.\n\nEnter password to confirm'),
+        content: const Text(
+          'Are you sure you want reset your account? This action cannot be undone.\n\nEnter password to confirm',
+        ),
         actions: <Widget>[
           TextField(
             controller: _passwordController,
@@ -392,27 +436,32 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
             ),
           ),
           SizedBox(height: 10),
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async => {
-              if (await db.verifyPassword(userID, _passwordController.text))
-              {
-                db.deleteAllFromUser(userID),
-                db.setUserBalance(userID, 0),
-                Navigator.pop(context, true),
-                reloadPage()
-              }
-              else
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Incorrect Passoword')),
-                )
-              }
-            },
-            child: const Text('Confirm'),
+          Row(
+            children: [
+              Spacer(),
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async => {
+                  if (await db.verifyPassword(userID, _passwordController.text))
+                    {
+                      db.deleteAllFromUser(userID),
+                      db.setUserBalance(userID, 0),
+                      Navigator.pop(context, true),
+                      reloadPage(),
+                    }
+                  else
+                    {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Incorrect Password')),
+                      ),
+                    },
+                },
+                child: const Text('Confirm'),
+              ),
+            ],
           ),
         ],
       ),
@@ -420,7 +469,6 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
 
     if (confirm != true) return;
   }
-
 
   void logout() async {
     // Show confirmation dialog
@@ -510,9 +558,8 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
 
   void _addSpending() async {
     if (addAmountController.text.isEmpty ||
-      addCaptionController.text.isEmpty ||
-      addCategoryController.text.isEmpty) {
-
+        addCaptionController.text.isEmpty ||
+        addCategoryController.text.isEmpty) {
       showErrorSnackBar(context, 'Please fill in all fields.');
       return;
     }
@@ -526,8 +573,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
 
     double theBalance = (balance ?? 0.0) + amount;
     await db.setUserBalance(userID, theBalance);
-   
-    
+
     clearFields();
     getUserData();
   }
@@ -545,38 +591,42 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
           icon: Icon(Icons.settings),
           tooltip: 'User Settings',
           onSelected: (String selection) {
-
             switch (selection) {
-              case "ChangeEmail" : // updateUser
+              case "ChangeEmail": // updateUser
                 changeEmail();
-              case "ChangePass" : // updateUser
+              case "ChangePass": // updateUser
                 changePassword();
-              case "ResetLog" : // deleteLog
+              case "ResetLog": // deleteLog
                 resetLog();
-              case "ResetAcc" : // deleteAllFromUser
+              case "ResetAcc": // deleteAllFromUser
                 resetAccount();
-              case "LogOut" : 
+              case "LogOut":
                 logout();
             }
           },
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>> [
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
             const PopupMenuItem<String>(
               value: "ChangeEmail",
-              child: Text("Change Email")),
+              child: Text("Change Email"),
+            ),
             const PopupMenuItem<String>(
               value: "ChangePass",
-              child: Text("Change Password")),
+              child: Text("Change Password"),
+            ),
             const PopupMenuDivider(),
             const PopupMenuItem<String>(
               value: "ResetLog",
-              child: Text("Reset Log")),
+              child: Text("Reset Log"),
+            ),
             const PopupMenuItem<String>(
               value: "ResetAcc",
-              child: Text("Reset Account")),
+              child: Text("Reset Account"),
+            ),
             const PopupMenuDivider(),
             const PopupMenuItem<String>(
               value: "LogOut",
-              child: Text("Log Out")),
+              child: Text("Log Out"),
+            ),
           ],
         ),
         backgroundColor: const Color(0xFF280039),
@@ -617,7 +667,10 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                         height: 100,
                         decoration: BoxDecoration(
                           color: const Color(0xFFFF9B71),
-                          border: Border.all(color: Color(0xFF3B0054), width: 3),
+                          border: Border.all(
+                            color: Color(0xFF3B0054),
+                            width: 3,
+                          ),
                           borderRadius: BorderRadius.circular(7),
                         ),
                         child: Center(
@@ -651,7 +704,10 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                         //Spending section content
                         decoration: BoxDecoration(
                           color: const Color(0xFFFF9B71),
-                          border: Border.all(color: Color(0xFF3B0054), width: 3),
+                          border: Border.all(
+                            color: Color(0xFF3B0054),
+                            width: 3,
+                          ),
                           borderRadius: BorderRadius.circular(7),
                         ),
                         child: Column(
@@ -771,8 +827,8 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                                   onPressed: () {
                                     //add date picker functionality
                                   },
-                              ),
-                                
+                                ),
+
                                 IconButton.filled(
                                   onPressed: () {
                                     _addSpending();
@@ -800,9 +856,11 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                         children: [
                           IconButton.filled(
                             onPressed: () {
-                              Navigator.of(context).push(
+                              Navigator.of(context)
+                                  .push(
                                     MaterialPageRoute(
-                                      builder: (context) => const CategoriesScreen(),
+                                      builder: (context) =>
+                                          const CategoriesScreen(),
                                     ),
                                   )
                                   .then((value) => reloadPage());
@@ -813,7 +871,10 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                               backgroundColor: Color(0xFFFF9B71),
                             ),
                           ),
-                          Text('Categories', style: TextStyle(color: Colors.white)),
+                          Text(
+                            'Categories',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ],
                       ),
                     ),
@@ -826,7 +887,8 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                               Navigator.of(context)
                                   .push(
                                     MaterialPageRoute(
-                                      builder: (context) => const SpendingsScreen(),
+                                      builder: (context) =>
+                                          const SpendingsScreen(),
                                     ),
                                   )
                                   .then((value) => reloadPage());
@@ -837,7 +899,10 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                               backgroundColor: Color(0xFFFF9B71),
                             ),
                           ),
-                          Text('Spending', style: TextStyle(color: Colors.white)),
+                          Text(
+                            'Spending',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ],
                       ),
                     ),
@@ -870,8 +935,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                       child: Column(
                         children: [
                           IconButton.filled(
-                            onPressed: () async{
-                              
+                            onPressed: () async {
                               await Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => const AddDeposit(),
@@ -885,7 +949,10 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                               backgroundColor: Color(0xFFFF9B71),
                             ),
                           ),
-                          Text('Deposit', style: TextStyle(color: Colors.white)),
+                          Text(
+                            'Deposit',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ],
                       ),
                     ),
@@ -894,9 +961,8 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                 Padding(padding: EdgeInsetsGeometry.all(10)),
               ],
             ),
-          )
+          ),
         ],
-          
       ),
     );
   }
