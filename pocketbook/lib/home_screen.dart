@@ -45,8 +45,32 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   }
 
   void logout() async {
+    // Show confirmation dialog
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Log Out'),
+        content: const Text('Are you sure you want to log out?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Log Out'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
     final prefs = await SharedPreferences.getInstance();
+    // Selectively clear login-related preferences
     await prefs.clear();
+    // Reset userID
+    DatabaseHandler.userID = -1;
 
     clearFields();
     setState(() {
@@ -56,11 +80,11 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
       dropdownItems = [];
     });
 
+    if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => const SignInScreen()),
       (Route<dynamic> route) => false,
     );
-    //.then((value) => reloadPage());
   }
 
   @override
@@ -110,14 +134,14 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     if (addAmountController.text.isEmpty ||
       addCaptionController.text.isEmpty ||
       addCategoryController.text.isEmpty) {
-        
+
       showErrorSnackBar(context, 'Please fill in all fields.');
       return;
     }
     double amount = double.parse(addAmountController.text).abs();
     //make the amount auto negated
     amount = -amount.abs();
-    String caption = addCaptionController.text;
+    String caption = firstLetterCapital(addCaptionController.text).trim();
     String category = addCategoryController.text;
 
     await db.addSpending(userID, category, caption, amount);
@@ -149,312 +173,320 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
         foregroundColor: Colors.white,
         elevation: 40,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(30), //Welcome Message
-            child: Text(
-              'Hi, $userName!',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 10,
-            ), //Balance section outer border
-            child: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Container(
-                  //Balance section content
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFF9B71),
-                    border: Border.all(color: Color(0xFF3B0054), width: 3),
-                    borderRadius: BorderRadius.circular(7),
+      body: CustomScrollView(
+        physics: ClampingScrollPhysics(),
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(30), //Welcome Message
+                  child: Text(
+                    'Hi, $userName!',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10,
+                  ), //Balance section outer border
                   child: Center(
-                    child: Text(
-                      'Account Balance\n\$${balance?.toStringAsFixed(2) ?? '0.00'}',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 0, 0, 0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white, width: 3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Container(
+                        //Balance section content
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFF9B71),
+                          border: Border.all(color: Color(0xFF3B0054), width: 3),
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Account Balance\n\$${balance?.toStringAsFixed(2) ?? '0.00'}',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 20,
-            ), //Spending Section padding
-            child: Center(
-              child: Container(
-                //spending section outer border
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Container(
-                  //Spending section content
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFF9B71),
-                    border: Border.all(color: Color(0xFF3B0054), width: 3),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 15),
-                        child: Text(
-                          'Add Spending',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 0, 0, 0),
-                          ),
-                        ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 20,
+                  ), //Spending Section padding
+                  child: Center(
+                    child: Container(
+                      //spending section outer border
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white, width: 3),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-
-                      Padding(
-                        padding: EdgeInsetsGeometry.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
+                      child: Container(
+                        //Spending section content
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFF9B71),
+                          border: Border.all(color: Color(0xFF3B0054), width: 3),
+                          borderRadius: BorderRadius.circular(7),
                         ),
-                        child: TextField(
-                          controller: addAmountController,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'^\d+\.?\d{0,2}'),
-                            ), //Not fully sure what this means, but it should lock the $ amount to 2 decimal places
-                          ],
-                          keyboardType: TextInputType.numberWithOptions(
-                            signed: false,
-                            decimal: true,
-                          ),
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Amount',
-                            //prefixText: '\$',
-                            filled: true,
-                            fillColor: Colors.white,
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color(0xFF3B0054),
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(255, 117, 20, 158),
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsetsGeometry.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        child: TextField(
-                          controller: addCaptionController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Caption',
-                            filled: true,
-                            fillColor: Colors.white,
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color(0xFF3B0054),
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(255, 117, 20, 158),
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                        ),
-                      ),
-                      //DropdownMenu<>(),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsetsGeometry.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-
-                            child: DropdownMenu<String>(
-                              controller: addCategoryController,
-                              width: 200,
-                              hintText: "Category",
-                              dropdownMenuEntries: dropdownItems,
-                              inputDecorationTheme: InputDecorationTheme(
-                                filled: true,
-                                fillColor: Colors.white,
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color(0xFF3B0054),
-                                    width: 3,
-                                  ),
-                                  borderRadius: BorderRadius.circular(15),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              child: Text(
+                                'Add Spending',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 0, 0, 0),
                                 ),
                               ),
                             ),
-                          ),
-                          //calendar button for adding date if not today
-                          IconButton.filled(
-                            icon: const Icon(Icons.calendar_today),
-                            onPressed: () {
-                              //add date picker functionality
-                            },
-                         ),
-                          
-                          IconButton.filled(
-                            onPressed: () {
-                              _addSpending();
-                            },
-                            icon: Icon(Icons.add),
-                            color: Colors.white,
-                            //style: IconButton.styleFrom(backgroundColor: Color(0xFF3B0054))
-                          ),
-                        ],
+
+                            Padding(
+                              padding: EdgeInsetsGeometry.symmetric(
+                                horizontal: 10,
+                                vertical: 5,
+                              ),
+                              child: TextField(
+                                controller: addAmountController,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d+\.?\d{0,2}'),
+                                  ), //Not fully sure what this means, but it should lock the $ amount to 2 decimal places
+                                ],
+                                keyboardType: TextInputType.numberWithOptions(
+                                  signed: false,
+                                  decimal: true,
+                                ),
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Amount',
+                                  //prefixText: '\$',
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF3B0054),
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color.fromARGB(255, 117, 20, 158),
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsetsGeometry.symmetric(
+                                horizontal: 10,
+                                vertical: 5,
+                              ),
+                              child: TextField(
+                                controller: addCaptionController,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Caption',
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF3B0054),
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color.fromARGB(255, 117, 20, 158),
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            //DropdownMenu<>(),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsetsGeometry.symmetric(
+                                    horizontal: 10,
+                                    vertical: 5,
+                                  ),
+
+                                  child: DropdownMenu<String>(
+                                    controller: addCategoryController,
+                                    width: 200,
+                                    hintText: "Category",
+                                    dropdownMenuEntries: dropdownItems,
+                                    inputDecorationTheme: InputDecorationTheme(
+                                      filled: true,
+                                      fillColor: Colors.white,
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Color(0xFF3B0054),
+                                          width: 3,
+                                        ),
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                //calendar button for adding date if not today
+                                IconButton.filled(
+                                  icon: const Icon(Icons.calendar_today),
+                                  onPressed: () {
+                                    //add date picker functionality
+                                  },
+                              ),
+                                
+                                IconButton.filled(
+                                  onPressed: () {
+                                    _addSpending();
+                                  },
+                                  icon: Icon(Icons.add),
+                                  color: Colors.white,
+                                  //style: IconButton.styleFrom(backgroundColor: Color(0xFF3B0054))
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
-          Expanded(child: Container()),
-          Row(
-            children: [
-              //Navigation buttons
-              Expanded(child: Container()),
-              SizedBox(
-                width: 80,
-                child: Column(
+                Expanded(child: Container()),
+                Row(
                   children: [
-                    IconButton.filled(
-                      onPressed: () {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (context) => const CategoriesScreen(),
-                              ),
-                            )
-                            .then((value) => reloadPage());
-                      }, // Added navigation to the categories button
-                      icon: Icon(Icons.view_day),
-                      style: IconButton.styleFrom(
-                        fixedSize: Size(60, 60),
-                        backgroundColor: Color(0xFFFF9B71),
-                      ),
-                    ),
-                    Text('Categories', style: TextStyle(color: Colors.white)),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: 80,
-                child: Column(
-                  children: [
-                    IconButton.filled(
-                      onPressed: () {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (context) => const SpendingsScreen(),
-                              ),
-                            )
-                            .then((value) => reloadPage());
-                      },
-                      icon: Icon(Icons.pie_chart),
-                      style: IconButton.styleFrom(
-                        fixedSize: Size(60, 60),
-                        backgroundColor: Color(0xFFFF9B71),
-                      ),
-                    ),
-                    Text('Spending', style: TextStyle(color: Colors.white)),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: 80,
-                child: Column(
-                  children: [
-                    IconButton.filled(
-                      onPressed: () {
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute(
-                                builder: (context) => const LogScreen(),
-                              ),
-                            )
-                            .then((value) => reloadPage());
-                      },
-                      icon: Icon(Icons.attach_money),
-                      style: IconButton.styleFrom(
-                        fixedSize: Size(60, 60),
-                        backgroundColor: Color(0xFFFF9B71),
-                      ),
-                    ),
-                    Text('Log', style: TextStyle(color: Colors.white)),
-                  ],
-                ),
-              ),
-               SizedBox(
-                width: 80,
-                child: Column(
-                  children: [
-                    IconButton.filled(
-                      onPressed: () async{
-                        
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const AddDeposit(),
+                    //Navigation buttons
+                    Expanded(child: Container()),
+                    SizedBox(
+                      width: 80,
+                      child: Column(
+                        children: [
+                          IconButton.filled(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => const CategoriesScreen(),
+                                    ),
+                                  )
+                                  .then((value) => reloadPage());
+                            }, // Added navigation to the categories button
+                            icon: Icon(Icons.view_day),
+                            style: IconButton.styleFrom(
+                              fixedSize: Size(60, 60),
+                              backgroundColor: Color(0xFFFF9B71),
+                            ),
                           ),
-                        );
-                        getUserData();
-                      },
-                      icon: Icon(Icons.add),
-                      style: IconButton.styleFrom(
-                        fixedSize: Size(60, 60),
-                        backgroundColor: Color(0xFFFF9B71),
+                          Text('Categories', style: TextStyle(color: Colors.white)),
+                        ],
                       ),
                     ),
-                    Text('Deposit', style: TextStyle(color: Colors.white)),
+                    SizedBox(
+                      width: 80,
+                      child: Column(
+                        children: [
+                          IconButton.filled(
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .push(
+                                    MaterialPageRoute(
+                                      builder: (context) => const SpendingsScreen(),
+                                    ),
+                                  )
+                                  .then((value) => reloadPage());
+                            },
+                            icon: Icon(Icons.pie_chart),
+                            style: IconButton.styleFrom(
+                              fixedSize: Size(60, 60),
+                              backgroundColor: Color(0xFFFF9B71),
+                            ),
+                          ),
+                          Text('Spending', style: TextStyle(color: Colors.white)),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      width: 80,
+                      child: Column(
+                        children: [
+                          IconButton.filled(
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .push(
+                                    MaterialPageRoute(
+                                      builder: (context) => const LogScreen(),
+                                    ),
+                                  )
+                                  .then((value) => reloadPage());
+                            },
+                            icon: Icon(Icons.attach_money),
+                            style: IconButton.styleFrom(
+                              fixedSize: Size(60, 60),
+                              backgroundColor: Color(0xFFFF9B71),
+                            ),
+                          ),
+                          Text('Log', style: TextStyle(color: Colors.white)),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      width: 80,
+                      child: Column(
+                        children: [
+                          IconButton.filled(
+                            onPressed: () async{
+                              
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => const AddDeposit(),
+                                ),
+                              );
+                              getUserData();
+                            },
+                            icon: Icon(Icons.add),
+                            style: IconButton.styleFrom(
+                              fixedSize: Size(60, 60),
+                              backgroundColor: Color(0xFFFF9B71),
+                            ),
+                          ),
+                          Text('Deposit', style: TextStyle(color: Colors.white)),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          Padding(padding: EdgeInsetsGeometry.all(10)),
+                Padding(padding: EdgeInsetsGeometry.all(10)),
+              ],
+            ),
+          )
         ],
+          
       ),
     );
   }
