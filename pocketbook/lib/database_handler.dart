@@ -28,7 +28,6 @@ class DatabaseHandler {
 
   void manualUpdate() async {
     //To be manually edited and run, only if needed
-    
   }
 
   Future<void> addUser(
@@ -49,10 +48,11 @@ class DatabaseHandler {
   }
 
   Future<void> setUserBalance(int userID, double amount) async {
-    db.update('user_data', 
-    {'account_balance': amount},
-    where: 'userID = ?',
-    whereArgs: [userID],
+    db.update(
+      'user_data',
+      {'account_balance': amount},
+      where: 'userID = ?',
+      whereArgs: [userID],
     );
   }
 
@@ -69,6 +69,26 @@ class DatabaseHandler {
       'amount': amount,
       'date_time': await getCurrentTime(),
     });
+  }
+
+  Future<void> updateEmail(
+    int userID,
+    String email,
+  ) async {
+    await db.update('user_data', 
+      {'email': email,},
+      where: 'userID = ?',
+      whereArgs: [userID]
+    );
+  }
+
+  Future<void> updatePassword(int userID, String password) async {
+    final String salt = BCrypt.gensalt();
+    await db.update('user_data', 
+      {'password_hash': BCrypt.hashpw(password, salt), 'hash_salt': salt,}, //*** make sure updating the salt but not the password doesn't cause issues
+      where: 'userID = ?',
+      whereArgs: [userID]
+    );
   }
 
   //For updating edited categories
@@ -94,21 +114,34 @@ class DatabaseHandler {
     );
   }
 
-  Future<void> updateLogs(int userID, String category, String caption, String newCaption, double amount, String dateAndTime, String newDateAndTime) async {
+  Future<void> updateLogs(
+    int userID,
+    String category,
+    String caption,
+    String newCaption,
+    double amount,
+    String dateAndTime,
+    String newDateAndTime,
+  ) async {
     await db.update(
       'spending_logs',
-      {'caption': newCaption, 'amount' : amount, 'date_time' : newDateAndTime},
-      where: 'userID = ? AND category = ? AND date_time = ? AND caption IS NOT NULL',
+      {'caption': newCaption, 'amount': amount, 'date_time': newDateAndTime},
+      where:
+          'userID = ? AND category = ? AND date_time = ? AND caption IS NOT NULL',
       whereArgs: [userID, category, dateAndTime],
     );
   }
-//For deleting categories
-  Future<void> deleteCategory(int userId, String categoryName)
-  async{
+
+  //For deleting categories
+  Future<void> deleteAllFromUser(int userID) async {
+    await db.delete('spending_logs', where: 'userID = ?', whereArgs: [userID]);
+  }
+
+  Future<void> deleteCategory(int userId, String categoryName) async {
     await db.delete(
       'spending_logs',
       where: 'userID = ? AND category = ?',
-      whereArgs: [userId, categoryName]
+      whereArgs: [userId, categoryName],
     );
   }
 
@@ -116,7 +149,14 @@ class DatabaseHandler {
     await db.delete(
       'spending_logs',
       where: 'userID = ? AND caption = ? AND date_time = ?',
-      whereArgs: [userID, caption, dateAndTime]
+      whereArgs: [userID, caption, dateAndTime],
+    );
+  }
+  Future<void> deleteAllLogs(int userID) async {
+    await db.delete(
+      'spending_logs',
+      where: 'userID = ? AND caption IS NOT NULL',
+      whereArgs: [userID],
     );
   }
 
@@ -163,13 +203,15 @@ class DatabaseHandler {
       whereArgs: [userID],
     );
   }
-  
-  Future<List<Map<String, Object?>>> getCategoriesFromName(int userID, String category) async {
+
+  Future<List<Map<String, Object?>>> getCategoriesFromName(
+    int userID,
+    String category,
+  ) async {
     return db.query(
       'spending_logs',
       where: 'userID = ? AND category = ? AND caption IS NULL',
       whereArgs: [userID, category],
-      
     );
   }
 
@@ -185,9 +227,7 @@ class DatabaseHandler {
     );
   }
 
-  Future<List<Map<String, Object?>>> getSpendingLog(
-    int userID,
-  ) async {
+  Future<List<Map<String, Object?>>> getSpendingLog(int userID) async {
     return db.query(
       'spending_logs',
       where: 'userID = ? AND caption IS NOT NULL',
@@ -204,11 +244,32 @@ class DatabaseHandler {
     );
 
     if (user.isNotEmpty &&
-        user.first["password_hash"] ==
-            BCrypt.hashpw(
-              password,
-              user.first["hash_salt"] as String,
-            )) // if email is registered, and if hashes match
+      user.first["password_hash"] ==
+        BCrypt.hashpw(
+          password,
+          user.first["hash_salt"] as String,
+        )
+      ) // if email is registered, and if hashes match
+    {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> verifyPassword(int userID, String password) async {
+    final user = await db.query(
+      'user_data',
+      where: 'userID = ?',
+      whereArgs: [userID],
+    );
+
+    if (user.isNotEmpty &&
+      user.first["password_hash"] ==
+        BCrypt.hashpw(
+          password,
+          user.first["hash_salt"] as String,
+        )
+      ) // if ID exists, and if hashes match
     {
       return true;
     }
@@ -218,11 +279,12 @@ class DatabaseHandler {
   String getCurrentTime() {
     DateTime now = DateTime.now();
     DateFormat formatter = DateFormat("MMM-dd-yyyy\nhh:mm:ss a");
-    
+
     return formatter.format(now);
   }
 
-  Future<bool> userExists(String email) async { // FUNCTION HAS NOT BEEN TESTED
+  Future<bool> userExists(String email) async {
+    // FUNCTION HAS NOT BEEN TESTED
     List<Map<String, Object?>> user = await getUserDataFromEmail(email);
 
     if (user.isEmpty) {
@@ -231,8 +293,12 @@ class DatabaseHandler {
     return true;
   }
 
-  Future<bool> categoryExists(String category) async { // FUNCTION HAS NOT BEEN TESTED
-    List<Map<String, Object?>> categoryList = await getCategoriesFromName(userID, category);
+  Future<bool> categoryExists(String category) async {
+    // FUNCTION HAS NOT BEEN TESTED
+    List<Map<String, Object?>> categoryList = await getCategoriesFromName(
+      userID,
+      category,
+    );
 
     if (categoryList.isEmpty) {
       return false;

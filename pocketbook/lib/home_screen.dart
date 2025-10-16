@@ -44,6 +44,384 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     addCategoryController.clear();
   }
 
+  void changeEmail() async {
+    final TextEditingController _oldEmailController = TextEditingController();
+    final TextEditingController _newEmailController = TextEditingController();
+    final TextEditingController _passwordController = TextEditingController();
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Change Email'),
+        actions: <Widget>[
+          TextField(
+            controller: _oldEmailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              labelText: 'Current Email',
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color(0xFF3B0054),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 117, 20, 158),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          TextField(
+            controller: _newEmailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              labelText: 'New Email',
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color(0xFF3B0054),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 117, 20, 158),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          TextField(
+            controller: _passwordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'Password',
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color(0xFF3B0054),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 117, 20, 158),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async => {
+              if (_oldEmailController.text.isEmpty || _newEmailController.text.isEmpty || _passwordController.text.isEmpty)
+              {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please enter all fields')),
+                )
+              }
+              else if (await db.userExists(_newEmailController.text))
+              {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Email is already in use')),
+                )
+              }
+              else if (await db.verifyUser(_oldEmailController.text, _passwordController.text))
+              {
+                db.updateEmail(userID, _newEmailController.text),
+                Navigator.pop(context, true),
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Email updated')),
+                )
+              }
+              else
+              {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Invalid email or password')),
+                )
+              }
+            },
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    //verify new email is available, and that old email and password match
+  }
+
+  void changePassword() async {
+    final TextEditingController _oldPasswordController = TextEditingController();
+    final TextEditingController _newPasswordController = TextEditingController();
+    final TextEditingController _confirmNewPassword = TextEditingController();
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Change Password'),
+        actions: <Widget>[
+          TextField(
+            controller: _oldPasswordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'Current Password',
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color(0xFF3B0054),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 117, 20, 158),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          TextField(
+            controller: _newPasswordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'New Password',
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color(0xFF3B0054),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 117, 20, 158),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          TextField(
+            controller: _confirmNewPassword,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'Confirm New Password',
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color(0xFF3B0054),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 117, 20, 158),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async => {
+              if (_oldPasswordController.text.isEmpty || _newPasswordController.text.isEmpty || _confirmNewPassword.text.isEmpty)
+              {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please enter all fields')),
+                )
+              }
+              else if (!await db.verifyPassword(userID, _oldPasswordController.text))
+              {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Current password is incorrect')),
+                )
+              }
+              else if (_oldPasswordController.text == _newPasswordController.text)
+              {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('New and old passwords cannot match')),
+                )
+              }
+              else if (_newPasswordController.text != _confirmNewPassword.text)
+              {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('New passwords do not match')),
+                )
+              }
+              else
+              {
+                db.updatePassword(userID, _newPasswordController.text),
+                Navigator.pop(context, true),
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Password updated')),
+                )
+              }
+            },
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+    // Have user enter password to confirm
+  }
+
+  void resetLog() async {
+    // Show confirmation dialog
+    final TextEditingController _passwordController = TextEditingController();
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Reset Log'),
+        content: const Text('Are you sure you want reset your logs? This action cannot be undone.\n\nEnter password to confirm'),
+        actions: <Widget>[
+          TextField(
+            controller: _passwordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'Password',
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color(0xFF3B0054),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 117, 20, 158),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async => {
+              if (await db.verifyPassword(userID, _passwordController.text))
+              {
+                db.deleteAllLogs(userID),
+                Navigator.pop(context, true)
+              }
+              else
+              {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Incorrect Passoword')),
+                )
+              }
+            },
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+  }
+
+  void resetAccount() async {
+    // Show confirmation dialog
+    final TextEditingController _passwordController = TextEditingController();
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Reset Account'),
+        content: const Text('Are you sure you want reset your account? This action cannot be undone.\n\nEnter password to confirm'),
+        actions: <Widget>[
+          TextField(
+            controller: _passwordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'Password',
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color(0xFF3B0054),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Color.fromARGB(255, 117, 20, 158),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async => {
+              if (await db.verifyPassword(userID, _passwordController.text))
+              {
+                db.deleteAllFromUser(userID),
+                db.setUserBalance(userID, 0),
+                Navigator.pop(context, true),
+                reloadPage()
+              }
+              else
+              {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Incorrect Passoword')),
+                )
+              }
+            },
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+  }
+
+
   void logout() async {
     // Show confirmation dialog
     final bool? confirm = await showDialog<bool>(
@@ -163,22 +541,43 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
         title: Text('PocketBook'),
         centerTitle: true,
         leading: PopupMenuButton<String>(
+          position: PopupMenuPosition.under,
           icon: Icon(Icons.settings),
           tooltip: 'User Settings',
           onSelected: (String selection) {
 
             switch (selection) {
-              case "" : return; // case [text] : function();
+              case "ChangeEmail" : // updateUser
+                changeEmail();
+              case "ChangePass" : // updateUser
+                changePassword();
+              case "ResetLog" : // deleteLog
+                resetLog();
+              case "ResetAcc" : // deleteAllFromUser
+                resetAccount();
+              case "LogOut" : 
+                logout();
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>> [
             const PopupMenuItem<String>(
-              value: "placeholder",
-              child: Text("placeholder"))
+              value: "ChangeEmail",
+              child: Text("Change Email")),
+            const PopupMenuItem<String>(
+              value: "ChangePass",
+              child: Text("Change Password")),
+            const PopupMenuDivider(),
+            const PopupMenuItem<String>(
+              value: "ResetLog",
+              child: Text("Reset Log")),
+            const PopupMenuItem<String>(
+              value: "ResetAcc",
+              child: Text("Reset Account")),
+            const PopupMenuDivider(),
+            const PopupMenuItem<String>(
+              value: "LogOut",
+              child: Text("Log Out")),
           ],
-          // onPressed: () {
-          //   logout();
-          // },
         ),
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
