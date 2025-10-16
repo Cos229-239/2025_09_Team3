@@ -46,15 +46,46 @@ class _LogEditState extends State<LogEdit> {
     void saveEditedLog() async {
     String caption = _captionController.text;
     String dateTime = "${DateFormat("MMM-dd-yyyy").format(_dateController)}\n$timeString";
-    if (caption.isNotEmpty && _amountValue != 0.0) {
-      caption = firstLetterCapital(caption);
 
-      await db.updateLogs(DatabaseHandler.userID, widget.selectedLog!.category, widget.selectedLog!.caption, caption, _amountValue, widget.selectedLog!.dateAndTime, dateTime);
-      Navigator.of(context).pop();
-    }
-    else {
+    if (caption.isEmpty || _amountController.text.isEmpty) {
       showErrorSnackBar(context, 'Please enter all fields');
       return;
+    }
+      
+
+      
+    
+    try {
+
+      double parsed = double.parse(_amountController.text);
+      if (!isDeposit){
+        _amountValue = -parsed.abs();
+      }
+      else{
+        _amountValue = parsed.abs();
+      }
+      caption = firstLetterCapital(caption);
+
+      //for calculating balance changes 
+      double oldAmount =widget.selectedLog!.amount;
+      double newAmount =_amountValue;
+      double difference =newAmount - oldAmount;
+
+      final userData= await db.getUserData(DatabaseHandler.userID);
+      double currentBalance = 0.0;
+      if(userData.isNotEmpty && userData.first['account_balance'] != null){
+        currentBalance = userData.first['account_balance'] as double;
+      }
+      double updatedBalance = currentBalance + difference;
+      await db.setUserBalance(DatabaseHandler.userID, updatedBalance);
+      
+      await db.updateLogs(DatabaseHandler.userID, widget.selectedLog!.category, widget.selectedLog!.caption, caption, _amountValue, widget.selectedLog!.dateAndTime, dateTime);
+      showErrorSnackBar(context, 'Log updated Successfully');
+      Navigator.of(context).pop();
+    
+      
+    } catch (e) {
+      showErrorSnackBar(context, 'Please enter a valid amount');
     }
   }
 
