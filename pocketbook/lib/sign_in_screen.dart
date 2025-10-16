@@ -37,15 +37,14 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
       body: Center(
         child: Container(
-          width: 300,
-          height: 500,
+          // Removed fixed height to allow for dynamic sizing
           decoration: BoxDecoration(
             color: const Color(0xFFFF9B71),
             border: Border.all(color: const Color(0xFF280039), width: 3),
             borderRadius: BorderRadius.circular(30),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(24.0),
+          child: SingleChildScrollView( // Added SingleChildScrollView to handle overflow
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -136,6 +135,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ElevatedButton(
                   onPressed: () async {
                     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+                      if (!mounted) return;
                       showDialog<String>(
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
@@ -151,29 +151,47 @@ class _SignInScreenState extends State<SignInScreen> {
                       return;
                     }
 
-                    if (await db.verifyUser(
-                      _emailController.text,
-                      _passwordController.text,
-                    )) {
-                      await db.setUserIDVar(_emailController.text);
+                    try {
+                      if (await db.verifyUser(
+                        _emailController.text,
+                        _passwordController.text,
+                      )) {
+                        await db.setUserIDVar(_emailController.text);
 
-                      if (_rememberMe) {
-                        final prefs = await SharedPreferences.getInstance();
-                        await prefs.setBool('logged_in', true);
-                        await prefs.setString('email', _emailController.text.trim());
+                        if (_rememberMe) {
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('logged_in', true);
+                          await prefs.setString('email', _emailController.text.trim());
+                        }
+
+                        if (!mounted) return;
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => const HomeScreenState(),
+                          ),
+                        );
+                      } else {
+                        if (!mounted) return;
+                        showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: const Text('Incorrect email or password'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'OK'),
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                        );
                       }
-
+                    } catch (e) {
                       if (!mounted) return;
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => const HomeScreenState(),
-                        ),
-                      );
-                    } else {
                       showDialog<String>(
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
-                          title: const Text('Incorrect email or password'),
+                          title: const Text('An error occurred'),
+                          content: Text('Error: $e'),
                           actions: <Widget>[
                             TextButton(
                               onPressed: () => Navigator.pop(context, 'OK'),
