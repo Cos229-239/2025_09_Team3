@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'database_handler.dart';
 import 'spendings_sub_menu.dart';
+import 'package:intl/intl.dart';
 
 class SpendingsScreen extends StatefulWidget{
   const SpendingsScreen({super.key});

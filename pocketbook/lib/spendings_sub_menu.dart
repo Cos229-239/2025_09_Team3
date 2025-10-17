@@ -393,7 +393,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
   String _signFor(double v) => v > 0 ? '+' : (v < 0 ? '-' : '');
 
   static const _monthNames = <String> [
-    'January', 'February', 'March', 'April', 'May', 'June', 'July', 'Auguust', 'September', 'October', 'November', 'December'
+    'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   static const _monthAbbrev = <String> [
