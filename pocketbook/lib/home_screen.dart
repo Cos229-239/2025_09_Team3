@@ -173,7 +173,11 @@ DateTime? picked = await showDatePicker(
     String caption = firstLetterCapital(addCaptionController.text).trim();
     String category = addCategoryController.text;
 
-    await db.addSpending(userID, category, caption, amount);
+    String formattedDate = DateFormat("MMM-dd-yyyy").format(selectedDate);
+    String formattedTime = DateFormat("h:mm:ss a").format(DateTime.now());
+    String customDateTime = "$formattedDate\n$formattedTime";
+
+    await db.addSpending(userID, category, caption, amount, customDateTime: customDateTime);
 
     double theBalance = (balance ?? 0.0) + amount;
     await db.setUserBalance(userID, theBalance);

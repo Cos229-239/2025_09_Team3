@@ -125,13 +125,14 @@ class DatabaseHandler {
     String category,
     String caption,
     double amount,
+    {String? customDateTime}//added to create a custom date
   ) async {
     await db.insert('spending_logs', {
       'userID': userID,
       'category': category,
       'caption': caption,
       'amount': amount,
-      'date_time': await getCurrentTime(),
+      'date_time': customDateTime ?? await getCurrentTime(),
     });
   }
 
@@ -217,9 +218,10 @@ class DatabaseHandler {
 
   String getCurrentTime() {
     DateTime now = DateTime.now();
-    DateFormat formatter = DateFormat("MMM-dd-yyyy\nhh:mm:ss a");
-    
-    return formatter.format(now);
+   String formattedDate = DateFormat("MMM-dd-yyyy").format(now);
+    String formattedTime = DateFormat("h:mm:ss a").format(now);
+   String customDateTime = "$formattedDate\n$formattedTime";
+   return customDateTime;
   }
 
   Future<bool> userExists(String email) async { // FUNCTION HAS NOT BEEN TESTED
