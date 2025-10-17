@@ -8,6 +8,7 @@ import 'package:pocketbook/sign_in_screen.dart';
 import 'package:pocketbook/spendings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'database_handler.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreenState extends StatefulWidget {
   const HomeScreenState({super.key});
@@ -26,6 +27,10 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   final TextEditingController addCategoryController = TextEditingController();
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
   int userID = DatabaseHandler.userID;
+
+  //date variables
+  DateTime selectedDate = DateTime.now();
+  String dateDisplay = "Today";
 
   void reloadPage() {
     clearFields();
@@ -87,11 +92,35 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     );
   }
 
+
   @override
   void initState() {
     super.initState();
     getUserData();
   }
+
+Future<void> _selectDate() async{
+DateTime? picked = await showDatePicker(
+
+  context: context,
+  initialDate: selectedDate,
+  firstDate: DateTime(2000),
+  lastDate: DateTime.now(),
+  );
+
+  if(picked != null){
+    setState((){
+      selectedDate = picked;
+      DateTime now = DateTime.now();
+      if (picked.year == now.year && picked.month == now.month && picked.day == now.day) {
+        dateDisplay = "Today";
+      } else {
+        dateDisplay = DateFormat('MMM dd, yyyy').format(picked);
+      }
+    });
+  }
+
+}
 
   Future<void> getUserData() async {
     //Grab info from DB
@@ -360,6 +389,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                                   icon: const Icon(Icons.calendar_today),
                                   onPressed: () {
                                     //add date picker functionality
+                                    _selectDate();
                                   },
                               ),
                                 
