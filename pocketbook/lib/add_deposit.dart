@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbook/helper_files.dart';
 import 'database_handler.dart';
+import 'package:intl/intl.dart';
 
 
 
@@ -15,6 +16,33 @@ class _AddDepositState extends State<AddDeposit> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _originController = TextEditingController();
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
+
+   //date variables
+  DateTime selectedDate = DateTime.now();
+  String dateDisplay = "Today";
+
+  Future<void> _selectDate() async{
+DateTime? picked = await showDatePicker(
+
+  context: context,
+  initialDate: selectedDate,
+  firstDate: DateTime(2000),
+  lastDate: DateTime.now(),
+  );
+
+  if(picked != null){
+    setState((){
+      selectedDate = picked;
+      DateTime now = DateTime.now();
+      if (picked.year == now.year && picked.month == now.month && picked.day == now.day) {
+        dateDisplay = "Today";
+      } else {
+        dateDisplay = DateFormat('MMM dd, yyyy').format(picked);
+      }
+    });
+  }
+
+}
 
  @override
   Widget build(BuildContext context) {
@@ -43,7 +71,7 @@ class _AddDepositState extends State<AddDeposit> {
             child:  Center(
               child: Container(
                 width: 300,
-                height: 500,
+                height: 525,
                 decoration: BoxDecoration(
                   color: const Color(0xFFFF9B71),
                   border: Border.all(
@@ -66,6 +94,16 @@ class _AddDepositState extends State<AddDeposit> {
                           color: Color(0xFF280039),
                         ),
                       ),
+                         const SizedBox(height: 10),
+                              Text(
+                                'Date: $dateDisplay',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255,50,50,50),
+                                ),
+                              ),
                       const SizedBox(height: 30),
                       TextFormField(
                         controller: _amountController,
@@ -128,7 +166,19 @@ class _AddDepositState extends State<AddDeposit> {
                             ),
                         ),
                       ),
-                    
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () async{
+                          // add functionality to add deposit to database
+                          _selectDate();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey, 
+                          foregroundColor: Colors.black,
+                        ),
+                        
+                        child: const Text('Select Date')
+                      ),
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () async{
