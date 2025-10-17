@@ -45,16 +45,16 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   }
 
   void changeEmail() async {
-    final TextEditingController _oldEmailController = TextEditingController();
-    final TextEditingController _newEmailController = TextEditingController();
-    final TextEditingController _passwordController = TextEditingController();
+    final TextEditingController oldEmailController = TextEditingController();
+    final TextEditingController newEmailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Change Email'),
         actions: <Widget>[
           TextField(
-            controller: _oldEmailController,
+            controller: oldEmailController,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
               labelText: 'Current Email',
@@ -78,7 +78,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
           ),
           SizedBox(height: 10),
           TextField(
-            controller: _newEmailController,
+            controller: newEmailController,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
               labelText: 'New Email',
@@ -102,7 +102,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
           ),
           SizedBox(height: 10),
           TextField(
-            controller: _passwordController,
+            controller: passwordController,
             obscureText: true,
             decoration: InputDecoration(
               labelText: 'Password',
@@ -134,9 +134,9 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
               ),
               TextButton(
                 onPressed: () async => {
-                  if (_oldEmailController.text.isEmpty ||
-                      _newEmailController.text.isEmpty ||
-                      _passwordController.text.isEmpty)
+                  if (oldEmailController.text.isEmpty ||
+                      newEmailController.text.isEmpty ||
+                      passwordController.text.isEmpty)
                     {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -144,7 +144,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                         ),
                       ),
                     }
-                  else if (await db.userExists(_newEmailController.text))
+                  else if (await db.userExists(newEmailController.text))
                     {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -153,11 +153,11 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                       ),
                     }
                   else if (await db.verifyUser(
-                    _oldEmailController.text,
-                    _passwordController.text,
+                    oldEmailController.text,
+                    passwordController.text,
                   ))
                     {
-                      db.updateEmail(userID, _newEmailController.text),
+                      db.updateEmail(userID, newEmailController.text),
                       Navigator.pop(context, true),
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Email updated')),
@@ -186,18 +186,18 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   }
 
   void changePassword() async {
-    final TextEditingController _oldPasswordController =
+    final TextEditingController oldPasswordController =
         TextEditingController();
-    final TextEditingController _newPasswordController =
+    final TextEditingController newPasswordController =
         TextEditingController();
-    final TextEditingController _confirmNewPassword = TextEditingController();
+    final TextEditingController confirmNewPassword = TextEditingController();
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Change Password'),
         actions: <Widget>[
           TextField(
-            controller: _oldPasswordController,
+            controller: oldPasswordController,
             obscureText: true,
             decoration: InputDecoration(
               labelText: 'Current Password',
@@ -221,7 +221,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
           ),
           SizedBox(height: 10),
           TextField(
-            controller: _newPasswordController,
+            controller: newPasswordController,
             obscureText: true,
             decoration: InputDecoration(
               labelText: 'New Password',
@@ -245,7 +245,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
           ),
           SizedBox(height: 10),
           TextField(
-            controller: _confirmNewPassword,
+            controller: confirmNewPassword,
             obscureText: true,
             decoration: InputDecoration(
               labelText: 'Confirm New Password',
@@ -277,9 +277,9 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
               ),
               TextButton(
                 onPressed: () async => {
-                  if (_oldPasswordController.text.isEmpty ||
-                      _newPasswordController.text.isEmpty ||
-                      _confirmNewPassword.text.isEmpty)
+                  if (oldPasswordController.text.isEmpty ||
+                      newPasswordController.text.isEmpty ||
+                      confirmNewPassword.text.isEmpty)
                     {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -289,7 +289,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                     }
                   else if (!await db.verifyPassword(
                     userID,
-                    _oldPasswordController.text,
+                    oldPasswordController.text,
                   ))
                     {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -298,8 +298,8 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                         ),
                       ),
                     }
-                  else if (_oldPasswordController.text ==
-                      _newPasswordController.text)
+                  else if (oldPasswordController.text ==
+                      newPasswordController.text)
                     {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -307,8 +307,8 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                         ),
                       ),
                     }
-                  else if (_newPasswordController.text !=
-                      _confirmNewPassword.text)
+                  else if (newPasswordController.text !=
+                      confirmNewPassword.text)
                     {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -318,7 +318,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
                     }
                   else
                     {
-                      db.updatePassword(userID, _newPasswordController.text),
+                      db.updatePassword(userID, newPasswordController.text),
                       Navigator.pop(context, true),
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Password updated')),
@@ -339,7 +339,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
 
   void resetLog() async {
     // Show confirmation dialog
-    final TextEditingController _passwordController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -349,7 +349,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
         ),
         actions: <Widget>[
           TextField(
-            controller: _passwordController,
+            controller: passwordController,
             obscureText: true,
             decoration: InputDecoration(
               labelText: 'Password',
@@ -381,7 +381,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
               ),
               TextButton(
                 onPressed: () async => {
-                  if (await db.verifyPassword(userID, _passwordController.text))
+                  if (await db.verifyPassword(userID, passwordController.text))
                     {db.deleteAllLogs(userID), Navigator.pop(context, true)}
                   else
                     {
@@ -403,7 +403,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
 
   void resetAccount() async {
     // Show confirmation dialog
-    final TextEditingController _passwordController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -413,7 +413,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
         ),
         actions: <Widget>[
           TextField(
-            controller: _passwordController,
+            controller: passwordController,
             obscureText: true,
             decoration: InputDecoration(
               labelText: 'Password',
@@ -445,7 +445,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
               ),
               TextButton(
                 onPressed: () async => {
-                  if (await db.verifyPassword(userID, _passwordController.text))
+                  if (await db.verifyPassword(userID, passwordController.text))
                     {
                       db.deleteAllFromUser(userID),
                       db.setUserBalance(userID, 0),

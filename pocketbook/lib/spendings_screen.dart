@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 import 'database_handler.dart';
 import 'spendings_sub_menu.dart';
 
@@ -44,7 +45,7 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
           final whenRaw = t['date_time']?.toString() ?? '';
           DateTime? when;
           try{
-            when = DateTime.parse(whenRaw);
+            when = DateFormat("MMM-dd-yyyy\nhh:mm:ss a").parse(whenRaw);
           } catch (_) {
             when = null;
           }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'database_handler.dart';
 
 class SpendingsSubmenu extends StatefulWidget {
@@ -50,11 +51,13 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
       );
       final budgetFromDb = (catRows.isNotEmpty) ? (catRows.first['amount'] as num?)?.toDouble() : null;
       final parsed = rows.map((r) {
-        final whenRaw = r['date_time']?.toString() ?? '';
+        String whenRaw = r['date_time'] as String;
+        //whenRaw = whenRaw.replaceAll("\n", "\\");
         DateTime? when;
         try {
-          when = DateTime.parse(whenRaw);
+          when = DateFormat("MMM-dd-yyyy\nhh:mm:ss a").parse(whenRaw);
         } catch (_) {
+          print(whenRaw);
           when = null;
         }
         final caption = r['caption']?.toString() ?? '-';
@@ -91,7 +94,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
     final m = month.month;
     return list.where((t) {
       if (t.when == null) return false;
-      return t.when!.year == y && t.when!.month == m;
+      return t.when!.year == y && t.when!.month == m; //I think the issue is here. t.when!.month = "oct" or something, when m = 10.
     }).toList()
       ..sort((a, b) {
         final aa = a.when ?? DateTime.fromMillisecondsSinceEpoch(0);
