@@ -168,6 +168,7 @@ class _CategoryCreationState extends State<CategoryCreation> {
                           color: Color(0xFF280039),
                         ),
                       ),
+                      //Replace with text box
                       Slider(
                         value: _budgetValue,
                         min: 0,
