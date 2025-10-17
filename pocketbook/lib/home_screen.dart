@@ -282,16 +282,32 @@ DateTime? picked = await showDatePicker(
                           children: [
                             Padding(
                               padding: EdgeInsets.symmetric(vertical: 15),
-                              child: Text(
-                                'Add Spending',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
+                              child: Column(
+                              children: [
+                                Text(
+                                  'Add Spending',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
                                   color: Color.fromARGB(255, 0, 0, 0),
                                 ),
                               ),
-                            ),
+                              //added a date display to show selected date.
+                              const SizedBox(height: 10),
+                              Text(
+                                'Date: $dateDisplay',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255,50,50,50),
+                                ),
+                              ),
+                            
+                          ],
+                        ),
+                      ),
 
                             Padding(
                               padding: EdgeInsetsGeometry.symmetric(
