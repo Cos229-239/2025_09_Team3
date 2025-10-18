@@ -127,6 +127,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
   Widget build(BuildContext context) {
     final c = widget.categoryColor;
     final onC = _on(c);
+    final double remainder = (_budget ?? widget.totalAmount) - _monthSpent;
 
     return Scaffold(
       backgroundColor: const Color(0xFF3B0054),
@@ -179,7 +180,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             
-                            // Spending Data
+                            // Spending Data title
                             Text(
                               widget.categoryName,
                               style: TextStyle(
@@ -193,7 +194,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
 
                             // Category Name
                             Text(
-                              widget.categoryName,
+                              '${_fmt(remainder)} left',
                               style: TextStyle(
                                 color: onC.withValues(alpha: 0.9),
                                 fontSize: 18,
