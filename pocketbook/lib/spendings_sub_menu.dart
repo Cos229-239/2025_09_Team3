@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'database_handler.dart';
 
 class SpendingsSubmenu extends StatefulWidget {
@@ -35,6 +36,17 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
 
   Color _on(Color bg) => ThemeData.estimateBrightnessForColor(bg) == Brightness.light ? Colors.black : Colors.white;
 
+ // DateTime? _parseWhen(String whenRaw) {
+ //   final isoish = whenRaw.contains(' ') ? whenRaw.replaceFirst(' ', 'T') : whenRaw;
+ //   final isoParsed = DateTime.tryParse(isoish);
+ //   if (isoParsed != null) return isoParsed;
+ //   try {
+ //     return DateFormat("MMM-dd-yyyy\nhh:mm:ss a").parse(whenRaw);
+ //   } catch (_) {
+ //     return null;
+ //   }
+ // }
+
   Future<void> _loadTxns() async {
     setState(() => _loading = true);
 
@@ -44,16 +56,20 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
         DatabaseHandler.userID,
         widget.categoryName,
       );
+      // print('[submenu] rows fetched for "${widget.categoryName}": ${rows.length}');
+      // if (rows.isNotEmpty) print('[submenu] first row: ${rows.first}');
       final catRows = await handler.getCategoriesFromName(
         DatabaseHandler.userID,
         widget.categoryName,
       );
       final budgetFromDb = (catRows.isNotEmpty) ? (catRows.first['amount'] as num?)?.toDouble() : null;
       final parsed = rows.map((r) {
-        final whenRaw = r['date_time']?.toString() ?? '';
+        //final whenRaw = r['date_time']?.toString() ?? '';
+        //DateTime? when;
+        String whenRaw = r['date_time'] as String;
         DateTime? when;
         try {
-          when = DateTime.parse(whenRaw);
+          when = DateFormat("MMM-dd-yyyy\nhh:mm:ss a").parse(whenRaw);
         } catch (_) {
           when = null;
         }
