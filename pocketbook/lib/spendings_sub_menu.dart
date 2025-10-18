@@ -45,19 +45,19 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
         DatabaseHandler.userID,
         widget.categoryName,
       );
+      // print('[submenu] rows fetched for "${widget.categoryName}": ${rows.length}');
+      // if (rows.isNotEmpty) print('[submenu] first row: ${rows.first}');
       final catRows = await handler.getCategoriesFromName(
         DatabaseHandler.userID,
         widget.categoryName,
       );
       final budgetFromDb = (catRows.isNotEmpty) ? (catRows.first['amount'] as num?)?.toDouble() : null;
       final parsed = rows.map((r) {
-        String whenRaw = r['date_time'] as String;
-        //whenRaw = whenRaw.replaceAll("\n", "\\");
+        final whenRaw = r['date_time']?.toString() ?? '';
         DateTime? when;
         try {
           when = DateFormat("MMM-dd-yyyy\nhh:mm:ss a").parse(whenRaw);
         } catch (_) {
-          print(whenRaw);
           when = null;
         }
         final caption = r['caption']?.toString() ?? '-';
@@ -130,12 +130,13 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
   Widget build(BuildContext context) {
     final c = widget.categoryColor;
     final onC = _on(c);
+    final double remainder = (_budget ?? widget.totalAmount) - _monthSpent;
 
     return Scaffold(
       backgroundColor: const Color(0xFF3B0054),
       appBar: AppBar( 
-        title:  Text(widget.categoryName),  // Uses the category's name
-        centerTitle: true,
+        // title:  Text(widget.categoryName),  // Uses the category's name
+        // centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: 'Go Back',
@@ -182,9 +183,9 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             
-                            // Spending Data
+                            // Spending Data title
                             Text(
-                              'Spending Data',
+                              widget.categoryName,
                               style: TextStyle(
                                 color:  onC,
                                 fontSize: 24,
@@ -196,7 +197,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
 
                             // Category Name
                             Text(
-                              widget.categoryName,
+                              '${_fmt(remainder)} left',
                               style: TextStyle(
                                 color: onC.withValues(alpha: 0.9),
                                 fontSize: 18,

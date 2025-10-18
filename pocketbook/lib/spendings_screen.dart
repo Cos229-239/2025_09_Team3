@@ -146,17 +146,17 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                   child: _categories.isNotEmpty && _totalValue > 0 
                     ? PieChart(
                       PieChartData(
-                        sectionsSpace: 4,
-                        centerSpaceRadius: 75,
+                        sectionsSpace: 1, // Gap between sections
+                        centerSpaceRadius: 75, // Adjusts the internal radius (the donut hole)
                         borderData: FlBorderData(show: false),
                         sections: _categories.map((c) {
                           return PieChartSectionData(
                             value: c.value, // Month spend per category
                             title: c.name, 
                             color: c.color,
-                            radius: 70,
+                            radius: 80, // This adjusts the external radius (the entire donut)
                             titleStyle: const TextStyle(
-                              color: Colors.white,
+                              color: Colors.white, 
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
@@ -170,17 +170,25 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                 const SizedBox(height: 16),
                 
                 // Breakdown header bar
-                Container(
-                  width: 425,
-                  height: 75,
-                  decoration: const BoxDecoration(color: Color(0xFF280039)),
-                  child: const Center(
-                    child: Text(
-                    'Breakdown',
-                    style: TextStyle(color: Colors.white, fontSize: 36),
+                SizedBox(
+                    width: 425,
+                    height: 75,
+                    child: Container(
+                      decoration: BoxDecoration(
+                      color: Color(0xFF280039), // Colour of the "Breakdown" box
+                      border: Border.all(color: Colors.white, width: 3),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Breakdown',
+                          style: TextStyle(
+                            color: Colors.white, // Border colour to the "Breakdown" box
+                            fontSize: 36,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
 
                 const SizedBox(height: 16),
 
