@@ -131,8 +131,8 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
     return Scaffold(
       backgroundColor: const Color(0xFF3B0054),
       appBar: AppBar( 
-        title:  Text(widget.categoryName),  // Uses the category's name
-        centerTitle: true,
+        // title:  Text(widget.categoryName),  // Uses the category's name
+        // centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: 'Go Back',
@@ -181,7 +181,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
                             
                             // Spending Data
                             Text(
-                              'Spending Data',
+                              widget.categoryName,
                               style: TextStyle(
                                 color:  onC,
                                 fontSize: 24,
