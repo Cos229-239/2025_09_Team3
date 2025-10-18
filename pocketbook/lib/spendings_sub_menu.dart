@@ -36,17 +36,6 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
 
   Color _on(Color bg) => ThemeData.estimateBrightnessForColor(bg) == Brightness.light ? Colors.black : Colors.white;
 
- // DateTime? _parseWhen(String whenRaw) {
- //   final isoish = whenRaw.contains(' ') ? whenRaw.replaceFirst(' ', 'T') : whenRaw;
- //   final isoParsed = DateTime.tryParse(isoish);
- //   if (isoParsed != null) return isoParsed;
- //   try {
- //     return DateFormat("MMM-dd-yyyy\nhh:mm:ss a").parse(whenRaw);
- //   } catch (_) {
- //     return null;
- //   }
- // }
-
   Future<void> _loadTxns() async {
     setState(() => _loading = true);
 
