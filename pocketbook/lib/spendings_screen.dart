@@ -150,9 +150,10 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                         centerSpaceRadius: 75, // Adjusts the internal radius (the donut hole)
                         borderData: FlBorderData(show: false),
                         sections: _categories.map((c) {
+                          final percentage = (c.value / _totalValue) * 100; // divides percentage for each category (JD)
                           return PieChartSectionData(
                             value: c.value, // Month spend per category
-                            title: c.name, 
+                            title: percentage >=6 ? c.name: '', // Show label only if >=6% (JD)
                             color: c.color,
                             radius: 80, // This adjusts the external radius (the entire donut)
                             titleStyle: const TextStyle(
