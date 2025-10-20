@@ -606,6 +606,8 @@ DateTime? picked = await showDatePicker(
 
     double theBalance = (balance ?? 0.0) + amount;
     await db.setUserBalance(userID, theBalance);
+    //Shows successful addition of expense
+    showErrorSnackBar(context, 'Expense of \$${(-amount).toStringAsFixed(2)} for $caption added successfully.');
 
     clearFields();
     getUserData();
