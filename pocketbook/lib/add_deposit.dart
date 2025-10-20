@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocketbook/helper_files.dart';
 import 'database_handler.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 
 
 
@@ -107,12 +108,17 @@ DateTime? picked = await showDatePicker(
                       const SizedBox(height: 30),
                       TextFormField(
                         controller: _amountController,
+                         inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d+\.?\d{0,2}'),
+                                  ), 
+                                ],
                         keyboardType: TextInputType.numberWithOptions(
                           signed: false,
                           decimal: true,
                         ),
                         decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
+                          border: const OutlineInputBorder(),                         
                           filled: true,
                           fillColor: Colors.white,
                           labelText: 'Deposit Amount',

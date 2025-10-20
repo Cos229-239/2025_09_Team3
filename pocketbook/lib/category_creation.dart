@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pocketbook/database_handler.dart';
 import 'package:pocketbook/helper_files.dart';
@@ -32,12 +33,14 @@ class _CategoryCreationState extends State<CategoryCreation> {
     if (widget.initialCategory != null) {
       _categoryNameController.text = widget.initialCategory!.name;
       _budgetValue = widget.initialCategory!.budget;
+      _budgetController.text = _budgetValue.toStringAsFixed(2);
       _chosenColor = widget.initialCategory!.color;
     }
   }
   final TextEditingController _categoryNameController = TextEditingController();
+  final TextEditingController _budgetController = TextEditingController();
   double _budgetValue = 0.0;
-  Color _chosenColor = const Color.fromARGB(255, 2, 128, 77);
+  Color _chosenColor = const Color.fromARGB(255, 126, 126, 126);
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
 
   Future<void> addCategory() async {
@@ -112,7 +115,7 @@ class _CategoryCreationState extends State<CategoryCreation> {
             child:  Center(       
               child: Container(
                 width: 300,
-                height: 525,
+                height: 500,
                 decoration: BoxDecoration(
                   color: const Color(0xFFFF9B71),
                   border: Border.all(
@@ -137,7 +140,11 @@ class _CategoryCreationState extends State<CategoryCreation> {
                       ),
                       const SizedBox(height: 30),
                       TextFormField(
-                        controller: _categoryNameController,
+                        controller: _categoryNameController,  
+                        inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d+\.?\d{0,2}'),
+                                  ), ],
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
                           filled: true,
@@ -161,25 +168,33 @@ class _CategoryCreationState extends State<CategoryCreation> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      Text(
-                        'Set Budget Limit: \$${_budgetValue.toStringAsFixed(2)}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Color(0xFF280039),
+                       TextFormField(
+                        controller: _budgetController,   
+                        keyboardType: TextInputType.numberWithOptions(
+                          signed: false,
+                          decimal: true,
                         ),
-                      ),
-                      //Replace with text box
-                      Slider(
-                        value: _budgetValue,
-                        min: 0,
-                        max: 2000,
-                        divisions: 200,
-                        label: '$_budgetValue',
-                        onChanged: (value) {
-                          setState(() {
-                            _budgetValue = value;
-                          });
-                        },
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          filled: true,
+                          fillColor: Colors.white,
+                          labelText: 'Budget Limit',
+                          hintText: 'Enter budget limit',
+                          enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFF3B0054),
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Color.fromARGB(255, 117, 20, 158),
+                                      width: 3,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                        ),
                       ),
                       SizedBox(height: 30),
                       ElevatedButton(
