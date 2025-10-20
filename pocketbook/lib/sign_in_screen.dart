@@ -120,12 +120,13 @@ class _SignInScreenState extends State<SignInScreen> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Checkbox(
-                            value: _rememberMe,
+                            value: _rememberMe,     
                             onChanged: (bool? value) {
                               setState(() {
                                 _rememberMe = value ?? false;
                               });
                             },
+                            fillColor: WidgetStateProperty.all<Color>(Colors.white),
                             activeColor: const Color(0xFF280039),
                           ),
                           const Text(
