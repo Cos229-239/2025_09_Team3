@@ -112,7 +112,7 @@ class _CategoryCreationState extends State<CategoryCreation> {
         slivers: [
           SliverFillRemaining(
             hasScrollBody: false,
-            child:  Center(       
+            child: Center(
               child: Container(
                 width: 300,
                 height: 500,
@@ -140,11 +140,7 @@ class _CategoryCreationState extends State<CategoryCreation> {
                       ),
                       const SizedBox(height: 30),
                       TextFormField(
-                        controller: _categoryNameController,  
-                        inputFormatters: [
-                                  FilteringTextInputFormatter.allow(
-                                    RegExp(r'^\d+\.?\d{0,2}'),
-                                  ), ],
+                        controller: _categoryNameController,
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
                           filled: true,
@@ -169,11 +165,16 @@ class _CategoryCreationState extends State<CategoryCreation> {
                       ),
                       const SizedBox(height: 30),
                        TextFormField(
-                        controller: _budgetController,   
+                        controller: _budgetController,
                         keyboardType: TextInputType.numberWithOptions(
                           signed: false,
                           decimal: true,
                         ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d+\.?\d{0,2}'),
+                          ),
+                        ],
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
                           filled: true,
@@ -195,6 +196,16 @@ class _CategoryCreationState extends State<CategoryCreation> {
                                     borderRadius: BorderRadius.circular(15),
                                   ),
                         ),
+                        onChanged: (value) {
+                          setState(() {
+                            // Update _budgetValue when the budget field changes
+                            try {
+                              _budgetValue = double.parse(value);
+                            } catch (e) {
+                              _budgetValue = 0.0;
+                            }
+                          });
+                        },
                       ),
                       SizedBox(height: 30),
                       ElevatedButton(

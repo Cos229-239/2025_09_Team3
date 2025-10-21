@@ -3,9 +3,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'database_handler.dart';
 import 'spendings_sub_menu.dart';
-import 'package:intl/intl.dart';
 
-class SpendingsScreen extends StatefulWidget{
+class SpendingsScreen extends StatefulWidget {
   const SpendingsScreen({super.key});
 
   @override
@@ -18,7 +17,7 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
   final DateTime _focusedMonth = DateTime.now(); // Current Month
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _loadCategories();
   }
@@ -32,8 +31,7 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
         final name = (r['category'] as String?) ?? 'Unnamed';
         final colorRaw = r['category_color'];
         final color = _colorFromDb(colorRaw) ?? const Color(0xFF3498DB);
-        //final value = (r['amount'] as num?)?.toDouble() ?? 0.0;
-        return Category(name: name, value: 0.0, color: color);
+        return Category(name: name, value: 0.0, color: color, budget: 0.0);
       }).toList();
 
       final futures = base.map((c) async {
@@ -45,7 +43,7 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
         for (final t in txns) {
           final whenRaw = t['date_time']?.toString() ?? '';
           DateTime? when;
-          try{
+          try {
             when = DateFormat("MMM-dd-yyyy\nhh:mm:ss a").parse(whenRaw);
           } catch (_) {
             when = null;
@@ -54,11 +52,17 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
           if (_isSameMonth(when, _focusedMonth)) {
             final amt = (t['amount'] as num?)?.toDouble() ?? 0.0;
             if (amt < 0) {
-              monthSpent += -amt;  // Store as positive "spent" for charting
+              monthSpent += -amt; // Store as positive "spent" for charting
             }
           }
         }
-        return Category(name: c.name, value: monthSpent, color: c.color);
+        // NEW CONCEPT:::::: Fetch budget for this category
+        final catRows = await handler.getCategoriesFromName(DatabaseHandler.userID, c.name);
+        double categoryBudget = 0.0;
+        if (catRows.isNotEmpty && catRows.first['amount'] != null) {
+          categoryBudget = (catRows.first['amount'] as num).toDouble();
+        }
+        return Category(name: c.name, value: monthSpent, color: c.color, budget: categoryBudget);
       }).toList();
 
       final loaded = await Future.wait(futures);
@@ -66,8 +70,8 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
       if (!mounted) return;
       setState(() {
         _categories
-        ..clear()
-        ..addAll(loaded);
+          ..clear()
+          ..addAll(loaded);
         _loading = false;
       });
     } catch (e) {
@@ -149,11 +153,27 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                         sectionsSpace: 1, // Gap between sections
                         centerSpaceRadius: 75, // Adjusts the internal radius (the donut hole)
                         borderData: FlBorderData(show: false),
+                            pieTouchData: PieTouchData(
+                              enabled: true,
+                              touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                                if (!event.isInterestedForInteractions ||
+                                    pieTouchResponse == null ||
+                                    pieTouchResponse.touchedSection == null) {
+                                  return;
+                                }
+                                final index = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                                if (index >= 0 && index < _categories.length) {
+                                  _openCategory(_categories[index]);
+                                }
+                              },
+                            ),
                         sections: _categories.map((c) {
-                          final percentage = (c.value / _totalValue) * 100; // divides percentage for each category (JD)
+                          final percentage = (_totalValue > 0 ? c.value / _totalValue : 0) * 100; // divides percentage for each category (JD)
                           return PieChartSectionData(
                             value: c.value, // Month spend per category
-                            title: percentage >=6 ? c.name: '', // Show label only if >=6% (JD)
+                            title: percentage >=6 
+                            ? '${c.name}\n\$${c.value.toStringAsFixed(0)}/\$${c.budget.toStringAsFixed(0)}'
+                            : '', // Show label only if >=6% (JD)
                             color: c.color,
                             radius: 80, // This adjusts the external radius (the entire donut)
                             titleStyle: const TextStyle(
@@ -161,6 +181,10 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
+                            badgeWidget: c.value > c.budget && c.budget > 0
+                                    ? const Icon(Icons.warning, color: Colors.red, size: 16)
+                                    : null,
+                                badgePositionPercentageOffset: 1.2,
                           );
                         }).toList(),
                       ),
@@ -168,8 +192,7 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                   : const _EmptyPiePlaceholder(),
                 ),
 
-                const SizedBox(height: 16),
-                
+                const SizedBox(height: 16),                
                 // Breakdown header bar
                 SizedBox(
                     width: 425,
@@ -282,12 +305,14 @@ class Category {
   final String name;
   final double value; // This Month's Spending (positive)
   final Color color;
+  final double budget; // New::::::: Budget limit from DB
   //bool pressed;
 
   Category({
     required this.name,
     required this.value,
     required this.color,
+    required this.budget, // New::::::: Required budget field
     //this.pressed = false,
   });
 }
