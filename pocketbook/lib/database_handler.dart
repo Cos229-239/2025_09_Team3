@@ -1,4 +1,3 @@
-//import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:bcrypt/bcrypt.dart';
@@ -8,6 +7,7 @@ class DatabaseHandler {
   late Database db;
   static int userID = -1;
   static DatabaseHandler? databaseInstance;
+
   DatabaseHandler._create(this.db);
 
   static Future<DatabaseHandler> create() async {
@@ -15,19 +15,24 @@ class DatabaseHandler {
       join(await getDatabasesPath(), 'pocketbook_database.db'),
       onCreate: (db, version) async {
         await db.execute(
-          'CREATE TABLE IF NOT EXISTS user_data(userID INTEGER PRIMARY KEY AUTOINCREMENT, fname TEXT, lname TEXT, email TEXT, account_balance REAL, password_hash TEXT, hash_salt TEXT);',
+          'CREATE TABLE IF NOT EXISTS user_data(userID INTEGER PRIMARY KEY AUTOINCREMENT, fname TEXT, lname TEXT, email TEXT, account_balance REAL, password_hash TEXT, hash_salt TEXT, monthly_budget REAL DEFAULT 1500.0)',
         );
         await db.execute(
-          'CREATE TABLE IF NOT EXISTS spending_logs(userID INTEGER, category TEXT, category_color TEXT, caption TEXT, amount REAL, date_time TEXT);',
+          'CREATE TABLE IF NOT EXISTS spending_logs(userID INTEGER, category TEXT, category_color TEXT, caption TEXT, amount REAL, date_time TEXT)',
         );
       },
-      version: 1,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('ALTER TABLE user_data ADD COLUMN monthly_budget REAL DEFAULT 1500.0');
+        }
+      },
+      version: 2,
     );
     return DatabaseHandler._create(db);
   }
 
   void manualUpdate() async {
-    //To be manually edited and run, only if needed
+    // To be manually edited and run, only if needed
   }
 
   Future<void> addUser(
@@ -37,13 +42,13 @@ class DatabaseHandler {
     String password,
   ) async {
     final String salt = BCrypt.gensalt();
-
     await db.insert('user_data', {
       'fname': first,
       'lName': last,
       'email': email,
       'password_hash': BCrypt.hashpw(password, salt),
       'hash_salt': salt,
+      'monthly_budget': 1500.0, // Default budget for new users
     });
   }
 
@@ -75,23 +80,24 @@ class DatabaseHandler {
     int userID,
     String email,
   ) async {
-    await db.update('user_data', 
-      {'email': email,},
+    await db.update(
+      'user_data',
+      {'email': email},
       where: 'userID = ?',
-      whereArgs: [userID]
+      whereArgs: [userID],
     );
   }
 
   Future<void> updatePassword(int userID, String password) async {
     final String salt = BCrypt.gensalt();
-    await db.update('user_data', 
-      {'password_hash': BCrypt.hashpw(password, salt), 'hash_salt': salt,}, //*** make sure updating the salt but not the password doesn't cause issues
+    await db.update(
+      'user_data',
+      {'password_hash': BCrypt.hashpw(password, salt), 'hash_salt': salt},
       where: 'userID = ?',
-      whereArgs: [userID]
+      whereArgs: [userID],
     );
   }
 
-  //For updating edited categories
   Future<void> updateCategory(
     int userID,
     String categoryName,
@@ -106,7 +112,6 @@ class DatabaseHandler {
       whereArgs: [userID, categoryName],
     );
     await db.update(
-      // Update logs within a category as well
       'spending_logs',
       {'category': newName},
       where: 'userID = ? AND category = ? AND caption IS NOT NULL',
@@ -126,13 +131,11 @@ class DatabaseHandler {
     await db.update(
       'spending_logs',
       {'caption': newCaption, 'amount': amount, 'date_time': newDateAndTime},
-      where:
-          'userID = ? AND category = ? AND date_time = ? AND caption IS NOT NULL',
+      where: 'userID = ? AND category = ? AND date_time = ? AND caption IS NOT NULL',
       whereArgs: [userID, category, dateAndTime],
     );
   }
 
-  //For deleting categories
   Future<void> deleteAllFromUser(int userID) async {
     await db.delete('spending_logs', where: 'userID = ?', whereArgs: [userID]);
   }
@@ -152,6 +155,7 @@ class DatabaseHandler {
       whereArgs: [userID, caption, dateAndTime],
     );
   }
+
   Future<void> deleteAllLogs(int userID) async {
     await db.delete(
       'spending_logs',
@@ -164,9 +168,9 @@ class DatabaseHandler {
     int userID,
     String category,
     String caption,
-    double amount,
-    {String? customDateTime}//added to create a custom date
-  ) async {
+    double amount, {
+    String? customDateTime,
+  }) async {
     await db.insert('spending_logs', {
       'userID': userID,
       'category': category,
@@ -245,13 +249,11 @@ class DatabaseHandler {
     );
 
     if (user.isNotEmpty &&
-      user.first["password_hash"] ==
-        BCrypt.hashpw(
-          password,
-          user.first["hash_salt"] as String,
-        )
-      ) // if email is registered, and if hashes match
-    {
+        user.first["password_hash"] ==
+            BCrypt.hashpw(
+              password,
+              user.first["hash_salt"] as String,
+            )) {
       return true;
     }
     return false;
@@ -265,13 +267,11 @@ class DatabaseHandler {
     );
 
     if (user.isNotEmpty &&
-      user.first["password_hash"] ==
-        BCrypt.hashpw(
-          password,
-          user.first["hash_salt"] as String,
-        )
-      ) // if ID exists, and if hashes match
-    {
+        user.first["password_hash"] ==
+            BCrypt.hashpw(
+              password,
+              user.first["hash_salt"] as String,
+            )) {
       return true;
     }
     return false;
@@ -279,14 +279,13 @@ class DatabaseHandler {
 
   String getCurrentTime() {
     DateTime now = DateTime.now();
-   String formattedDate = DateFormat("MMM-dd-yyyy").format(now);
+    String formattedDate = DateFormat("MMM-dd-yyyy").format(now);
     String formattedTime = DateFormat("h:mm:ss a").format(now);
-   String customDateTime = "$formattedDate\n$formattedTime";
-   return customDateTime;
+    String customDateTime = "$formattedDate\n$formattedTime";
+    return customDateTime;
   }
 
   Future<bool> userExists(String email) async {
-    // FUNCTION HAS NOT BEEN TESTED
     List<Map<String, Object?>> user = await getUserDataFromEmail(email);
 
     if (user.isEmpty) {
@@ -296,7 +295,6 @@ class DatabaseHandler {
   }
 
   Future<bool> categoryExists(String category) async {
-    // FUNCTION HAS NOT BEEN TESTED
     List<Map<String, Object?>> categoryList = await getCategoriesFromName(
       userID,
       category,
@@ -314,5 +312,28 @@ class DatabaseHandler {
 
   void debugClearUsers() {
     db.execute("DELETE FROM user_data");
+  }
+
+  Future<void> setMonthlyBudget(int userId, double budget) async {
+    final db = this.db;
+    await db.update(
+      'user_data',
+      {'monthly_budget': budget},
+      where: 'userID = ?',
+      whereArgs: [userId],
+    );
+  }
+
+  Future<double> getMonthlyBudget(int userId) async {
+    final db = this.db;
+    final result = await db.query(
+      'user_data',
+      columns: ['monthly_budget'],
+      where: 'userID = ?',
+      whereArgs: [userId],
+    );
+    return result.isNotEmpty && result.first['monthly_budget'] != null
+        ? result.first['monthly_budget'] as double
+        : 1500.0; // Default if not set
   }
 }

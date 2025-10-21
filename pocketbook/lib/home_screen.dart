@@ -6,6 +6,8 @@ import 'package:pocketbook/helper_files.dart';
 import 'package:pocketbook/log_screen.dart';
 import 'package:pocketbook/sign_in_screen.dart';
 import 'package:pocketbook/spendings_screen.dart';
+import 'package:pocketbook/trend_spending.dart';
+import 'package:pocketbook/set_budget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'database_handler.dart';
 import 'package:intl/intl.dart';
@@ -17,7 +19,7 @@ class HomeScreenState extends StatefulWidget {
   State<StatefulWidget> createState() => _HomeScreenStateManager();
 }
 
-class _HomeScreenStateManager extends State<HomeScreenState> {
+class _HomeScreenStateManager extends State<HomeScreenState> with SingleTickerProviderStateMixin {
   String? userName = "";
   double? balance = 0.00;
   List<String> categoryList = [];
@@ -27,10 +29,28 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   final TextEditingController addCategoryController = TextEditingController();
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
   int userID = DatabaseHandler.userID;
+  late AnimationController _animationController;
 
   //date variables
   DateTime selectedDate = DateTime.now();
   String dateDisplay = "Today";
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    // Call async initialization without making initState async
+    getUserData();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   void reloadPage() {
     clearFields();
@@ -186,15 +206,11 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     );
 
     if (confirm != true) return;
-
-    //verify new email is available, and that old email and password match
   }
 
   void changePassword() async {
-    final TextEditingController oldPasswordController =
-        TextEditingController();
-    final TextEditingController newPasswordController =
-        TextEditingController();
+    final TextEditingController oldPasswordController = TextEditingController();
+    final TextEditingController newPasswordController = TextEditingController();
     final TextEditingController confirmNewPassword = TextEditingController();
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -339,11 +355,9 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     );
 
     if (confirm != true) return;
-    // Have user enter password to confirm
   }
 
   void resetLog() async {
-    // Show confirmation dialog
     final TextEditingController passwordController = TextEditingController();
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -407,7 +421,6 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   }
 
   void resetAccount() async {
-    // Show confirmation dialog
     final TextEditingController passwordController = TextEditingController();
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -476,7 +489,6 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   }
 
   void logout() async {
-    // Show confirmation dialog
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -498,9 +510,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     if (confirm != true) return;
 
     final prefs = await SharedPreferences.getInstance();
-    // Selectively clear login-related preferences
     await prefs.clear();
-    // Reset userID
     DatabaseHandler.userID = -1;
 
     clearFields();
@@ -519,37 +529,28 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   }
 
 
-  @override
-  void initState() {
-    super.initState();
-    getUserData();
+  Future<void> _selectDate() async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+
+    if (picked != null) {
+      setState(() {
+        selectedDate = picked;
+        DateTime now = DateTime.now();
+        if (picked.year == now.year && picked.month == now.month && picked.day == now.day) {
+          dateDisplay = "Today";
+        } else {
+          dateDisplay = DateFormat('MMM dd, yyyy').format(picked);
+        }
+      });
+    }
   }
-
-Future<void> _selectDate() async{
-DateTime? picked = await showDatePicker(
-
-  context: context,
-  initialDate: selectedDate,
-  firstDate: DateTime(2000),
-  lastDate: DateTime.now(),
-  );
-
-  if(picked != null){
-    setState((){
-      selectedDate = picked;
-      DateTime now = DateTime.now();
-      if (picked.year == now.year && picked.month == now.month && picked.day == now.day) {
-        dateDisplay = "Today";
-      } else {
-        dateDisplay = DateFormat('MMM dd, yyyy').format(picked);
-      }
-    });
-  }
-
-}
 
   Future<void> getUserData() async {
-    //Grab info from DB
     List<Map<String, Object?>> userData = await db.getUserData(userID);
     List<Map<String, Object?>> userCategories = await db.getCategories(userID);
     if (mounted) {
@@ -593,7 +594,6 @@ DateTime? picked = await showDatePicker(
       return;
     }
     double amount = double.parse(addAmountController.text).abs();
-    //make the amount auto negated
     amount = -amount.abs();
     String caption = firstLetterCapital(addCaptionController.text).trim();
     String category = addCategoryController.text;
@@ -606,7 +606,6 @@ DateTime? picked = await showDatePicker(
 
     double theBalance = (balance ?? 0.0) + amount;
     await db.setUserBalance(userID, theBalance);
-    //Shows successful addition of expense
     showErrorSnackBar(context, 'Expense of \$${(-amount).toStringAsFixed(2)} for $caption added successfully.');
 
     clearFields();
@@ -618,7 +617,6 @@ DateTime? picked = await showDatePicker(
     return Scaffold(
       backgroundColor: Color(0xFF3B0054),
       appBar: AppBar(
-        //Top bar across screen
         title: Text('PocketBook'),
         centerTitle: true,
         leading: PopupMenuButton<String>(
@@ -627,16 +625,21 @@ DateTime? picked = await showDatePicker(
           tooltip: 'User Settings',
           onSelected: (String selection) {
             switch (selection) {
-              case "ChangeEmail": // updateUser
+              case "ChangeEmail":
                 changeEmail();
-              case "ChangePass": // updateUser
+                break;
+              case "ChangePass":
                 changePassword();
-              case "ResetLog": // deleteLog
+                break;
+              case "ResetLog":
                 resetLog();
-              case "ResetAcc": // deleteAllFromUser
+                break;
+              case "ResetAcc":
                 resetAccount();
+                break;
               case "LogOut":
                 logout();
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -676,7 +679,7 @@ DateTime? picked = await showDatePicker(
             child: Column(
               children: [
                 Padding(
-                  padding: EdgeInsets.all(30), //Welcome Message
+                  padding: EdgeInsets.all(30),
                   child: Text(
                     'Hi, $userName!',
                     textAlign: TextAlign.center,
@@ -688,9 +691,7 @@ DateTime? picked = await showDatePicker(
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 10,
-                  ), //Balance section outer border
+                  padding: EdgeInsets.symmetric(horizontal: 10),
                   child: Center(
                     child: Container(
                       decoration: BoxDecoration(
@@ -698,7 +699,6 @@ DateTime? picked = await showDatePicker(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Container(
-                        //Balance section content
                         height: 100,
                         decoration: BoxDecoration(
                           color: const Color(0xFFFF9B71),
@@ -727,16 +727,14 @@ DateTime? picked = await showDatePicker(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 20,
-                  ), //Spending Section padding
+                  ),
                   child: Center(
                     child: Container(
-                      //spending section outer border
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.white, width: 3),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Container(
-                        //Spending section content
                         decoration: BoxDecoration(
                           color: const Color(0xFFFF9B71),
                           border: Border.all(
@@ -751,34 +749,31 @@ DateTime? picked = await showDatePicker(
                             Padding(
                               padding: EdgeInsets.symmetric(vertical: 15),
                               child: Column(
-                              children: [
-                                Text(
-                                  'Add Spending',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 0, 0, 0),
-                                ),
+                                children: [
+                                  Text(
+                                    'Add Spending',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 0, 0, 0),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    'Date: $dateDisplay',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 50, 50, 50),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              //added a date display to show selected date.
-                              const SizedBox(height: 10),
-                              Text(
-                                'Date: $dateDisplay',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255,50,50,50),
-                                ),
-                              ),
-                            
-                          ],
-                        ),
-                      ),
-
+                            ),
                             Padding(
-                              padding: EdgeInsetsGeometry.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 10,
                                 vertical: 5,
                               ),
@@ -787,7 +782,7 @@ DateTime? picked = await showDatePicker(
                                 inputFormatters: [
                                   FilteringTextInputFormatter.allow(
                                     RegExp(r'^\d+\.?\d{0,2}'),
-                                  ), //Not fully sure what this means, but it should lock the $ amount to 2 decimal places
+                                  ),
                                 ],
                                 keyboardType: TextInputType.numberWithOptions(
                                   signed: false,
@@ -796,7 +791,6 @@ DateTime? picked = await showDatePicker(
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(),
                                   hintText: 'Amount',
-                                  //prefixText: '\$',
                                   filled: true,
                                   fillColor: Colors.white,
                                   enabledBorder: OutlineInputBorder(
@@ -817,7 +811,7 @@ DateTime? picked = await showDatePicker(
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsetsGeometry.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 10,
                                 vertical: 5,
                               ),
@@ -845,15 +839,13 @@ DateTime? picked = await showDatePicker(
                                 ),
                               ),
                             ),
-                            //DropdownMenu<>(),
                             Row(
                               children: [
                                 Padding(
-                                  padding: EdgeInsetsGeometry.symmetric(
+                                  padding: EdgeInsets.symmetric(
                                     horizontal: 10,
                                     vertical: 5,
                                   ),
-
                                   child: DropdownMenu<String>(
                                     controller: addCategoryController,
                                     width: 200,
@@ -872,22 +864,18 @@ DateTime? picked = await showDatePicker(
                                     ),
                                   ),
                                 ),
-                                //calendar button for adding date if not today
                                 IconButton.filled(
                                   icon: const Icon(Icons.calendar_today),
                                   onPressed: () {
-                                    //add date picker functionality
                                     _selectDate();
                                   },
                                 ),
-
                                 IconButton.filled(
                                   onPressed: () {
                                     _addSpending();
                                   },
                                   icon: Icon(Icons.add),
                                   color: Colors.white,
-                                  //style: IconButton.styleFrom(backgroundColor: Color(0xFF3B0054))
                                 ),
                               ],
                             ),
@@ -898,123 +886,165 @@ DateTime? picked = await showDatePicker(
                   ),
                 ),
                 Expanded(child: Container()),
-                Row(
-                  children: [
-                    //Navigation buttons
-                    Expanded(child: Container()),
-                    SizedBox(
-                      width: 80,
-                      child: Column(
-                        children: [
-                          IconButton.filled(
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const CategoriesScreen(),
-                                    ),
-                                  )
-                                  .then((value) => reloadPage());
-                            }, // Added navigation to the categories button
-                            icon: Icon(Icons.view_day),
-                            style: IconButton.styleFrom(
-                              fixedSize: Size(60, 60),
-                              backgroundColor: Color(0xFFFF9B71),
-                            ),
-                          ),
-                          Text(
-                            'Categories',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 16.0, // Horizontal spacing between buttons
+                    runSpacing: 16.0, // Vertical spacing between rows
+                    children: [
+                      _buildNavButton(
+                        icon: Icons.view_day,
+                        label: 'Categories',
+                        onTap: () {
+                          _animationController.forward().then((_) {
+                            _animationController.reverse();
+                            Navigator.of(context)
+                                .push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const CategoriesScreen(),
+                                  ),
+                                )
+                                .then((value) => reloadPage());
+                          });
+                        },
                       ),
-                    ),
-                    SizedBox(
-                      width: 80,
-                      child: Column(
-                        children: [
-                          IconButton.filled(
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const SpendingsScreen(),
-                                    ),
-                                  )
-                                  .then((value) => reloadPage());
-                            },
-                            icon: Icon(Icons.pie_chart),
-                            style: IconButton.styleFrom(
-                              fixedSize: Size(60, 60),
-                              backgroundColor: Color(0xFFFF9B71),
-                            ),
-                          ),
-                          Text(
-                            'Spending',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
+                      _buildNavButton(
+                        icon: Icons.pie_chart,
+                        label: 'Spending',
+                        onTap: () {
+                          _animationController.forward().then((_) {
+                            _animationController.reverse();
+                            Navigator.of(context)
+                                .push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const SpendingsScreen(),
+                                  ),
+                                )
+                                .then((value) => reloadPage());
+                          });
+                        },
                       ),
-                    ),
-                    SizedBox(
-                      width: 80,
-                      child: Column(
-                        children: [
-                          IconButton.filled(
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .push(
-                                    MaterialPageRoute(
-                                      builder: (context) => const LogScreen(),
-                                    ),
-                                  )
-                                  .then((value) => reloadPage());
-                            },
-                            icon: Icon(Icons.attach_money),
-                            style: IconButton.styleFrom(
-                              fixedSize: Size(60, 60),
-                              backgroundColor: Color(0xFFFF9B71),
-                            ),
-                          ),
-                          Text('Log', style: TextStyle(color: Colors.white)),
-                        ],
+                      _buildNavButton(
+                        icon: Icons.attach_money,
+                        label: 'Log',
+                        onTap: () {
+                          _animationController.forward().then((_) {
+                            _animationController.reverse();
+                            Navigator.of(context)
+                                .push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const LogScreen(),
+                                  ),
+                                )
+                                .then((value) => reloadPage());
+                          });
+                        },
                       ),
-                    ),
-                    SizedBox(
-                      width: 80,
-                      child: Column(
-                        children: [
-                          IconButton.filled(
-                            onPressed: () async {
-                              await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => const AddDeposit(),
-                                ),
-                              );
-                              getUserData();
-                            },
-                            icon: Icon(Icons.add),
-                            style: IconButton.styleFrom(
-                              fixedSize: Size(60, 60),
-                              backgroundColor: Color(0xFFFF9B71),
-                            ),
-                          ),
-                          Text(
-                            'Deposit',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
+                      _buildNavButton(
+                        icon: Icons.add,
+                        label: 'Deposit',
+                        onTap: () async {
+                          _animationController.forward().then((_) async {
+                            _animationController.reverse();
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const AddDeposit(),
+                              ),
+                            );
+                            getUserData();
+                          });
+                        },
                       ),
-                    ),
-                  ],
+                      _buildNavButton(
+                        icon: Icons.bar_chart,
+                        label: 'Trends',
+                        onTap: () {
+                          _animationController.forward().then((_) {
+                            _animationController.reverse();
+                            Navigator.of(context)
+                                .push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const TrendSpending(),
+                                  ),
+                                )
+                                .then((value) => reloadPage());
+                          });
+                        },
+                      ),
+                      _buildNavButton(
+                        icon: Icons.account_balance_wallet,
+                        label: 'Budget',
+                        onTap: () {
+                          _animationController.forward().then((_) {
+                            _animationController.reverse();
+                            Navigator.of(context)
+                                .push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const SetBudget(),
+                                  ),
+                                )
+                                .then((value) => reloadPage());
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                Padding(padding: EdgeInsetsGeometry.all(10)),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildNavButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedBuilder(
+        animation: _animationController,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: 1.0 + _animationController.value * 0.1,
+            child: Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Color(0xFF3B0054), width: 2),
+              ),
+              color: const Color(0xFFFF9B71),
+              child: SizedBox(
+                width: 80,
+                height: 100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      icon,
+                      size: 30,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
