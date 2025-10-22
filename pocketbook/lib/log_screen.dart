@@ -90,12 +90,20 @@ void initState() {
          logFilters = logs.where((log) => log.amount >0).toList();
          break;
         case 'Ascending Date':
+        logFilters = List.from(logs);
+        logFilters.sort((a,b) => a.dateAndTime.compareTo(b.dateAndTime));
          break;
         case 'Descending Date':
+        logFilters = List.from(logs);
+        logFilters.sort((a,b) => b.dateAndTime.compareTo(a.dateAndTime));
           break;
         case 'Ascending Amount':
+          logFilters = List.from(logs);
+          logFilters.sort((a, b) => a.amount.compareTo(b.amount));
           break;
         case 'Descending Amount':
+          logFilters = List.from(logs);
+          logFilters.sort((a, b) => b.amount.compareTo(a.amount));
           break;
         default:
         logFilters = List.from(logs);
