@@ -75,7 +75,7 @@ void initState() {
     });
   
   }
-
+//
   //method to filter logs
   void applyLogFilters(){
     setState((){
