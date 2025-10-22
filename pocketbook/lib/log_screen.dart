@@ -121,7 +121,46 @@ void initState() {
         backgroundColor: const Color(0xFF280039),
         foregroundColor: Colors.white,
         elevation: 40,
+        actions: [
+          Container(
+               margin: EdgeInsets.only(right: 16, top: 8, bottom: 8),
+    padding: EdgeInsets.symmetric(horizontal: 12),
+    decoration: BoxDecoration(
+      color: Colors.white.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: Colors.white.withOpacity(0.3)),
+    ),
+            child: DropdownButton<String>(
+              value: selectedFilter,
+              dropdownColor: const Color(0xFF280039),
+              icon: const Icon(Icons.filter_list, color: Colors.white, size: 20),
+             
+              selectedItemBuilder: (BuildContext context) {
+               return filterOptions.map<Widget>((String item){
+                 return Container();
+                 
+               }).toList();
+              },
+              items: filterOptions.map<DropdownMenuItem<String>>((String option) {
+                return DropdownMenuItem<String>(
+                  value: option,
+                  child: Text(option, style: const TextStyle(color: Colors.white)),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedFilter = newValue;
+                    applyLogFilters();
+                  });
+                }
+              },
+            
+            ),
+          )
+        ]
       ),
+
 
       body: Column(
       
