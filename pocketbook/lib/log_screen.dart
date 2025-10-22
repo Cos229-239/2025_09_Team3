@@ -70,6 +70,8 @@ void initState() {
         amount: log['amount'] as double? ?? 0.0,
         category: log['category']?.toString() ?? ''
       )).toList();
+
+      logFilters = List.from(logs);
     });
   
   }
@@ -122,44 +124,55 @@ void initState() {
         foregroundColor: Colors.white,
         elevation: 40,
         actions: [
-          Container(
-               margin: EdgeInsets.only(right: 16, top: 8, bottom: 8),
-    padding: EdgeInsets.symmetric(horizontal: 12),
-    decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.1),
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Colors.white.withOpacity(0.3)),
-    ),
-            child: DropdownButton<String>(
-              value: selectedFilter,
-              dropdownColor: const Color(0xFF280039),
-              icon: const Icon(Icons.filter_list, color: Colors.white, size: 20),
-             
-              selectedItemBuilder: (BuildContext context) {
-               return filterOptions.map<Widget>((String item){
-                 return Container();
-                 
-               }).toList();
-              },
-              items: filterOptions.map<DropdownMenuItem<String>>((String option) {
-                return DropdownMenuItem<String>(
-                  value: option,
-                  child: Text(option, style: const TextStyle(color: Colors.white)),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    selectedFilter = newValue;
-                    applyLogFilters();
-                  });
-                }
-              },
-            
+          PopupMenuButton<String>(
+            icon: Container(
+              padding: const EdgeInsets.all(7),
+              child: const Icon(
+                Icons.filter_list,
+                color: Colors.white,
+              ),
             ),
-          )
-        ]
+            color: const Color(0xFF280039),
+            offset: const Offset(0,55),
+            onSelected: (String value) {
+              setState(() {
+                selectedFilter = value;
+                applyLogFilters();
+              });
+            },
+           itemBuilder: (BuildContext context) {
+              return filterOptions.map((String option){
+
+                return PopupMenuItem<String>(
+                  value: option,
+                  child: Container(
+                    width: 180,
+                    child: Row(
+                      children: [
+                        selectedFilter == option ?
+                          const Icon(Icons.check, color: Colors.white) :
+                          const SizedBox(width: 24),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              option,
+                              style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: selectedFilter == option ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
+                          ),
+                      ],
+                    ),
+                  )
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
+
+
 
 
       body: Column(
@@ -201,10 +214,10 @@ void initState() {
               logs.isEmpty ? const Center(child: Text('No transactions available.')) :
               ListView.builder(
               //change to data from database <----------------------------------
-            itemCount: logs.length,
+            itemCount: logFilters.length,
             itemBuilder: (context, index){
 
-              final log = logs[index];
+              final log = logFilters[index];
               final depositPos = log.amount > 0;
               return ElevatedButton(
                 onPressed: () {
