@@ -415,5 +415,4 @@ class _Txn {
     required this.caption,
     required this.amount
   });
-
 }

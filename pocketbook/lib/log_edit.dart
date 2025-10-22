@@ -302,4 +302,3 @@ class _LogEditState extends State<LogEdit> {
     );
   }
 }
-

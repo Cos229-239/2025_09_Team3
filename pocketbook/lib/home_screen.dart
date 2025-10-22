@@ -56,6 +56,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
+        scrollable: true,
         title: const Text('Change Email'),
         actions: <Widget>[
           TextField(
@@ -200,6 +201,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Change Password'),
+        scrollable: true,
         actions: <Widget>[
           TextField(
             controller: oldPasswordController,
@@ -349,6 +351,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Reset Log'),
+        scrollable: true,
         content: const Text(
           'Are you sure you want reset your logs? This action cannot be undone.\n\nEnter password to confirm',
         ),
@@ -413,6 +416,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Reset Account'),
+        scrollable: true,
         content: const Text(
           'Are you sure you want reset your account? This action cannot be undone.\n\nEnter password to confirm',
         ),

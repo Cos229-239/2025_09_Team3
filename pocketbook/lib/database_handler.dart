@@ -1,4 +1,3 @@
-//import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:bcrypt/bcrypt.dart';
@@ -24,10 +23,6 @@ class DatabaseHandler {
       version: 1,
     );
     return DatabaseHandler._create(db);
-  }
-
-  void manualUpdate() async {
-    //To be manually edited and run, only if needed
   }
 
   Future<void> addUser(
@@ -67,7 +62,7 @@ class DatabaseHandler {
       'category': categoryName,
       'category_color': categoryColor,
       'amount': amount,
-      'date_time': await getCurrentTime(),
+      'date_time': getCurrentTime(),
     });
   }
 
@@ -85,7 +80,7 @@ class DatabaseHandler {
   Future<void> updatePassword(int userID, String password) async {
     final String salt = BCrypt.gensalt();
     await db.update('user_data', 
-      {'password_hash': BCrypt.hashpw(password, salt), 'hash_salt': salt,}, //*** make sure updating the salt but not the password doesn't cause issues
+      {'password_hash': BCrypt.hashpw(password, salt), 'hash_salt': salt,},
       where: 'userID = ?',
       whereArgs: [userID]
     );
@@ -152,6 +147,7 @@ class DatabaseHandler {
       whereArgs: [userID, caption, dateAndTime],
     );
   }
+
   Future<void> deleteAllLogs(int userID) async {
     await db.delete(
       'spending_logs',
@@ -306,13 +302,5 @@ class DatabaseHandler {
       return false;
     }
     return true;
-  }
-
-  void debugClearLog() {
-    db.execute("DELETE FROM spending_logs");
-  }
-
-  void debugClearUsers() {
-    db.execute("DELETE FROM user_data");
   }
 }
