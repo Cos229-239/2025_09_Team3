@@ -126,8 +126,10 @@ class _SignInScreenState extends State<SignInScreen> {
                                 _rememberMe = value ?? false;
                               });
                             },
-                            fillColor: WidgetStateProperty.all<Color>(Colors.white),
-                            activeColor: const Color(0xFF280039),
+                            fillColor: WidgetStateProperty.all<Color>(const Color.fromARGB(255, 255, 255, 255)),
+                            //side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
+                            activeColor: Colors.white,
+                            checkColor: Colors.black,
                           ),
                           const Text(
                             'Remember Me',
