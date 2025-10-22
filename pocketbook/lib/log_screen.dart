@@ -29,6 +29,20 @@ class _LogScreenState extends State<LogScreen> {
 
 final DatabaseHandler db = DatabaseHandler.databaseInstance!;
 List<LogEntry> logs = [];
+List<LogEntry> logFilters = [];
+String selectedFilter = 'All';
+
+final List<String> filterOptions =[
+  'All',
+  'Expenses',
+  'Deposits',
+  'Ascending Date',
+  'Descending Date',
+  'Ascending Amount',
+  'Descending Amount',
+
+ ];
+
 
 void reloadPage() {
     setState(() {
@@ -58,6 +72,35 @@ void initState() {
       )).toList();
     });
   
+  }
+
+  //method to filter logs
+  void applyLogFilters(){
+    setState((){
+      switch (selectedFilter){
+        case 'All':
+          logFilters = List.from(logs);
+          break;
+        case 'Expenses':
+         logFilters = logs.where((log) => log.amount <0).toList();
+         break;
+        case 'Deposits':
+         logFilters = logs.where((log) => log.amount >0).toList();
+         break;
+        case 'Ascending Date':
+         break;
+        case 'Descending Date':
+          break;
+        case 'Ascending Amount':
+          break;
+        case 'Descending Amount':
+          break;
+        default:
+        logFilters = List.from(logs);
+      }
+
+    });
+
   }
 
    @override
