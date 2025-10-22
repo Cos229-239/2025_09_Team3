@@ -127,7 +127,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               });
                             },
                             fillColor: WidgetStateProperty.all<Color>(const Color.fromARGB(255, 255, 255, 255)),
-                            //side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
+                            side: BorderSide(color: Color(0xFF3B0054), width: 2),
                             activeColor: Colors.white,
                             checkColor: Colors.black,
                           ),
