@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocketbook/database_handler.dart';
 import 'package:pocketbook/log_edit.dart';
 
-//hardcoded data for testing asthetics until database is connected
+
 class LogEntry {
   String category;
   String caption;
@@ -32,6 +32,7 @@ List<LogEntry> logs = [];
 List<LogEntry> logFilters = [];
 String selectedFilter = 'All';
 
+//String list of filter options
 final List<String> filterOptions =[
   'All',
   'Expenses',
@@ -43,7 +44,7 @@ final List<String> filterOptions =[
 
  ];
 
-
+//method to reload page
 void reloadPage() {
     setState(() {
       
@@ -57,11 +58,12 @@ void initState() {
   listLogs();
 }
 
-//list the logs from database <--------------------------------------------------
+//list the logs from database 
   Future<void> listLogs() 
   async{
     final dataLog = await db.getSpendingLog(DatabaseHandler.userID);
    
+   //maps data to log entries
     setState(() {
       logs = dataLog.map((log) => LogEntry(
         //had to do null checks////need to fix database for null checks also<---------------- //Lucas here - Database nulls are on purpose, just a heads up. I dont think nulls are possible if they shouldnt be. Let me know if I missed something though
@@ -186,7 +188,7 @@ void initState() {
       body: Column(
       
         children: [
-          //Table for displaying titles//
+          //Table for displaying titles
           Container(
             color: Colors.grey,
             padding: const EdgeInsets.all(8.0),
@@ -220,11 +222,9 @@ void initState() {
           Expanded(
             child: 
               logs.isEmpty ? const Center(child: Text('No transactions available.')) :
-              ListView.builder(
-              //change to data from database <----------------------------------
+              ListView.builder(              
             itemCount: logFilters.length,
             itemBuilder: (context, index){
-
               final log = logFilters[index];
               final depositPos = log.amount > 0;
               return ElevatedButton(

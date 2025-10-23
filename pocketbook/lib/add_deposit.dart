@@ -222,7 +222,7 @@ DateTime? picked = await showDatePicker(
       double amount = double.parse(_amountController.text);
       amount =amount.abs(); //keeps deposits positive
       String origin = firstLetterCapital(_originController.text.trim());
-      //TODO: ADD A FUNCTION TO CAPITALIZE THE FIRST LETTER IN EACH WORD> HELPER FILE<----------
+      
       
       //adds deposit to database
       await db.addSpending(
