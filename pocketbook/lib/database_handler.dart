@@ -2,6 +2,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:bcrypt/bcrypt.dart';
 import 'package:intl/intl.dart';
+import 'package:pocketbook/helper_files.dart';
 
 class DatabaseHandler {
   late Database db;
@@ -36,7 +37,7 @@ class DatabaseHandler {
     await db.insert('user_data', {
       'fname': first,
       'lName': last,
-      'email': email,
+      'email': email.toLowerCase(),
       'password_hash': BCrypt.hashpw(password, salt),
       'hash_salt': salt,
     });
@@ -66,23 +67,22 @@ class DatabaseHandler {
     });
   }
 
-  Future<void> updateEmail(
-    int userID,
-    String email,
-  ) async {
-    await db.update('user_data', 
-      {'email': email,},
+  Future<void> updateEmail(int userID, String email) async {
+    await db.update(
+      'user_data',
+      {'email': email},
       where: 'userID = ?',
-      whereArgs: [userID]
+      whereArgs: [userID],
     );
   }
 
   Future<void> updatePassword(int userID, String password) async {
     final String salt = BCrypt.gensalt();
-    await db.update('user_data', 
-      {'password_hash': BCrypt.hashpw(password, salt), 'hash_salt': salt,},
+    await db.update(
+      'user_data',
+      {'password_hash': BCrypt.hashpw(password, salt), 'hash_salt': salt},
       where: 'userID = ?',
-      whereArgs: [userID]
+      whereArgs: [userID],
     );
   }
 
@@ -160,9 +160,9 @@ class DatabaseHandler {
     int userID,
     String category,
     String caption,
-    double amount,
-    {String? customDateTime}//added to create a custom date
-  ) async {
+    double amount, {
+    String? customDateTime, //added to create a custom date
+  }) async {
     await db.insert('spending_logs', {
       'userID': userID,
       'category': category,
@@ -237,12 +237,11 @@ class DatabaseHandler {
     final user = await db.query(
       'user_data',
       where: 'email = ?',
-      whereArgs: [email],
+      whereArgs: [email.toLowerCase()],
     );
 
     if (user.isNotEmpty &&
-      user.first["password_hash"] ==
-        BCrypt.hashpw(
+        user.first["password_hash"] == BCrypt.hashpw(
           password,
           user.first["hash_salt"] as String,
         )
@@ -261,12 +260,11 @@ class DatabaseHandler {
     );
 
     if (user.isNotEmpty &&
-      user.first["password_hash"] ==
-        BCrypt.hashpw(
-          password,
-          user.first["hash_salt"] as String,
-        )
-      ) // if ID exists, and if hashes match
+        user.first["password_hash"] ==
+            BCrypt.hashpw(
+              password,
+              user.first["hash_salt"] as String,
+            )) // if ID exists, and if hashes match
     {
       return true;
     }
@@ -275,15 +273,14 @@ class DatabaseHandler {
 
   String getCurrentTime() {
     DateTime now = DateTime.now();
-   String formattedDate = DateFormat("MMM-dd-yyyy").format(now);
+    String formattedDate = DateFormat("MMM-dd-yyyy").format(now);
     String formattedTime = DateFormat("h:mm:ss a").format(now);
-   String customDateTime = "$formattedDate\n$formattedTime";
-   return customDateTime;
+    String customDateTime = "$formattedDate\n$formattedTime";
+    return customDateTime;
   }
 
   Future<bool> userExists(String email) async {
-    // FUNCTION HAS NOT BEEN TESTED
-    List<Map<String, Object?>> user = await getUserDataFromEmail(email);
+    List<Map<String, Object?>> user = await getUserDataFromEmail(email.toLowerCase());
 
     if (user.isEmpty) {
       return false;
@@ -292,10 +289,9 @@ class DatabaseHandler {
   }
 
   Future<bool> categoryExists(String category) async {
-    // FUNCTION HAS NOT BEEN TESTED
     List<Map<String, Object?>> categoryList = await getCategoriesFromName(
       userID,
-      category,
+      firstLetterCapital(category),
     );
 
     if (categoryList.isEmpty) {

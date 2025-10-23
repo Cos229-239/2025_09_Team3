@@ -19,9 +19,8 @@ class _AccountCreationState extends State<AccountCreation> {
   final TextEditingController dobController = TextEditingController();
   final TextEditingController incomeController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
-  final TextEditingController startingBalanceController = TextEditingController();// Added this
+  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController startingBalanceController = TextEditingController();
   final DatabaseHandler db = DatabaseHandler.databaseInstance!;
 
   Future<void> createAccount() async {
@@ -271,12 +270,12 @@ class _AccountCreationState extends State<AccountCreation> {
                           emailController.text.isNotEmpty &&
                           passwordController.text.isNotEmpty &&
                           confirmPasswordController.text.isNotEmpty &&                
-                          startingBalanceController.text.isNotEmpty) {// Added check for starting balance
+                          startingBalanceController.text.isNotEmpty) {
                         if (!await checkUserExists(emailController.text)) {
                           createAccount();
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('User already exists')),
+                            const SnackBar(content: Text('Email already in use')),
                           );
                         }
                       } else {
