@@ -77,7 +77,6 @@ void initState() {
     });
   
   }
-//
   //method to filter logs
   void applyLogFilters(){
     setState((){
@@ -219,62 +218,60 @@ void initState() {
           ),
           //List for displaying logs
           Divider(height: 1, color: const Color.fromARGB(255, 0, 0, 0)),
-          Expanded(
-            child: 
-              logs.isEmpty ? const Center(child: Text('No transactions available.')) :
-              ListView.builder(              
-            itemCount: logFilters.length,
-            itemBuilder: (context, index){
-              final log = logFilters[index];
-              final depositPos = log.amount > 0;
-              return ElevatedButton(
-                onPressed: () {
-                   Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => LogEdit(selectedLog: log),
-                    ),
-                  ).then((value) => reloadPage());
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  shape: LinearBorder.bottom(
-                    side: const BorderSide(
-                      color: Colors.black
+          Expanded( child: 
+            logs.isEmpty ? const Center(child: Text('No transactions available.')) :
+            ListView.builder(              
+              itemCount: logFilters.length,
+              itemBuilder: (context, index){
+                final log = logFilters[index];
+                final depositPos = log.amount > 0;
+                return ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => LogEdit(selectedLog: log),
+                      ),
+                    ).then((value) => reloadPage());
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    shape: LinearBorder.bottom(
+                      side: const BorderSide(
+                        color: Colors.black
+                      )
                     )
-                  )
-                ),
-               
-                 child: Row(
-                  children: [
-                    Expanded(
-                      child: Text (log.dateAndTime,
-                        textAlign: TextAlign.left, 
-                        style: TextStyle(color: Colors.black),
+                  ),
+                
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text (log.dateAndTime,
+                          textAlign: TextAlign.left, 
+                          style: TextStyle(color: Colors.black),
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Text (log.caption,
-                       textAlign: TextAlign.center,
-                       style: TextStyle(color: Colors.black),
-                       ),
-                      // Add this)
-                    ),
-                    Expanded(
-                      
-                      child: Text (
-                         textAlign: TextAlign.right,
-                        //operator to determine if deposit or withdrawal
-                        (depositPos ? '+' : '') + '\$' + log.amount.toStringAsFixed(2),
-                        style: TextStyle(
-                         
-                          color: depositPos ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.bold,
-                          
-                        )
+                      Expanded(
+                        flex: 1,
+                        child: Text (log.caption,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.black),
+                          ),
                       ),
-                    ),
-                  ],
+                      Expanded(
+                        
+                        child: Text (
+                            textAlign: TextAlign.right,
+                          //operator to determine if deposit or withdrawal
+                          (depositPos ? '+' : '') + '\$' + log.amount.toStringAsFixed(2),
+                          style: TextStyle(
+                            
+                            color: depositPos ? Colors.green : Colors.red,
+                            fontWeight: FontWeight.bold,
+                            
+                          )
+                        ),
+                      ),
+                    ],
                   ),
                 );
               }

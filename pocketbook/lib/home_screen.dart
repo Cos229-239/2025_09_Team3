@@ -49,7 +49,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     addCategoryController.clear();
   }
 
-  void changeEmail() async {
+  void changeEmail() async {  //verify new email is available, and that old email and password match
     final TextEditingController oldEmailController = TextEditingController();
     final TextEditingController newEmailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
@@ -187,11 +187,9 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     );
 
     if (confirm != true) return;
-
-    //verify new email is available, and that old email and password match
   }
 
-  void changePassword() async {
+  void changePassword() async { // Have user enter new password, and old to confirm change
     final TextEditingController oldPasswordController =
         TextEditingController();
     final TextEditingController newPasswordController =
@@ -341,11 +339,10 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     );
 
     if (confirm != true) return;
-    // Have user enter password to confirm
   }
 
   void resetLog() async {
-    // Show confirmation dialog
+    // Prompt password entry as confirmation
     final TextEditingController passwordController = TextEditingController();
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -410,7 +407,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   }
 
   void resetAccount() async {
-    // Show confirmation dialog
+    // Prompt password entry as confirmation
     final TextEditingController passwordController = TextEditingController();
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -480,7 +477,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
   }
 
   void logout() async {
-    // Show confirmation dialog
+    // Show confirmation modal
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -502,7 +499,7 @@ class _HomeScreenStateManager extends State<HomeScreenState> {
     if (confirm != true) return;
 
     final prefs = await SharedPreferences.getInstance();
-    // Selectively clear login-related preferences
+    // clear saved login so it doesn't auto sign in
     await prefs.clear();
     // Reset userID
     DatabaseHandler.userID = -1;
@@ -765,7 +762,7 @@ DateTime? picked = await showDatePicker(
                                   color: Color.fromARGB(255, 0, 0, 0),
                                 ),
                               ),
-                              //added a date display to show selected date.
+                              //date display to show selected date.
                               const SizedBox(height: 10),
                               Text(
                                 'Date: $dateDisplay',
@@ -849,7 +846,6 @@ DateTime? picked = await showDatePicker(
                                 ),
                               ),
                             ),
-                            //DropdownMenu<>(),
                             Row(
                               children: [
                                 Padding(
@@ -880,7 +876,6 @@ DateTime? picked = await showDatePicker(
                                 IconButton.filled(
                                   icon: const Icon(Icons.calendar_today),
                                   onPressed: () {
-                                    //add date picker functionality
                                     _selectDate();
                                   },
                                 ),
@@ -920,7 +915,7 @@ DateTime? picked = await showDatePicker(
                                     ),
                                   )
                                   .then((value) => reloadPage());
-                            }, // Added navigation to the categories button
+                            },
                             icon: Icon(Icons.view_day),
                             style: IconButton.styleFrom(
                               fixedSize: Size(60, 60),

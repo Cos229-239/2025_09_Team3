@@ -238,7 +238,7 @@ class _CategoryCreationState extends State<CategoryCreation> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _chosenColor, // <-- Use the chosen color here
+                          backgroundColor: _chosenColor,
                           foregroundColor: Colors.black,
                         ),
                         child: const Text('Choose Color')

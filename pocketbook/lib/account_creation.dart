@@ -40,8 +40,7 @@ class _AccountCreationState extends State<AccountCreation> {
           passwordController.text,
         );
         await db.setUserIDVar(emailController.text);
-        //added for setting starting balance
-        if(startingBalanceController.text.isNotEmpty){
+        if(startingBalanceController.text.isNotEmpty) {
           double startingBalance = double.parse(startingBalanceController.text);
           await db.setUserBalance(DatabaseHandler.userID, startingBalance);
 
@@ -51,8 +50,6 @@ class _AccountCreationState extends State<AccountCreation> {
             'Starting Balance',
             startingBalance,
           );
-          
-
         }
         
         Navigator.of(context).pushAndRemoveUntil(
@@ -76,7 +73,7 @@ class _AccountCreationState extends State<AccountCreation> {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
-    startingBalanceController.dispose(); // Added this dispose
+    startingBalanceController.dispose();
     super.dispose();
   }
 
@@ -236,7 +233,6 @@ class _AccountCreationState extends State<AccountCreation> {
                       ),
                     ),
                   ),
-                  //added starting balance textfield
                   const SizedBox(height: 10),
                   TextField(
                     controller: startingBalanceController,

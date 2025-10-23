@@ -161,7 +161,7 @@ class DatabaseHandler {
     String category,
     String caption,
     double amount, {
-    String? customDateTime, //added to create a custom date
+    String? customDateTime,
   }) async {
     await db.insert('spending_logs', {
       'userID': userID,

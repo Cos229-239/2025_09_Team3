@@ -23,12 +23,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
       categories = [];
       for (int i = 0; i < userCategories.length; i++) {
+        //for each in categories, make an object with the data
         categories.add(createCategoryObject(userCategories[i]));
       }
       setState(() {_loading = false;});
   }
   Category createCategoryObject(Map<String, Object?> category) {
-    //for each in categories, make an object with the data
+    //object with given data
     Category newCategory = Category(name: category['category'] as String, budget: category['amount'] as double, color: Color(int.parse("${category['category_color']}", radix: 16)));
     return newCategory;
   }

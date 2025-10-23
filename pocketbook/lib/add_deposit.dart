@@ -175,7 +175,6 @@ DateTime? picked = await showDatePicker(
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () async{
-                          // add functionality to add deposit to database
                           _selectDate();
                         },
                         style: ElevatedButton.styleFrom(
@@ -188,7 +187,6 @@ DateTime? picked = await showDatePicker(
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () async{
-                          // add functionality to add deposit to database
                           _addDeposit();
                         },
                         style: ElevatedButton.styleFrom(

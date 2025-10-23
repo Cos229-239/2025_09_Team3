@@ -56,7 +56,7 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
             }
           }
         }
-        // NEW CONCEPT:::::: Fetch budget for this category
+        //Fetch budget for this category
         final catRows = await handler.getCategoriesFromName(DatabaseHandler.userID, c.name);
         double categoryBudget = 0.0;
         if (catRows.isNotEmpty && catRows.first['amount'] != null) {
@@ -240,19 +240,17 @@ class _SpendingsScreenState extends State<SpendingsScreen> {
                           label: item.name,
                           color: item.color,
                           onTap: () => _openCategory(item),
-                          ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
+                  ),
                 )
-              
-              ],  // Children
+              ],
             ),
          ),
         ),
       ),
     );
-
   }
 
 // Parese a DB-Stored colour value
@@ -305,14 +303,14 @@ class Category {
   final String name;
   final double value; // This Month's Spending (positive)
   final Color color;
-  final double budget; // New::::::: Budget limit from DB
+  final double budget; // Budget limit from DB
   //bool pressed;
 
   Category({
     required this.name,
     required this.value,
     required this.color,
-    required this.budget, // New::::::: Required budget field
+    required this.budget, // Required budget field
     //this.pressed = false,
   });
 }

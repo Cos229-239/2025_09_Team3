@@ -94,7 +94,7 @@ class _SpendingsSubMenuState extends State<SpendingsSubmenu> {
     final m = month.month;
     return list.where((t) {
       if (t.when == null) return false;
-      return t.when!.year == y && t.when!.month == m; //I think the issue is here. t.when!.month = "oct" or something, when m = 10.
+      return t.when!.year == y && t.when!.month == m;
     }).toList()
       ..sort((a, b) {
         final aa = a.when ?? DateTime.fromMillisecondsSinceEpoch(0);

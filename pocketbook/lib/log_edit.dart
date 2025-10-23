@@ -4,7 +4,6 @@ import 'package:pocketbook/helper_files.dart';
 import 'package:pocketbook/log_screen.dart';
 import 'package:intl/intl.dart';
 
-//TODO: This just a copy of the category create screen. Remove unneccesary code, 
 class LogEdit extends StatefulWidget {
   //allows for editing categories
   final LogEntry? selectedLog;
@@ -52,9 +51,6 @@ class _LogEditState extends State<LogEdit> {
       return;
     }
       
-
-      
-    
     try {
 
       double parsed = double.parse(_amountController.text);
@@ -67,9 +63,9 @@ class _LogEditState extends State<LogEdit> {
       caption = firstLetterCapital(caption);
 
       //for calculating balance changes 
-      double oldAmount =widget.selectedLog!.amount;
-      double newAmount =_amountValue;
-      double difference =newAmount - oldAmount;
+      double oldAmount = widget.selectedLog!.amount;
+      double newAmount = _amountValue;
+      double difference = newAmount - oldAmount;
 
       final userData= await db.getUserData(DatabaseHandler.userID);
       double currentBalance = 0.0;
@@ -274,15 +270,12 @@ class _LogEditState extends State<LogEdit> {
                                 ]
                               );
                             }
-
                           );
 
                           if (deleteConfirm == true) {
                           await db.deleteLog(
-                           //Update functionality to update account balance when deleting a log
                             DatabaseHandler.userID, widget.selectedLog!.caption, widget.selectedLog!.dateAndTime);
                             Navigator.of(context).pop();
-                          
                           }
                         },
                         style: ElevatedButton.styleFrom(
