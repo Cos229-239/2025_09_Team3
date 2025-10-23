@@ -23,7 +23,14 @@ class DatabaseHandler {
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
-          await db.execute('ALTER TABLE user_data ADD COLUMN monthly_budget REAL DEFAULT 1500.0');
+          // Check if monthly_budget column exists before adding
+          final result = await db.rawQuery(
+            "PRAGMA table_info(user_data)",
+          );
+          bool columnExists = result.any((row) => row['name'] == 'monthly_budget');
+          if (!columnExists) {
+            await db.execute('ALTER TABLE user_data ADD COLUMN monthly_budget REAL DEFAULT 1500.0');
+          }
         }
       },
       version: 2,
