@@ -8,6 +8,7 @@ class DatabaseHandler {
   late Database db;
   static int userID = -1;
   static DatabaseHandler? databaseInstance;
+
   DatabaseHandler._create(this.db);
 
   static Future<DatabaseHandler> create() async {
@@ -15,13 +16,25 @@ class DatabaseHandler {
       join(await getDatabasesPath(), 'pocketbook_database.db'),
       onCreate: (db, version) async {
         await db.execute(
-          'CREATE TABLE IF NOT EXISTS user_data(userID INTEGER PRIMARY KEY AUTOINCREMENT, fname TEXT, lname TEXT, email TEXT, account_balance REAL, password_hash TEXT, hash_salt TEXT);',
+          'CREATE TABLE IF NOT EXISTS user_data(userID INTEGER PRIMARY KEY AUTOINCREMENT, fname TEXT, lname TEXT, email TEXT, account_balance REAL, password_hash TEXT, hash_salt TEXT, monthly_budget REAL DEFAULT 1500.0)',
         );
         await db.execute(
-          'CREATE TABLE IF NOT EXISTS spending_logs(userID INTEGER, category TEXT, category_color TEXT, caption TEXT, amount REAL, date_time TEXT);',
+          'CREATE TABLE IF NOT EXISTS spending_logs(userID INTEGER, category TEXT, category_color TEXT, caption TEXT, amount REAL, date_time TEXT)',
         );
       },
-      version: 1,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          // Check if monthly_budget column exists before adding
+          final result = await db.rawQuery(
+            "PRAGMA table_info(user_data)",
+          );
+          bool columnExists = result.any((row) => row['name'] == 'monthly_budget');
+          if (!columnExists) {
+            await db.execute('ALTER TABLE user_data ADD COLUMN monthly_budget REAL DEFAULT 1500.0');
+          }
+        }
+      },
+      version: 2,
     );
     return DatabaseHandler._create(db);
   }
@@ -33,13 +46,13 @@ class DatabaseHandler {
     String password,
   ) async {
     final String salt = BCrypt.gensalt();
-
     await db.insert('user_data', {
       'fname': first,
       'lName': last,
       'email': email.toLowerCase(),
       'password_hash': BCrypt.hashpw(password, salt),
       'hash_salt': salt,
+      'monthly_budget': 1500.0, // Default budget for new users
     });
   }
 
@@ -73,6 +86,7 @@ class DatabaseHandler {
       {'email': email},
       where: 'userID = ?',
       whereArgs: [userID],
+      whereArgs: [userID],
     );
   }
 
@@ -81,12 +95,15 @@ class DatabaseHandler {
     await db.update(
       'user_data',
       {'password_hash': BCrypt.hashpw(password, salt), 'hash_salt': salt},
+    await db.update(
+      'user_data',
+      {'password_hash': BCrypt.hashpw(password, salt), 'hash_salt': salt},
       where: 'userID = ?',
+      whereArgs: [userID],
       whereArgs: [userID],
     );
   }
 
-  //For updating edited categories
   Future<void> updateCategory(
     int userID,
     String categoryName,
@@ -101,7 +118,6 @@ class DatabaseHandler {
       whereArgs: [userID, categoryName],
     );
     await db.update(
-      // Update logs within a category as well
       'spending_logs',
       {'category': newName},
       where: 'userID = ? AND category = ? AND caption IS NOT NULL',
@@ -121,13 +137,11 @@ class DatabaseHandler {
     await db.update(
       'spending_logs',
       {'caption': newCaption, 'amount': amount, 'date_time': newDateAndTime},
-      where:
-          'userID = ? AND category = ? AND date_time = ? AND caption IS NOT NULL',
+      where: 'userID = ? AND category = ? AND date_time = ? AND caption IS NOT NULL',
       whereArgs: [userID, category, dateAndTime],
     );
   }
 
-  //For deleting categories
   Future<void> deleteAllFromUser(int userID) async {
     await db.delete('spending_logs', where: 'userID = ?', whereArgs: [userID]);
   }
@@ -148,6 +162,7 @@ class DatabaseHandler {
     );
   }
 
+
   Future<void> deleteAllLogs(int userID) async {
     await db.delete(
       'spending_logs',
@@ -160,6 +175,9 @@ class DatabaseHandler {
     int userID,
     String category,
     String caption,
+    double amount, {
+    String? customDateTime,
+  }) async {
     double amount, {
     String? customDateTime,
   }) async {
@@ -274,7 +292,10 @@ class DatabaseHandler {
   String getCurrentTime() {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat("MMM-dd-yyyy").format(now);
+    String formattedDate = DateFormat("MMM-dd-yyyy").format(now);
     String formattedTime = DateFormat("h:mm:ss a").format(now);
+    String customDateTime = "$formattedDate\n$formattedTime";
+    return customDateTime;
     String customDateTime = "$formattedDate\n$formattedTime";
     return customDateTime;
   }
@@ -298,5 +319,28 @@ class DatabaseHandler {
       return false;
     }
     return true;
+  }
+
+  Future<void> setMonthlyBudget(int userId, double budget) async {
+    final db = this.db;
+    await db.update(
+      'user_data',
+      {'monthly_budget': budget},
+      where: 'userID = ?',
+      whereArgs: [userId],
+    );
+  }
+
+  Future<double> getMonthlyBudget(int userId) async {
+    final db = this.db;
+    final result = await db.query(
+      'user_data',
+      columns: ['monthly_budget'],
+      where: 'userID = ?',
+      whereArgs: [userId],
+    );
+    return result.isNotEmpty && result.first['monthly_budget'] != null
+        ? result.first['monthly_budget'] as double
+        : 1500.0; // Default if not set
   }
 }
