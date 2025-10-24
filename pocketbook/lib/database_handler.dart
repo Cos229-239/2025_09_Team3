@@ -86,7 +86,6 @@ class DatabaseHandler {
       {'email': email},
       where: 'userID = ?',
       whereArgs: [userID],
-      whereArgs: [userID],
     );
   }
 
@@ -95,11 +94,7 @@ class DatabaseHandler {
     await db.update(
       'user_data',
       {'password_hash': BCrypt.hashpw(password, salt), 'hash_salt': salt},
-    await db.update(
-      'user_data',
-      {'password_hash': BCrypt.hashpw(password, salt), 'hash_salt': salt},
       where: 'userID = ?',
-      whereArgs: [userID],
       whereArgs: [userID],
     );
   }
@@ -175,9 +170,6 @@ class DatabaseHandler {
     int userID,
     String category,
     String caption,
-    double amount, {
-    String? customDateTime,
-  }) async {
     double amount, {
     String? customDateTime,
   }) async {
@@ -292,10 +284,7 @@ class DatabaseHandler {
   String getCurrentTime() {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat("MMM-dd-yyyy").format(now);
-    String formattedDate = DateFormat("MMM-dd-yyyy").format(now);
     String formattedTime = DateFormat("h:mm:ss a").format(now);
-    String customDateTime = "$formattedDate\n$formattedTime";
-    return customDateTime;
     String customDateTime = "$formattedDate\n$formattedTime";
     return customDateTime;
   }
